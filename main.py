@@ -13,7 +13,7 @@ bot = commands.Bot(command_prefix=bot_prefix, intents=bot_intents)
 bot.remove_command("help")
 
 # add extensions
-extensions = ("extensions.base_commands", "extensions.send_conquest_tips")
+extensions = ("extensions.base_commands", "extensions.send_conquest_tips", "extensions.settings_commands")
 @bot.event
 async def setup_hook():
     for extension in extensions:
