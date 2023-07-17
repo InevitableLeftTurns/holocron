@@ -1,5 +1,6 @@
 bot_prefixes = {}
 
+
 def bot_prefix(bot_instance, message):
     if message.guild is None:
         return bot_prefixes["0"]

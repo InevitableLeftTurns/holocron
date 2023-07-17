@@ -1,6 +1,7 @@
 import discord
 from discord.utils import get
 
+
 async def check_higher_perms(author: discord.Member, guild: discord.Guild):
     bot_perms = get(guild.roles, name="Conquest Admin")
     if bot_perms is None:
