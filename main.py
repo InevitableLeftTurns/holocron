@@ -1,12 +1,14 @@
 import discord
 from discord.ext import commands
-from util.global_constants import bot_prefix, bot_token
+from util.global_constants import bot_token
+from util.prefix_handler import bot_prefix
 
 
 # build intents
 bot_intents = discord.Intents.default()
 bot_intents.members = True
 bot_intents.message_content = True
+bot_intents.reactions = True
 
 # bot init
 bot = commands.Bot(command_prefix=bot_prefix, intents=bot_intents)

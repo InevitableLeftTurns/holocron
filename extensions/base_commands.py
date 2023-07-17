@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands
-from util.global_constants import bot_prefix
+from util.prefix_handler import bot_prefixes
 
 
 class BaseCommands(commands.Cog):
@@ -26,9 +26,9 @@ class BaseCommands(commands.Cog):
             else:
                 command_component = message_content
             await ctx.send(f"The command `{command_component}` does not exist. For a list of commands, use "
-                           f"`{bot_prefix}help`.")
+                           f"`{ctx.prefix}help`.")
         else:
-            await ctx.send(f"[TEMP] Error on command `{bot_prefix}{ctx.command.name}`: {exception}")
+            await ctx.send(f"[TEMP] Error on command `{ctx.prefix}{ctx.command.name}`: {exception}")
 
     @commands.command(name="help", description="Gives info on certain commands, or a list of commands")
     async def _help(self, ctx: commands.Context, *command_list):
@@ -38,31 +38,31 @@ class BaseCommands(commands.Cog):
 
             if bot_command is not None:
                 aliases = "none" if len(bot_command.aliases) == 0 else ", ".join(bot_command.aliases)
-                to_send += f"**{bot_prefix}{command}** (aliases: {aliases})\n"
+                to_send += f"**{ctx.prefix}{command}** (aliases: {aliases})\n"
                 if command == "help":
                     to_send += f"A command that gives you a list of commands, or help on specific ones.\n" \
-                               f"To get a list of commands, use `{bot_prefix}help`, or for help on a certain command," \
-                               f" use `{bot_prefix}help [command]`.\n\n"
+                               f"To get a list of commands, use `{ctx.prefix}help`, or for help on a certain command," \
+                               f" use `{ctx.prefix}help [command]`.\n\n"
                 elif command == "tips":
                     to_send += f"A command to request tips for the currently active conquest.\n" \
-                               f"To get tips on Global Feats, use `{bot_prefix}tips g[number (1-8)]`. " \
-                               f"(ex: `{bot_prefix}tips g3`)\n" \
-                               f"To get tips on Sectors, use `{bot_prefix}tips s[number (1-5)][type (b,m,n,f)]" \
+                               f"To get tips on Global Feats, use `{ctx.prefix}tips g[number (1-8)]`. " \
+                               f"(ex: `{ctx.prefix}tips g3`)\n" \
+                               f"To get tips on Sectors, use `{ctx.prefix}tips s[number (1-5)][type (b,m,n,f)]" \
                                f"[number (optional)]`." \
-                               f"\n(ex: `{bot_prefix}tips s3b` for Sector 3 Boss tips. `{bot_prefix}tips s1n13` for " \
-                               f"Sector 1 Node 13 tips. `{bot_prefix}tips s5f2` for Sector 5 Feat 2 tips.)\n\n"
+                               f"\n(ex: `{ctx.prefix}tips s3b` for Sector 3 Boss tips. `{ctx.prefix}tips s1n13` for " \
+                               f"Sector 1 Node 13 tips. `{ctx.prefix}tips s5f2` for Sector 5 Feat 2 tips.)\n\n"
                 else:
                     to_send += f"[basic decripton]\n" \
                                f"{bot_command.description}\n\n"
 
             else:
-                to_send += f"**{bot_prefix}{command}** is not a valid command."
+                to_send += f"**{ctx.prefix}{command}** is not a valid command."
 
         if to_send == "":
-            to_send = f"**List of Commands**. For detailed help, use `{bot_prefix}help [command]`\n"
+            to_send = f"**List of Commands**. For detailed help, use `{ctx.prefix}help [command]`\n"
             for com in self.bot.commands:
                 aliases = "none" if len(com.aliases) == 0 else ", ".join(com.aliases)
-                to_send += f"**{bot_prefix}{com.name}** (aliases: {aliases})\n" \
+                to_send += f"**{ctx.prefix}{com.name}** (aliases: {aliases})\n" \
                            f"{com.description}\n\n"
 
         await ctx.author.send(to_send[0:-2])

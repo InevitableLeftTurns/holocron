@@ -1,5 +1,5 @@
 import discord
-from util.tip import Tip
+from util.Tip import Tip
 from discord.ext import commands
 
 class SendConquestTips(commands.Cog):
