@@ -30,7 +30,7 @@ class BaseCommands(commands.Cog):
         else:
             await ctx.send(f"[TEMP] Error on command `{ctx.prefix}{ctx.command.name}`: {exception}")
 
-    @commands.command(name="help", description="Gives info on certain commands, or a list of commands")
+    @commands.command(name="help", aliases=["h"], description="Gives info on certain commands, or a list of commands")
     async def _help(self, ctx: commands.Context, *command_list):
         to_send = ""
         for command in command_list:

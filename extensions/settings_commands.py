@@ -4,14 +4,10 @@ import json
 from discord.ext import commands
 from util.command_checks import check_higher_perms
 from collections import namedtuple
-from util.prefix_handler import bot_prefixes
+from util.prefix_handler import bot_prefixes, check_prefix_valid
 
 
 AwaitingReaction = namedtuple("AwaitingReaction", ["user_id", "allowed_emoji"])
-
-def check_prefix(message: discord.Message):
-    content = message.content
-    return True if len(content) <= 3 and content.find(" ") == -1 else False
 
 
 class SettingsCommands(commands.Cog):
@@ -83,7 +79,7 @@ class SettingsCommands(commands.Cog):
         setting_accepted = False
         new_setting = None
         setting_checks = [
-            check_prefix
+            check_prefix_valid
         ]
         error_messages = [
             "That prefix has been rejected. Try a shorter prefix, or one without a space."

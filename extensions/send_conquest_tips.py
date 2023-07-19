@@ -10,13 +10,13 @@ class SendConquestTips(commands.Cog):
             #     1: {
             #         "nodes": {},
             #         "boss": {
-            #             "feats": [],
+            #             "feats": {
+            #               1: [],
+            #               2: []
+            #             },
             #             "tips": []
             #         },
-            #         "mini": {
-            #             "feats": [],
-            #             "tips": []
-            #         },
+            #         "mini": {}, # same as boss
             #         "feats": {
             #             1: ""  # through 4
             #         }
@@ -38,8 +38,8 @@ class SendConquestTips(commands.Cog):
         self.tip_storage["sectors"] = {}
         for i in range(5):
             self.tip_storage["sectors"][i+1] = {}
-            self.tip_storage["sectors"][i+1]["boss"] = {"feats": [], "tips": []}
-            self.tip_storage["sectors"][i+1]["mini"] = {"feats": [], "tips": []}
+            self.tip_storage["sectors"][i+1]["boss"] = {"feats": {1: [], 2: []}, "tips": []}
+            self.tip_storage["sectors"][i+1]["mini"] = {"feats": {1: [], 2: []}, "tips": []}
             self.tip_storage["sectors"][i+1]["nodes"] = {}
             self.tip_storage["sectors"][i+1]["feats"] = {}
             self.tip_storage["globals"] = {}
