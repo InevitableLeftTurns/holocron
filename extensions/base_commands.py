@@ -1,6 +1,5 @@
 import discord
 from discord.ext import commands
-from util.prefix_handler import bot_prefixes
 
 
 class BaseCommands(commands.Cog):

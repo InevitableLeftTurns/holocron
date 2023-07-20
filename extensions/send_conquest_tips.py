@@ -1,5 +1,4 @@
-import discord
-from util.Tip import Tip
+from data.Tip import Tip
 from discord.ext import commands
 
 class SendConquestTips(commands.Cog):
@@ -93,7 +92,7 @@ class SendConquestTips(commands.Cog):
         elif tip_location[0] == 's':
             pass
         else:
-            await ctx.author.send("Queries to tips must start with an `s` to identify a sector or `g` to identify"
+            await ctx.author.send("Queries to tips must start with an `s` to identify a sector or `g` to identify "
                                   "global feats")
 
 

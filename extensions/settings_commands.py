@@ -5,7 +5,7 @@ from discord.ext import commands
 from util.command_checks import check_higher_perms
 from collections import namedtuple
 from util.prefix_handler import bot_prefixes, check_prefix_valid
-
+from util.response_handler import check_set_response
 
 AwaitingReaction = namedtuple("AwaitingReaction", ["user_id", "allowed_emoji"])
 
@@ -18,14 +18,14 @@ class SettingsCommands(commands.Cog):
         self.waiting_for_reactions = {}
 
     def load_settings(self):
-        with open("util/settings.json") as settings_file:
+        with open("data/settings.json") as settings_file:
             settings = json.load(settings_file)["guild_id"]
         self.settings = settings
         for guild_id, settings in settings.items():
             bot_prefixes[guild_id] = settings["Bot Prefix"]
 
     def update_settings(self):
-        with open("util/settings.json", "w") as settings_file:
+        with open("data/settings.json", "w") as settings_file:
             json.dump({"guild_id": self.settings}, settings_file)
 
     def get_server_settings(self, guild: discord.Guild):
@@ -71,22 +71,32 @@ class SettingsCommands(commands.Cog):
 
         del self.waiting_for_reactions[reaction.message.id]
 
-        setting_index = int(reaction.emoji[0])-1
+        setting_index = int(reaction.emoji[0]) - 1
         current_settings = self.get_server_settings(reaction.message.guild)
-        await channel.send(f"What should the new value of `{[key for key in current_settings.keys()][setting_index]}` "
-                           f"be?")
-
+        key_list = [key for key in current_settings.keys()]
         setting_accepted = False
         new_setting = None
+        setting_hints = [
+            None,
+            "channel, dm"
+        ]
+        hints = "" if setting_hints[setting_index] is None else f"({setting_hints[setting_index]})"
         setting_checks = [
-            check_prefix_valid
+            check_prefix_valid,
+            check_set_response
         ]
         error_messages = [
-            "That prefix has been rejected. Try a shorter prefix, or one without a space."
+            "That prefix has been rejected. Try a shorter prefix, or one without a space.",
+            "To change response method, choose `channel` to change response method to the messaged channel, "
+            "or `dm` to change response method to DM's"
         ]
         success_functions = [
-            self.set_prefix
+            self.set_prefix,
+            self.set_response_method
         ]
+
+        await channel.send(f"What should `{key_list[setting_index]}` be changed to? {hints}")
+
         while not setting_accepted:
             new_setting = await self.bot.wait_for("message", check=check_message)
             setting_accepted = setting_checks[setting_index](new_setting)
@@ -101,6 +111,9 @@ class SettingsCommands(commands.Cog):
         self.update_settings()
         await message.channel.send(f"Set Prefix to {message.content}")
 
+    async def set_response_method(self, message: discord.Message):
+        await message.channel.send("success")
+
     @commands.command(name="settings", description="A list of server settings which can be changed (requires admin)")
     async def settings(self, ctx: commands.Context, edit="no"):
         if not await check_higher_perms(ctx.author, ctx.guild):
@@ -114,8 +127,8 @@ class SettingsCommands(commands.Cog):
             current_settings = self.get_server_settings(ctx.guild)
             emoji_list = []
             for index, key in enumerate(current_settings.keys()):
-                to_send += f"{index+1}: **{key}** (current value: {current_settings[key]})\n"
-                emoji_list.append(unicodedata.lookup(unicodedata.name(chr(ord(str(index+1))))) + "\u20E3")
+                to_send += f"{index + 1}: **{key}** (current value: `{current_settings[key]}`)\n"
+                emoji_list.append(unicodedata.lookup(unicodedata.name(chr(ord(str(index + 1))))) + "\u20E3")
 
             settings_message = await ctx.send(to_send[0:-1])
 
@@ -128,7 +141,7 @@ class SettingsCommands(commands.Cog):
             to_send = "**Current Settings**\n"
             current_settings = self.get_server_settings(ctx.guild)
             for setting, value in current_settings.items():
-                to_send += f"{setting}: {value}\n"
+                to_send += f"{setting}: `{value}`\n"
 
             await ctx.send(to_send[0:-1])
 
