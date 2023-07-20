@@ -4,8 +4,8 @@ import json
 from discord.ext import commands
 from util.command_checks import check_higher_perms
 from collections import namedtuple
-from util.prefix_handler import bot_prefixes, check_prefix_valid
-from util.response_handler import check_set_response
+from util.prefix_handler import bot_prefixes, check_prefix_valid, set_prefix
+from util.response_handler import response_settings, check_set_response, set_response_method, get_response_type
 
 AwaitingReaction = namedtuple("AwaitingReaction", ["user_id", "allowed_emoji"])
 
@@ -21,8 +21,10 @@ class SettingsCommands(commands.Cog):
         with open("data/settings.json") as settings_file:
             settings = json.load(settings_file)["guild_id"]
         self.settings = settings
+        defaults = settings["0"]
         for guild_id, settings in settings.items():
-            bot_prefixes[guild_id] = settings["Bot Prefix"]
+            bot_prefixes[guild_id] = settings.get("Bot Prefix", defaults["Bot Prefix"])
+            response_settings[guild_id] = settings.get("Response Method", defaults["Response Method"])
 
     def update_settings(self):
         with open("data/settings.json", "w") as settings_file:
@@ -90,9 +92,9 @@ class SettingsCommands(commands.Cog):
             "To change response method, choose `channel` to change response method to the messaged channel, "
             "or `dm` to change response method to DM's"
         ]
-        success_functions = [
-            self.set_prefix,
-            self.set_response_method
+        setting_specific_functions = [
+            set_prefix,
+            set_response_method
         ]
 
         await channel.send(f"What should `{key_list[setting_index]}` be changed to? {hints}")
@@ -102,22 +104,25 @@ class SettingsCommands(commands.Cog):
             setting_accepted = setting_checks[setting_index](new_setting)
             if not setting_accepted:
                 await channel.send(error_messages[setting_index])
-        await success_functions[setting_index](new_setting)
 
-    async def set_prefix(self, message: discord.Message):
-        id_key = str(message.guild.id)
-        self.settings[id_key]["Bot Prefix"] = message.content
-        bot_prefixes[id_key] = message.content
+        guild_id_key = str(new_setting.guild.id)
+        content = new_setting.content
+
+        setting_specific_functions[setting_index](guild_id_key, content)
+
+        response_method = get_response_type(new_setting.guild, new_setting.author, channel)
+        await self.set_new_setting(guild_id_key, key_list[setting_index], content, response_method)
+
+    async def set_new_setting(self, id_key, setting_key, new_value, response_method):
+        self.settings[id_key][setting_key] = new_value
         self.update_settings()
-        await message.channel.send(f"Set Prefix to {message.content}")
-
-    async def set_response_method(self, message: discord.Message):
-        await message.channel.send("success")
+        await response_method.send(f"Set `{setting_key}` to `{new_value}`")
 
     @commands.command(name="settings", description="A list of server settings which can be changed (requires admin)")
     async def settings(self, ctx: commands.Context, edit="no"):
+        response_method = get_response_type(ctx.guild, ctx.author, ctx.channel)
         if not await check_higher_perms(ctx.author, ctx.guild):
-            await ctx.send("You do not have access to this command.")
+            await response_method.send("You do not have access to this command.")
             return
 
         editing = True if edit == "edit" else False
@@ -127,9 +132,10 @@ class SettingsCommands(commands.Cog):
             current_settings = self.get_server_settings(ctx.guild)
             emoji_list = []
             for index, key in enumerate(current_settings.keys()):
-                to_send += f"{index + 1}: **{key}** (current value: `{current_settings[key]}`)\n"
+                to_send += f"{index + 1}: {key} (current value: `{current_settings[key]}`)\n"
                 emoji_list.append(unicodedata.lookup(unicodedata.name(chr(ord(str(index + 1))))) + "\u20E3")
 
+            # ignores response setting, always in-channel (due to how settings are stored/changed. might be 'fixable')
             settings_message = await ctx.send(to_send[0:-1])
 
             for emoji in emoji_list:
@@ -143,7 +149,7 @@ class SettingsCommands(commands.Cog):
             for setting, value in current_settings.items():
                 to_send += f"{setting}: `{value}`\n"
 
-            await ctx.send(to_send[0:-1])
+            await response_method(to_send[0:-1])
 
 
 async def setup(bot):

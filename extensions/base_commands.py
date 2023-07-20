@@ -1,5 +1,5 @@
-import discord
 from discord.ext import commands
+from util.response_handler import get_response_type
 
 
 class BaseCommands(commands.Cog):
@@ -11,12 +11,7 @@ class BaseCommands(commands.Cog):
         print(f"Bot loaded successfully. Logged in as '{self.bot.user}'")
 
     @commands.Cog.listener()
-    async def on_message(self, message: discord.Message):
-        if message.author.id == self.bot.user.id:
-            return
-
-    @commands.Cog.listener()
-    async def on_command_error(self, ctx: commands.Context, exception):
+    async def on_command_error(self, ctx: commands.Context, exception):  # ignores response setting, always in-channel
         if ctx.command is None:
             message_content = ctx.message.content
             space_index = message_content.find(" ")
@@ -31,6 +26,7 @@ class BaseCommands(commands.Cog):
 
     @commands.command(name="help", aliases=["h"], description="Gives info on certain commands, or a list of commands")
     async def _help(self, ctx: commands.Context, *command_list):
+        response_method = get_response_type(ctx.guild, ctx.author, ctx.channel)
         to_send = ""
         for command in command_list:
             bot_command = self.bot.get_command(command)
@@ -55,7 +51,7 @@ class BaseCommands(commands.Cog):
                                f"{bot_command.description}\n\n"
 
             else:
-                to_send += f"**{ctx.prefix}{command}** is not a valid command."
+                to_send += f"The command `**{ctx.prefix}{command}**` does not exist"
 
         if to_send == "":
             to_send = f"**List of Commands**. For detailed help, use `{ctx.prefix}help [command]`\n"
@@ -64,7 +60,7 @@ class BaseCommands(commands.Cog):
                 to_send += f"**{ctx.prefix}{com.name}** (aliases: {aliases})\n" \
                            f"{com.description}\n\n"
 
-        await ctx.author.send(to_send[0:-2])
+        await response_method.send(to_send[0:-2])
 
 async def setup(bot):
     await bot.add_cog(BaseCommands(bot))

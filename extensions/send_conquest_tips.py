@@ -1,5 +1,6 @@
 from data.Tip import Tip
 from discord.ext import commands
+from util.response_handler import get_response_type
 
 class SendConquestTips(commands.Cog):
     def __init__(self, bot: commands.Bot):
@@ -60,6 +61,7 @@ class SendConquestTips(commands.Cog):
     """
     @commands.command(name="tips", aliases=["t"], description="Sends tips and tricks for the active conquest")
     async def send_tips(self, ctx: commands.Context, tip_location: str):
+        response_method = get_response_type(ctx.guild, ctx.author, ctx.channel)
         if tip_location[0] == 'g':
             try:
                 global_feat_num = int(tip_location[1])
@@ -72,28 +74,28 @@ class SendConquestTips(commands.Cog):
 
                 if len(tips_to_send) == 0:
                     tips_to_send = f"There are currently no tips for Global Feat {global_feat_num}."
-                await ctx.author.send(tips_to_send)
+                await response_method.send(tips_to_send)
                 return
 
             except ValueError:
-                await ctx.author.send("Queries for Global Feats must have the second character be the number of Global "
-                                      "Feat you want tips for.")
+                await response_method.send("Queries for Global Feats must have the second character be the number of "
+                                           "Global Feat you want tips for.")
                 return
 
             except IndexError:
-                await ctx.author.send("Queries for global feats must be in the format `g[number]`, where `number` is "
-                                      "the number of the global feat that you want to look at.")
+                await response_method.send("Queries for global feats must be in the format `g[number]`, where `number` "
+                                           "is the number of the global feat that you want to look at.")
                 return
 
             except KeyError:
-                await ctx.author.send(f"There is no Global Feat associated with the number {global_feat_num}. Try a "
-                                      f"number between and including 1 through 8.")
+                await response_method.send(f"There is no Global Feat associated with the number {global_feat_num}. Try "
+                                           f"a number between and including 1 through 8.")
 
         elif tip_location[0] == 's':
             pass
         else:
-            await ctx.author.send("Queries to tips must start with an `s` to identify a sector or `g` to identify "
-                                  "global feats")
+            await response_method.send("Queries to tips must start with an `s` to identify a sector or `g` to identify "
+                                       "global feats")
 
 
 async def setup(bot):
