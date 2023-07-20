@@ -21,6 +21,7 @@ class SettingsCommands(commands.Cog):
         with open("data/settings.json") as settings_file:
             settings = json.load(settings_file)["guild_id"]
         self.settings = settings
+
         defaults = settings["0"]
         for guild_id, settings in settings.items():
             bot_prefixes[guild_id] = settings.get("Bot Prefix", defaults["Bot Prefix"])
@@ -120,6 +121,7 @@ class SettingsCommands(commands.Cog):
 
     @commands.command(name="settings", description="A list of server settings which can be changed (requires admin)")
     async def settings(self, ctx: commands.Context, edit="no"):
+        current_settings = self.get_server_settings(ctx.guild)
         response_method = get_response_type(ctx.guild, ctx.author, ctx.channel)
         if not await check_higher_perms(ctx.author, ctx.guild):
             await response_method.send("You do not have access to this command.")
@@ -129,7 +131,6 @@ class SettingsCommands(commands.Cog):
         if editing:
             to_send = "Which setting do you want to change?\n"
 
-            current_settings = self.get_server_settings(ctx.guild)
             emoji_list = []
             for index, key in enumerate(current_settings.keys()):
                 to_send += f"{index + 1}: {key} (current value: `{current_settings[key]}`)\n"
@@ -145,11 +146,10 @@ class SettingsCommands(commands.Cog):
 
         else:
             to_send = "**Current Settings**\n"
-            current_settings = self.get_server_settings(ctx.guild)
             for setting, value in current_settings.items():
                 to_send += f"{setting}: `{value}`\n"
 
-            await response_method(to_send[0:-1])
+            await response_method.send(to_send[0:-1])
 
 
 async def setup(bot):

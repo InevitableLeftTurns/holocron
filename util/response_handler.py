@@ -5,7 +5,8 @@ response_settings = {}
 
 
 def get_response_type(guild: discord.Guild, user: discord.User, channel: discord.TextChannel):
-    if response_settings[str(guild.id)] == "dm":
+    setting = response_settings.get(str(guild.id), response_settings["0"])
+    if setting == "dm":
         return user
     else:
         return channel
