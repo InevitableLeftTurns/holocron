@@ -24,7 +24,8 @@ def check_default_settings():
             json.dump(current_settings, current_settings_file)
 
         print(f"Generated {missing_settings} missing settings")
-
+        return
+    print("Settings loaded successfully")
 
 def ensure_settings_exist():
     if not os.path.exists("data/settings.json"):
