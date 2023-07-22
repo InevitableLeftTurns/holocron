@@ -50,7 +50,14 @@ class SendConquestTips(commands.Cog):
 
     def dummy_populate(self):
         self.tip_storage["globals"][1].append(Tip("uaq", "this is a tip for g1"))
-        self.tip_storage["sectors"][1]["feats"][1] = [Tip("uaq", "tip for s1f1")]
+
+        self.tip_storage["sectors"][1]["feats"][1] = [
+            Tip("uaq", "tip for s1f1", 0),
+            Tip("uaq", "tip for s1f1", 7),
+            Tip("uaq", "tip for s1f1", 2),
+            Tip("uaq", "tip for s1f1", 4)
+        ]
+
         self.tip_storage["sectors"][1]["nodes"][1] = [Tip("uaq", "tip for s1n1")]
         self.tip_storage["sectors"][1]["nodes"][12] = [
             Tip("uaq", "tip for s1n12", 0),
@@ -58,6 +65,7 @@ class SendConquestTips(commands.Cog):
             Tip("uaq", "tip for s1n12", 2),
             Tip("uaq", "tip for s1n12", 4)
         ]
+
         self.tip_storage["sectors"][1]["boss"]["feats"][1] = [
             Tip("uaq", "tip for s1b1", 0),
             Tip("uaq", "tip for s1b1", 7),
@@ -65,6 +73,7 @@ class SendConquestTips(commands.Cog):
             Tip("uaq", "tip for s1b1", 4),
         ]
         self.tip_storage["sectors"][1]["boss"]["tips"].append(Tip("uaq", "tip for s1b"))
+
         self.tip_storage["sectors"][1]["mini"]["feats"][1].append(Tip("uaq", "tip for s1m1"))
         self.tip_storage["sectors"][1]["mini"]["tips"].append(Tip("uaq", "tip for s1m"))
 
@@ -212,14 +221,14 @@ class SendConquestTips(commands.Cog):
     async def node_tips(self, response_method, sector_num, node_num):
         if node_num == "":
             node_request_base = f"s{sector_num}n"
-            await response_method.send(f"Node number expected. Try {node_request_base}[number], where [number] is the "
-                                       f"number of the node.")
+            await response_method.send(f"Node number expected. Try `{node_request_base}[number]`, where `[number]` is "
+                                       f"the number of the node.")
             return
 
         no_tips_message = f"There are currently no tips for Sector {sector_num} Node {node_num}. If you wish to " \
                           f"write one, [NYI]"
         try:
-            node_num = int(node_num[0:])
+            node_num = int(node_num)
             tips_list = self.tip_storage["sectors"][sector_num]["nodes"][node_num]
 
         except IndexError:  # should never be called because of prior if-statement, but placed just in case
@@ -249,8 +258,43 @@ class SendConquestTips(commands.Cog):
         # called only when all tips for a sector are removed
         await response_method.send(no_tips_message)
 
-    async def feat_tips(self, response_method, sector_num, remaining_location):
-        await response_method.send(f"feat tips for sector {sector_num}. remaining: {remaining_location}")
+    async def feat_tips(self, response_method, sector_num, feat_num):
+        if feat_num == "":
+            feat_request_base = f"s{sector_num}f"
+            await response_method.send(f"Feat number expected. Try `{feat_request_base}[number]`, where `[number]` is "
+                                       f"the number of the feat.")
+            return
+
+        try:
+            feat_num = int(feat_num[0])
+            tips_list = self.tip_storage["sectors"][sector_num]["feats"][feat_num]
+
+        except IndexError:  # should never be called because of prior if-statement, but placed just in case
+            await response_method.send("Illegal state. Send for help.")
+            return
+
+        except ValueError:  # called if feat_num is not a number
+            await response_method.send("Character following `feat` must be a number, indicating which feat to query.")
+            return
+
+        except KeyError:  # called if feat_num not [1,4]
+            await response_method.send("Provided feat number too small or large. Try a number between 1 and 4 "
+                                       "(inclusive)")
+            return
+
+        tips_list.sort(reverse=True, key=lambda each_tip: each_tip.rating)
+        top_three = tips_list[:3]
+
+        if len(top_three) > 0:
+            await response_method.send(f"__**Top {len(top_three)} tip{'s' if len(top_three) > 1 else ''} (of "
+                                       f"{len(tips_list)}) for Sector {sector_num} Feat {feat_num}**__\n"
+                                       f"{top_three[0].create_tip_message()}")
+            for tip in top_three[1:]:
+                await response_method.send(tip.create_tip_message())
+            return
+
+        await response_method.send(f"There are currently no tips for Sector {sector_num} Feat {feat_num}. If you wish "
+                                   f"to write one, [NYI]")
 
 async def setup(bot):
     await bot.add_cog(SendConquestTips(bot))
