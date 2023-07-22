@@ -52,6 +52,12 @@ class SendConquestTips(commands.Cog):
         self.tip_storage["globals"][1].append(Tip("uaq", "this is a tip for g1"))
         self.tip_storage["sectors"][1]["feats"][1] = [Tip("uaq", "tip for s1f1")]
         self.tip_storage["sectors"][1]["nodes"][1] = [Tip("uaq", "tip for s1n1")]
+        self.tip_storage["sectors"][1]["nodes"][12] = [
+            Tip("uaq", "tip for s1n12", 0),
+            Tip("uaq", "tip for s1n12", 7),
+            Tip("uaq", "tip for s1n12", 2),
+            Tip("uaq", "tip for s1n12", 4)
+        ]
         self.tip_storage["sectors"][1]["boss"]["feats"][1] = [
             Tip("uaq", "tip for s1b1", 0),
             Tip("uaq", "tip for s1b1", 7),
@@ -70,7 +76,8 @@ class SendConquestTips(commands.Cog):
     syntax: global,number
     examples: g1, g4, g8
     """
-    @commands.command(name="tips", aliases=["t"], description="Sends tips and tricks for the active conquest")
+    @commands.command(name="conquest", aliases=["c", "con", "conq"],
+                      description="Sends tips and tricks for the active conquest")
     async def send_tips(self, ctx: commands.Context, tip_location: str):
         response_method = get_response_type(ctx.guild, ctx.author, ctx.channel)
         tip_location = tip_location.lower()
@@ -126,22 +133,16 @@ class SendConquestTips(commands.Cog):
                 await response_method.send("The sector must be 1 through 5 (inclusive).")
                 return
 
-            function_indexes = {
-                "b": 0,
-                "m": 1,
-                "n": 2,
-                "f": 3
+            type_functions = {
+                "b": self.boss_tips,
+                "m": self.mini_tips,
+                "n": self.node_tips,
+                "f": self.feat_tips
             }
-            type_functions = [
-                self.boss_tips,
-                self.mini_tips,
-                self.node_tips,
-                self.feat_tips
-            ]
             tip_location = tip_location[1:]  # remove number, as we no longer care
             try:
                 tip_type = tip_location[0]  # in theory, one of [b, m, n, f]
-                await type_functions[function_indexes[tip_type]](response_method, sector_num, tip_location[1:])
+                await type_functions[tip_type](response_method, sector_num, tip_location[1:])
 
             except IndexError:  # called if no character in tip_location[0]
                 await response_method.send("Tip type expected. Use `b` for bosses, `m` for minibosses, `n` for generic "
@@ -158,8 +159,8 @@ class SendConquestTips(commands.Cog):
             await response_method.send("Queries to tips must start with an `s` to identify a sector or `g` to identify "
                                        "global feats")
 
-    async def boss_tips(self, response_method, sector_num, remaining_location, boss_type="boss"):
-        if remaining_location == "":
+    async def boss_tips(self, response_method, sector_num, extra_pos, boss_type="boss"):
+        if extra_pos == "":
             feat_num = None
 
             tips_list = self.tip_storage["sectors"][sector_num][boss_type]["tips"]
@@ -168,16 +169,16 @@ class SendConquestTips(commands.Cog):
 
         else:
             try:
-                feat_num = int(remaining_location[0])
+                feat_num = int(extra_pos[0])
                 tips_list = self.tip_storage["sectors"][sector_num][boss_type]["feats"][feat_num]
+
+            except IndexError:  # should never be called because of prior if-statement, but placed just in case
+                await response_method.send("Illegal state. Send for help.")
+                return
 
             except ValueError:  # called if non-number character at feat_num pos
                 await response_method.send(f"Characters following `boss` or `miniboss` must be either a number for "
                                            f"tips on feats, or blank for tips on clearing the stage.")
-                return
-
-            except IndexError:  # should never be called because of prior if-statement, but placed just in case
-                await response_method.send("Illegal state. Send for help.")
                 return
 
             except KeyError:  # called if feat_num not [1,2]
@@ -194,21 +195,62 @@ class SendConquestTips(commands.Cog):
         boss_name += "boss" if boss_name == "mini" else ""
         feats_included = f" Feat {feat_num}" if feat_num is not None else ""
 
-        # attaches first place here to send fewer messages
-        await response_method.send(f"__**Top {len(top_three)} tip{'s' if len(top_three) > 1 else ''} for Sector "
-                                   f"{sector_num} {boss_name}{feats_included}**__\n"
-                                   f"{top_three[0].create_tip_message()}")
-        for tip in top_three[1:]:
-            await response_method.send(tip.create_tip_message())
+        if len(top_three) > 0:
+            # attaches first place here to send fewer messages
+            await response_method.send(f"__**Top {len(top_three)} tip{'s' if len(top_three) > 1 else ''} (of "
+                                       f"{len(tips_list)}) for Sector {sector_num} {boss_name}{feats_included}**__\n"
+                                       f"{top_three[0].create_tip_message()}")
+            for tip in top_three[1:]:
+                await response_method.send(tip.create_tip_message())
+            return
+        await response_method.send(f"There are currently no tips for Sector {sector_num} {boss_name}{feats_included}. "
+                                   f"If you wish to write one, [NYI]")
 
-    async def mini_tips(self, response_method, sector_num, remaining_location):
-        await self.boss_tips(response_method, sector_num, remaining_location, "mini")
+    async def mini_tips(self, response_method, sector_num, extra_pos):
+        await self.boss_tips(response_method, sector_num, extra_pos, "mini")
 
-    async def node_tips(self, response_method, sector_num, remaining_location):
-        await response_method.send(f"boss tips for sector {sector_num}. remaining: {remaining_location}")
+    async def node_tips(self, response_method, sector_num, node_num):
+        if node_num == "":
+            node_request_base = f"s{sector_num}n"
+            await response_method.send(f"Node number expected. Try {node_request_base}[number], where [number] is the "
+                                       f"number of the node.")
+            return
+
+        no_tips_message = f"There are currently no tips for Sector {sector_num} Node {node_num}. If you wish to " \
+                          f"write one, [NYI]"
+        try:
+            node_num = int(node_num[0:])
+            tips_list = self.tip_storage["sectors"][sector_num]["nodes"][node_num]
+
+        except IndexError:  # should never be called because of prior if-statement, but placed just in case
+            await response_method.send("Illegal state. Send for help.")
+            return
+
+        except ValueError:  # called if node_num is not a number
+            await response_method.send("Character following `node` should be a number indicating which node to query.")
+            return
+
+        except KeyError:  # called if no tips for requested node
+            await response_method.send(no_tips_message)
+            return
+
+        tips_list.sort(reverse=True, key=lambda each_tip: each_tip.rating)
+        top_three = tips_list[:3]
+
+        if len(top_three) > 0:
+            # attaches first tip here to send fewer messages
+            await response_method.send(f"__**Top {len(top_three)} tip{'s' if len(top_three) > 1 else ''} "
+                                       f"(of {len(tips_list)}) for Sector {sector_num} Node {node_num}**__\n"
+                                       f"{top_three[0].create_tip_message()}")
+            for tip in top_three[1:]:
+                await response_method.send(tip.create_tip_message())
+            return
+
+        # called only when all tips for a sector are removed
+        await response_method.send(no_tips_message)
 
     async def feat_tips(self, response_method, sector_num, remaining_location):
-        await response_method.send(f"boss tips for sector {sector_num}. remaining: {remaining_location}")
+        await response_method.send(f"feat tips for sector {sector_num}. remaining: {remaining_location}")
 
 async def setup(bot):
     await bot.add_cog(SendConquestTips(bot))
