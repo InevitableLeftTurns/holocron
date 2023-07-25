@@ -1,6 +1,13 @@
+import discord
+from collections import namedtuple
 from data.Tip import Tip
 from discord.ext import commands
 from util.response_handler import get_response_type
+from util.command_checks import check_higher_perms
+
+
+AwaitingReaction = namedtuple("AwaitingReaction", ["user_id", "allowed_emoji", "tips", "mod_type", "location"])
+
 
 class SendConquestTips(commands.Cog):
     def __init__(self, bot: commands.Bot):
@@ -33,6 +40,7 @@ class SendConquestTips(commands.Cog):
         }
         self.create_tip_storage()
         self.dummy_populate()
+        self.awaiting_reactions = {}
 
     def create_tip_storage(self):
         self.tip_storage["sectors"] = {}
@@ -42,14 +50,16 @@ class SendConquestTips(commands.Cog):
             self.tip_storage["sectors"][i+1]["mini"] = {"feats": {1: [], 2: []}, "tips": []}
             self.tip_storage["sectors"][i+1]["nodes"] = {}
             self.tip_storage["sectors"][i+1]["feats"] = {}
-            self.tip_storage["globals"] = {}
             for j in range(4):
                 self.tip_storage["sectors"][i+1]["feats"][j+1] = []
-            for j in range(8):
-                self.tip_storage["globals"][j+1] = []
+
+        self.tip_storage["globals"] = {}
+        for i in range(8):
+            self.tip_storage["globals"][i+1] = []
 
     def dummy_populate(self):
-        self.tip_storage["globals"][1].append(Tip("uaq", "this is a tip for g1"))
+        self.tip_storage["globals"][1].append(Tip("trich", "this is a tip for g1"))
+        self.tip_storage["globals"][1].append(Tip("trich", "this is another tip for g1"))
 
         self.tip_storage["sectors"][1]["feats"][1] = [
             Tip("uaq", "tip for s1f1", 0),
@@ -77,6 +87,12 @@ class SendConquestTips(commands.Cog):
         self.tip_storage["sectors"][1]["mini"]["feats"][1].append(Tip("uaq", "tip for s1m1"))
         self.tip_storage["sectors"][1]["mini"]["tips"].append(Tip("uaq", "tip for s1m"))
 
+        self.tip_storage["globals"][1].append(Tip("uaq", "tip 1 to del in g1", user_id=490970360272125952))
+        self.tip_storage["globals"][1].append(Tip("uaq", "tip 2 to del in g1", user_id=490970360272125952))
+        self.tip_storage["globals"][1].append(Tip("uaq", "tip 3 to del in g1", user_id=490970360272125952))
+        self.tip_storage["globals"][1].append(Tip("uaq", "tip 4 to del in g1", user_id=490970360272125952))
+        self.tip_storage["globals"][1].append(Tip("uaq", "tip 5 to del in g1", user_id=490970360272125952))
+
     """
     tip_location- 
     syntax: sector,sector number,node/mini/boss/feat,number (op)
@@ -87,40 +103,52 @@ class SendConquestTips(commands.Cog):
     """
     @commands.command(name="conquest", aliases=["c", "con", "conq"],
                       description="Sends tips and tricks for the active conquest")
-    async def send_tips(self, ctx: commands.Context, tip_location: str):
+    async def conquest_tips(self, ctx: commands.Context, tip_location: str, to_edit="no"):
         response_method = get_response_type(ctx.guild, ctx.author, ctx.channel)
         tip_location = tip_location.lower()
+
+        modifying = {
+            "add": self.add_tip,
+            "edit": self.edit_tip,
+            "delete": self.edit_tip
+        }
+        try:
+            await modifying[to_edit](response_method, tip_location, ctx.author, ctx.guild, to_edit)
+            return
+        except KeyError:
+            pass
 
         if tip_location[0] == 'g':
             try:
                 global_feat_num = int(tip_location[1])
+                tip_list = self.tip_storage["globals"][global_feat_num]
 
-                tips_to_send = ""
-                tip: Tip
-                for tip in self.tip_storage["globals"][global_feat_num]:
-                    tips_to_send += f"**Tip from {tip.author}:**\n"
-                    tips_to_send += tip.content + "\n\n"
-
-                if len(tips_to_send) == 0:
-                    tips_to_send = f"There are currently no tips for Global Feat {global_feat_num}."
-                await response_method.send(tips_to_send)
+            except IndexError:  # called if tip_location[1] dne
+                await response_method.send("Character following `g` for global feat must be a number indicating which"
+                                           " global feat to query.")
                 return
 
-            except ValueError:  # called if non-number in global_feat_num pos
-                await response_method.send("Queries for Global Feats must have the second character be the number of "
-                                           "Global Feat you want tips for.")
+            except ValueError:  # called if tip_location[1] not int
+                await response_method.send("The character following `g` must be a number.")
                 return
 
-            except IndexError:  # called if no number in tip_location[1]
-                await response_method.send("Queries for global feats must be in the format `g[number]`, where `number` "
-                                           "is the number of the global feat that you want to look at.")
+            except KeyError:  # called if feat_num not in [1,8]
+                await response_method.send("The number following `g` must be between 1 and 8 (inclusive).")
                 return
 
-            except KeyError:  # called if number is not [1,8]
-                # noinspection PyUnboundLocalVariable
-                await response_method.send(f"There is no Global Feat associated with the number {global_feat_num}. Try "
-                                           f"a number between and including 1 through 8.")
+            tip_list.sort(reverse=True, key=lambda each_tip: each_tip.rating)
+            top_three = tip_list[:3]
+
+            if len(top_three) > 0:
+                await response_method.send(f"__**Top {len(top_three)} tip{'s' if len(top_three) > 1 else ''} (of "
+                                           f"{len(tip_list)}) for Global Feat {global_feat_num}**__\n"
+                                           f"{top_three[0].create_tip_message()}")
+                for tip in top_three[1:]:
+                    await response_method.send(tip.create_tip_message())
                 return
+
+            await response_method.send(f"There are currently no tips for Global Feat {global_feat_num}. If you wish "
+                                       f"to write one, [NYI]")
 
         elif tip_location[0] == 's':
             tip_location = tip_location[1:]  # remove s, as we no longer care
@@ -295,6 +323,124 @@ class SendConquestTips(commands.Cog):
 
         await response_method.send(f"There are currently no tips for Sector {sector_num} Feat {feat_num}. If you wish "
                                    f"to write one, [NYI]")
+
+    async def add_tip(self):  # take same params as edit_tip
+        pass  # part of one command
+
+    async def edit_tip(self, response_method, location, author, guild, mod_type):
+        if location[0] == "g":
+            try:
+                global_num = int(location[1])
+                all_tips = self.tip_storage["globals"][global_num].copy()
+
+            except IndexError:  # called if location[1] does not exist
+                await response_method.send(f"To {mod_type} a Global Feat tip, you must specify which Global Feat to "
+                                           f"{mod_type} a tip from.")
+                return
+
+            except ValueError:  # called if location[1] is not a number
+                await response_method.send(f"To specify which Global Feat you wish to {mod_type} a tip from, use a "
+                                           f"number corresponding to which feat you wish to {mod_type} from.")
+                return
+
+            except KeyError:  # called if global_num not in [1,8]
+                # noinspection PyUnboundLocalVariable
+                await response_method.send(f"The global feat number {global_num} does not exist. Please specify a "
+                                           f"number between 1 and 8 (inclusive).")
+                return
+
+            if await check_higher_perms(author, guild):
+                user_tips = all_tips
+            else:
+                user_tips = list(filter(lambda each_tip: each_tip.user_id == author.id, all_tips))
+
+            if len(user_tips) > 0:
+                user_tips.sort(reverse=True, key=lambda each_tip: each_tip.creation_time.time())
+                user_tips = user_tips[:5]
+
+                tip_messages = [f"Which tip would you like to {mod_type}?"]
+                for index, tip in enumerate(user_tips):
+                    tip_messages.append(f"{index+1} - {tip.create_selection_message()}")
+
+                sent_tip_message = await response_method.send("\n".join(tip_messages))
+                emoji_list = []
+                for index in range(len(user_tips)):
+                    emoji = str(index+1) + "\u20E3"
+
+                    await sent_tip_message.add_reaction(emoji)
+                    emoji_list.append(emoji)
+                await sent_tip_message.add_reaction("\u27A1")  # right arrow
+                emoji_list.append("\u27A1")
+
+                self.awaiting_reactions[sent_tip_message.id] = AwaitingReaction(author.id, emoji_list,
+                                                                                user_tips, mod_type, location)
+
+            else:
+                await response_method.send(f"There are no tips that you can {mod_type} in Global Feat {global_num}.")
+
+        elif location[0] == "s":
+            pass
+        else:
+            await response_method.send("Tips locations must start with an `s` to identify a sector, or `g` to identify "
+                                       "global feats.")
+
+    @commands.Cog.listener()
+    async def on_reaction_add(self, reaction: discord.Reaction, user: discord.Member):
+        if user.id == self.bot.user.id:
+            return
+        try:
+            awaiting_reaction = self.awaiting_reactions[reaction.message.id]
+        except KeyError:
+            return
+        if awaiting_reaction.user_id == user.id and reaction.emoji in awaiting_reaction.allowed_emoji:
+            await self.handle_reaction_add(reaction, user)
+
+    async def handle_reaction_add(self, reaction, user):
+        response_method = get_response_type(reaction.message.guild, user, reaction.message.channel)
+
+        awaiting_reaction = self.awaiting_reactions[reaction.message.id]
+        del self.awaiting_reactions[reaction.message.id]
+
+        tips = awaiting_reaction.tips
+        mod_type = awaiting_reaction.mod_type
+
+        try:
+            emoji_num = int(reaction.emoji[0])
+        except ValueError:
+            return  # page change, make a func or smth
+
+        chosen_tip = tips[emoji_num - 1]
+        if mod_type == "edit":
+            await self.handle_tip_edit(response_method, chosen_tip)
+        else:  # mod_type == delete:
+            await self.handle_tip_delete(response_method, chosen_tip, reaction, user, awaiting_reaction.location)
+
+    async def handle_tip_edit(self, response_method, tip):
+        pass
+
+    async def handle_tip_delete(self, response_method, tip, reaction, user, location):
+        def check_message(message):
+            return message.channel.id == channel_id and message.author.id == user_id
+
+        user_id = user.id
+        channel_id = reaction.message.channel.id
+        await response_method.send(f"Are you sure you want to delete the tip:\n`{tip.create_delete_message()}`?\n\n"
+                                   f"Please type `confirm` to confirm and permanently delete this tip, or `cancel` to "
+                                   f"cancel.")
+        confirm_message = await self.bot.wait_for("message", check=check_message)
+        if confirm_message.content == "confirm":
+            if location[0] == "g":
+                index = self.tip_storage["globals"][int(location[1])].index(tip)  # index of tip obj
+                self.tip_storage["globals"][int(location[1])].pop(index)
+                pass
+            else:  # location[0] == "s"
+                pass
+            feedback = "Tip deleted."
+        else:
+            feedback = "Deletion canceled. Tip not deleted."
+
+        await response_method.send(feedback)
+
 
 async def setup(bot):
     await bot.add_cog(SendConquestTips(bot))

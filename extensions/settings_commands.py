@@ -1,4 +1,3 @@
-import unicodedata
 import discord
 import json
 from discord.ext import commands
@@ -129,15 +128,15 @@ class SettingsCommands(commands.Cog):
 
         editing = True if edit == "edit" else False
         if editing:
-            to_send = "Which setting do you want to change?\n"
+            response = ["Which setting do you want to change?"]
 
             emoji_list = []
             for index, key in enumerate(current_settings.keys()):
-                to_send += f"{index + 1}: {key} (current value: `{current_settings[key]}`)\n"
-                emoji_list.append(unicodedata.lookup(unicodedata.name(chr(ord(str(index + 1))))) + "\u20E3")
+                response.append(f"{index + 1}: {key} (current value: `{current_settings[key]}`)")
+                emoji_list.append(str(index + 1) + "\u20E3")
 
             # ignores response setting, always in-channel (due to how settings are stored/changed. might be 'fixable')
-            settings_message = await ctx.send(to_send[0:-1])
+            settings_message = await ctx.send("\n".join(response))
 
             for emoji in emoji_list:
                 await settings_message.add_reaction(emoji)
@@ -145,11 +144,11 @@ class SettingsCommands(commands.Cog):
             self.waiting_for_reactions[settings_message.id] = AwaitingReaction(ctx.message.author.id, emoji_list)
 
         else:
-            to_send = "**Current Settings**\n"
+            response = ["**Current Settings**"]
             for setting, value in current_settings.items():
-                to_send += f"{setting}: `{value}`\n"
+                response.append(f"{setting}: `{value}`")
 
-            await response_method.send(to_send[0:-1])
+            await response_method.send("\n".join(response))
 
 
 async def setup(bot):
