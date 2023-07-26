@@ -1,12 +1,9 @@
 import discord
-from collections import namedtuple
 from data.Tip import Tip
+from data.AwaitingReaction import AwaitingReaction
 from discord.ext import commands
 from util.response_handler import get_response_type
 from util.command_checks import check_higher_perms
-
-
-AwaitingReaction = namedtuple("AwaitingReaction", ["user_id", "allowed_emoji", "tips", "mod_type", "location"])
 
 
 class SendConquestTips(commands.Cog):
@@ -330,13 +327,47 @@ class SendConquestTips(commands.Cog):
         await response_method.send("NYI")
 
     async def edit_tip(self, response_method, location, author, guild, mod_type):
+        tips_list = self.get_tips(location)
+
+        if await check_higher_perms(author, guild):
+            user_tips = tips_list
+        else:
+            user_tips = list(filter(lambda each_tip: each_tip.user_id == author.id, tips_list))
+
+        if len(user_tips) > 0:
+            user_tips.sort(reverse=True, key=lambda each_tip: each_tip.creation_time.time())
+            page_count = ((len(user_tips) - 1) // 5) + 1
+            user_tips = user_tips[:5]
+
+            tip_messages = [f"Which tip would you like to {mod_type}?"]
+            for index, tip in enumerate(user_tips):
+                tip_messages.append(f"{index+1} - {tip.create_selection_message()}")
+
+            emoji_list = []
+            for index in range(len(user_tips)):
+                emoji = str(index+1) + "\u20E3"
+                emoji_list.append(emoji)
+
+            if page_count > 1:
+                tip_messages.append(f"Page 1/{page_count}")
+                emoji_list.append("➡️")
+
+            sent_tip_message = await response_method.send("\n".join(tip_messages))
+
+            self.awaiting_reactions[sent_tip_message.id] = AwaitingReaction(author.id, emoji_list,
+                                                                            user_tips, mod_type, location)
+
+            for emoji in emoji_list:
+                await sent_tip_message.add_reaction(emoji)
+
+        else:
+            await response_method.send(f"There are no tips that you can {mod_type} in {location}.")
+
+    def get_tips(self, location):
         if location[0] == "g":
-            global_num = int(location[1])
-            all_tips = self.tip_storage["globals"][global_num].copy()
+            tip_list = self.tip_storage["globals"][int(location[1])].copy()
 
-            rep_string = f"Global Feat {global_num}"
-
-        elif location[0] == "s":
+        else:  # location[0] == "s"
             sector_num = int(location[1])
             tip_types = {
                 "b": "boss",
@@ -348,51 +379,15 @@ class SendConquestTips(commands.Cog):
             if tip_type == "boss" or tip_type == "mini":
                 feat_num = location[3:]
                 if feat_num == "":  # standard tips
-                    all_tips = self.tip_storage["sectors"][sector_num][tip_type]["tips"]
-                    rep_string = f"Sector {sector_num} {'Boss' if tip_type == 'boss' else 'Miniboss'}"
+                    tip_list = self.tip_storage["sectors"][sector_num][tip_type]["tips"]
                 else:  # feat tips
-                    all_tips = self.tip_storage["sectors"][sector_num][tip_type]["feats"][int(feat_num)]
-                    rep_string = f"Sector {sector_num} {'Boss' if tip_type == 'boss' else 'Miniboss'} Feat {feat_num}"
+                    tip_list = self.tip_storage["sectors"][sector_num][tip_type]["feats"][int(feat_num)]
             elif tip_type == "nodes":
-                all_tips = self.tip_storage["sectors"][sector_num]["nodes"][int(location[3:])]
-                rep_string = f"Sector {sector_num} Node {location[3:]}"
+                tip_list = self.tip_storage["sectors"][sector_num]["nodes"][int(location[3:])]
             else:  # tip_type == "feats"
-                all_tips = self.tip_storage["sectors"][sector_num]["feats"][int(location[3])]
-                rep_string = f"Sector {sector_num} Feat {location[3]}"
-        else:
-            await response_method.send("Tips locations must start with an `s` to identify a sector, or `g` to identify "
-                                       "global feats.")
-            return
+                tip_list = self.tip_storage["sectors"][sector_num]["feats"][int(location[3])]
 
-        if await check_higher_perms(author, guild):
-            user_tips = all_tips
-        else:
-            user_tips = list(filter(lambda each_tip: each_tip.user_id == author.id, all_tips))
-
-        if len(user_tips) > 0:
-            user_tips.sort(reverse=True, key=lambda each_tip: each_tip.creation_time.time())
-            user_tips = user_tips[:5]
-
-            tip_messages = [f"Which tip would you like to {mod_type}?"]
-            for index, tip in enumerate(user_tips):
-                tip_messages.append(f"{index+1} - {tip.create_selection_message()}")
-
-            sent_tip_message = await response_method.send("\n".join(tip_messages))
-            emoji_list = []
-            for index in range(len(user_tips)):
-                emoji = str(index+1) + "\u20E3"
-
-                await sent_tip_message.add_reaction(emoji)
-                emoji_list.append(emoji)
-
-            await sent_tip_message.add_reaction("\u27A1")  # right arrow
-            emoji_list.append("\u27A1")
-
-            self.awaiting_reactions[sent_tip_message.id] = AwaitingReaction(author.id, emoji_list,
-                                                                            user_tips, mod_type, location)
-
-        else:
-            await response_method.send(f"There are no tips that you can {mod_type} in {rep_string}.")
+        return tip_list
 
     @commands.Cog.listener()
     async def on_reaction_add(self, reaction: discord.Reaction, user: discord.Member):
@@ -409,7 +404,6 @@ class SendConquestTips(commands.Cog):
         response_method = get_response_type(reaction.message.guild, user, reaction.message.channel)
 
         awaiting_reaction = self.awaiting_reactions[reaction.message.id]
-        del self.awaiting_reactions[reaction.message.id]
 
         tips = awaiting_reaction.tips
         mod_type = awaiting_reaction.mod_type
@@ -417,13 +411,61 @@ class SendConquestTips(commands.Cog):
         try:
             emoji_num = int(reaction.emoji[0])
         except ValueError:
-            return  # page change, make a func or smth
+            await self.edit_page_change(reaction, awaiting_reaction)
+            return
+
+        del self.awaiting_reactions[reaction.message.id]
 
         chosen_tip = tips[emoji_num - 1]
         if mod_type == "edit":
             await self.handle_tip_edit(response_method, chosen_tip)
         else:  # mod_type == delete:
             await self.handle_tip_delete(response_method, chosen_tip, reaction, user, awaiting_reaction.location)
+
+    async def edit_page_change(self, reaction, awaiting_reaction):
+        page_num = awaiting_reaction.page_num
+
+        if reaction.emoji == "➡️":
+            page_num += 1
+        else:  # reaction.emoji == "⬅️"
+            page_num -= 1
+
+        awaiting_reaction.page_num = page_num
+        message = reaction.message
+        await message.clear_reactions()
+
+        all_tips = self.get_tips(awaiting_reaction.location)
+        index_low = (page_num-1) * 5
+        index_high = page_num * 5
+
+        if await check_higher_perms(reaction.message.author, reaction.message.guild):
+            user_tips = all_tips
+        else:
+            user_tips = list(filter(lambda each_tip: each_tip.user_id == reaction.message.author.id, all_tips))
+        user_tips.sort(reverse=True, key=lambda each_tip: each_tip.creation_time.time())
+
+        page_count = ((len(user_tips) - 1) // 5) + 1
+        tip_list = all_tips[index_low:index_high]
+        tip_messages = [f"Which tip would you like to {awaiting_reaction.mod_type}?"]
+        for index, tip in enumerate(tip_list):
+            tip_messages.append(f"{index + 1}: {tip.create_selection_message()}")
+
+        emoji_list = []
+        for index in range(len(tip_list)):
+            emoji = str(index + 1) + "\u20E3"
+            emoji_list.append(emoji)
+
+        if page_count > page_num:
+            emoji_list.append("➡️")
+        if page_num > 1:
+            emoji_list.insert(0, "⬅️")
+        tip_messages.append(f"Page {page_num}/{page_count}")
+        awaiting_reaction.allowed_emoji = emoji_list
+        awaiting_reaction.tips = tip_list
+
+        await reaction.message.edit(content="\n".join(tip_messages))
+        for emoji in emoji_list:
+            await reaction.message.add_reaction(emoji)
 
     async def handle_tip_edit(self, response_method, tip):
         await response_method.send("NYI")

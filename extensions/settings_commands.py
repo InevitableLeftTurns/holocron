@@ -138,10 +138,10 @@ class SettingsCommands(commands.Cog):
             # ignores response setting, always in-channel (due to how settings are stored/changed. might be 'fixable')
             settings_message = await ctx.send("\n".join(response))
 
+            self.waiting_for_reactions[settings_message.id] = AwaitingReaction(ctx.message.author.id, emoji_list)
+
             for emoji in emoji_list:
                 await settings_message.add_reaction(emoji)
-
-            self.waiting_for_reactions[settings_message.id] = AwaitingReaction(ctx.message.author.id, emoji_list)
 
         else:
             response = ["**Current Settings**"]
