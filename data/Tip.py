@@ -1,12 +1,19 @@
-from datetime import datetime, timedelta
+import discord
+from datetime import datetime
 
 
 class Tip:
-    def __init__(self, author, content, rating=0, user_id=0):
-        self.author = author
-        self.content = content
-        self.rating = rating
-        self.user_id = user_id
+    def __init__(self, message, content="", rating=0, user_id=0):
+        if isinstance(message, discord.Message):
+            self.author = message.author.name
+            self.content = message.content
+            self.rating = 0
+            self.user_id = message.author.id
+        else:
+            self.author = message
+            self.content = content
+            self.rating = rating
+            self.user_id = user_id
         self.creation_time = datetime.utcnow()
 
     def create_tip_message(self):

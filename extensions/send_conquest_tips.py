@@ -2,6 +2,7 @@ import discord
 from data.Tip import Tip
 from data.AwaitingReaction import AwaitingReaction
 from discord.ext import commands
+from functools import partial
 from util.response_handler import get_response_type
 from util.command_checks import check_higher_perms
 
@@ -214,12 +215,12 @@ class SendConquestTips(commands.Cog):
             return
 
         modifying = {
-            "add": self.add_tip,
-            "edit": self.edit_tip,
-            "delete": self.edit_tip
+            "add": partial(self.add_tip, ctx.channel),
+            "edit": partial(self.edit_tip, to_edit, ctx.guild),
+            "delete": partial(self.edit_tip, to_edit, ctx.guild)
         }
         try:
-            await modifying[to_edit](response_method, tip_location, ctx.author, ctx.guild, to_edit)
+            await modifying[to_edit](ctx.author, tip_location, response_method)
             return
         except KeyError:
             pass
@@ -323,10 +324,45 @@ class SendConquestTips(commands.Cog):
         else:
             await response_method.send(f"There are currently no tips for Sector {sector_num} Feat {feat_num}.")
 
-    async def add_tip(self, response_method, location, author, guild, mod_type):
-        await response_method.send("NYI")
+    async def add_tip(self, channel, author, location, response_method):
+        def check_message(message):
+            return message.channel.id == channel_id and message.author.id == user_id
 
-    async def edit_tip(self, response_method, location, author, guild, mod_type):
+        await response_method.send(f"Your next message in this channel will be added as a tip in {location}. If you "
+                                   f"wish to cancel, respond with `cancel`.")
+        channel_id = channel.id
+        user_id = author.id
+        tip_message = await self.bot.wait_for("message", check=check_message)
+
+        if tip_message.content.lower() == "cancel":
+            await response_method.send("Tip addition has been cancelled.")
+            return
+
+        if location[0] == "g":
+            global_num = int(location[1])
+            self.tip_storage["globals"][global_num].append(Tip(tip_message))
+
+        else:  # location[0] == "s"
+            tip_types = {
+                "b": "boss",
+                "m": "mini",
+                "n": "nodes",
+                "f": "feats"
+            }
+            sector = self.tip_storage["sectors"][int(location[1])][tip_types[location[2]]]
+            if location[2] == "b" or location[2] == "m":
+                if location[3:] == "":  # no number, normal tip
+                    sector["tips"].append(Tip(tip_message))
+                else:  # number, feat tip
+                    sector["feats"][int(location[3])].append(Tip(tip_message))
+            elif location[2] == "n":
+                sector[int(location[3:])].append(Tip(tip_message))
+            else:  # location[2] == "f"
+                sector[int(location[3])].append(Tip(tip_message))
+
+        await response_method.send(f"Your tip has been added to {location}")
+
+    async def edit_tip(self, mod_type, guild, author, location, response_method):
         tips_list = self.get_tips(location)
 
         if await check_higher_perms(author, guild):
