@@ -40,6 +40,13 @@ class SendConquestTips(commands.Cog):
         self.dummy_populate()
         self.awaiting_reactions = {}
 
+    tip_types = {
+        "b": "boss",
+        "m": "mini",
+        "n": "nodes",
+        "f": "feats"
+    }
+
     def create_tip_storage(self):
         self.tip_storage["sectors"] = {}
         for i in range(5):
@@ -60,10 +67,10 @@ class SendConquestTips(commands.Cog):
         self.tip_storage["globals"][1].append(Tip("trich", "this is another tip for g1"))
 
         self.tip_storage["sectors"][1]["feats"][1] = [
-            Tip("uaq", "tip for s1f1", 0),
-            Tip("uaq", "tip for s1f1", 7),
-            Tip("uaq", "tip for s1f1", 2),
-            Tip("uaq", "tip for s1f1", 4)
+            Tip("uaq", "tip for s1f1a", 0),
+            Tip("uaq", "tip for s1f1b", 7),
+            Tip("uaq", "tip for s1f1c", 2),
+            Tip("uaq", "tip for s1f1d", 4)
         ]
 
         self.tip_storage["sectors"][1]["nodes"][1] = [Tip("uaq", "tip for s1n1")]
@@ -124,12 +131,6 @@ class SendConquestTips(commands.Cog):
                 await response_method.send("The number following `s` must be between 1 and 5 (inclusive).")
                 return False
 
-            tip_types = [
-                "b",
-                "m",
-                "n",
-                "f"
-            ]
             try:
                 tip_type = location[2]
             except IndexError:
@@ -137,7 +138,7 @@ class SendConquestTips(commands.Cog):
                                            "miniboss tips, `n` for node tips, or `f` for sector feats.")
                 return False
 
-            if tip_type not in tip_types:
+            if tip_type not in self.tip_types.keys():
                 await response_method.send(f"The character following `{sector_num}` must be `b` for boss tips, `m` for "
                                            "miniboss tips, `n` for node tips, or `f` for sector feats.")
                 return False
@@ -338,18 +339,17 @@ class SendConquestTips(commands.Cog):
             await response_method.send("Tip addition has been cancelled.")
             return
 
+        self.write_tip(location, tip_message)
+
+        await response_method.send(f"Your tip has been added to {location}")
+
+    def write_tip(self, location, tip_message: discord.Message):
         if location[0] == "g":
             global_num = int(location[1])
             self.tip_storage["globals"][global_num].append(Tip(tip_message))
 
         else:  # location[0] == "s"
-            tip_types = {
-                "b": "boss",
-                "m": "mini",
-                "n": "nodes",
-                "f": "feats"
-            }
-            sector = self.tip_storage["sectors"][int(location[1])][tip_types[location[2]]]
+            sector = self.tip_storage["sectors"][int(location[1])][self.tip_types[location[2]]]
             if location[2] == "b" or location[2] == "m":
                 if location[3:] == "":  # no number, normal tip
                     sector["tips"].append(Tip(tip_message))
@@ -359,8 +359,6 @@ class SendConquestTips(commands.Cog):
                 sector[int(location[3:])].append(Tip(tip_message))
             else:  # location[2] == "f"
                 sector[int(location[3])].append(Tip(tip_message))
-
-        await response_method.send(f"Your tip has been added to {location}")
 
     async def edit_tip(self, mod_type, guild, author, location, response_method):
         tips_list = self.get_tips(location)
@@ -404,24 +402,17 @@ class SendConquestTips(commands.Cog):
             tip_list = self.tip_storage["globals"][int(location[1])].copy()
 
         else:  # location[0] == "s"
-            sector_num = int(location[1])
-            tip_types = {
-                "b": "boss",
-                "m": "mini",
-                "n": "nodes",
-                "f": "feats"
-            }
-            tip_type = tip_types[location[2]]
+            tip_type = self.tip_types[location[2]]
+            sector = self.tip_storage["sectors"][int(location[1])][tip_type]
             if tip_type == "boss" or tip_type == "mini":
                 feat_num = location[3:]
                 if feat_num == "":  # standard tips
-                    tip_list = self.tip_storage["sectors"][sector_num][tip_type]["tips"]
+                    tip_list = sector["tips"]
                 else:  # feat tips
-                    tip_list = self.tip_storage["sectors"][sector_num][tip_type]["feats"][int(feat_num)]
-            elif tip_type == "nodes":
-                tip_list = self.tip_storage["sectors"][sector_num]["nodes"][int(location[3:])]
-            else:  # tip_type == "feats"
-                tip_list = self.tip_storage["sectors"][sector_num]["feats"][int(location[3])]
+                    tip_list = sector["feats"][int(feat_num)]
+
+            else:  # tip_type == "feats" or "nodes"
+                tip_list = sector[int(location[3:])]
 
         return tip_list
 
@@ -453,10 +444,11 @@ class SendConquestTips(commands.Cog):
         del self.awaiting_reactions[reaction.message.id]
 
         chosen_tip = tips[emoji_num - 1]
+        channel = reaction.message.channel
         if mod_type == "edit":
-            await self.handle_tip_edit(response_method, chosen_tip)
+            await self.handle_tip_edit(response_method, chosen_tip, channel, user, awaiting_reaction.location)
         else:  # mod_type == delete:
-            await self.handle_tip_delete(response_method, chosen_tip, reaction, user, awaiting_reaction.location)
+            await self.handle_tip_delete(response_method, chosen_tip, channel, user, awaiting_reaction.location)
 
     async def edit_page_change(self, reaction, awaiting_reaction):
         page_num = awaiting_reaction.page_num
@@ -503,15 +495,35 @@ class SendConquestTips(commands.Cog):
         for emoji in emoji_list:
             await reaction.message.add_reaction(emoji)
 
-    async def handle_tip_edit(self, response_method, tip):
-        await response_method.send("NYI")
-
-    async def handle_tip_delete(self, response_method, tip, reaction, user, location):
+    async def handle_tip_edit(self, response_method, tip, channel, user, location):
         def check_message(message):
             return message.channel.id == channel_id and message.author.id == user_id
 
+        channel_id = channel.id
         user_id = user.id
-        channel_id = reaction.message.channel.id
+        await user.send(tip.create_tip_message())
+        await response_method.send("A message containing the tip has been sent to you. The content of that tip will "
+                                   "update to the content of your next message in this channel. If you wish to cancel "
+                                   "the edit, type `cancel`.")
+        tip_message = await self.bot.wait_for("message", check=check_message)
+
+        if tip_message.content == "cancel":
+            feedback = "Edit cancelled. Tip will remain as it was."
+        else:
+            location_tips = self.get_tips(location)
+            tip_index = location_tips.index(tip)
+            location_tips[tip_index].content = tip_message.content
+
+            feedback = "Edit success. The tip will now display your last message as its content."
+
+        await response_method.send(feedback)
+
+    async def handle_tip_delete(self, response_method, tip, channel, user, location):
+        def check_message(message):
+            return message.channel.id == channel_id and message.author.id == user_id
+
+        channel_id = channel.id
+        user_id = user.id
         await response_method.send(f"Are you sure you want to delete the tip:\n`{tip.create_delete_message()}`?\n\n"
                                    f"Please type `confirm` to confirm and permanently delete this tip, or `cancel` to "
                                    f"cancel.")
@@ -528,14 +540,8 @@ class SendConquestTips(commands.Cog):
         await response_method.send(feedback)
 
     def delete_sector_tip(self, location, tip):
-        tip_types = {
-            "b": "boss",
-            "m": "mini",
-            "n": "nodes",
-            "f": "feats"
-        }
         sector_num = int(location[1])
-        tip_type = tip_types[location[2]]
+        tip_type = self.tip_types[location[2]]
         if tip_type == "boss" or tip_type == "mini":
             try:
                 boss_feat_num = int(location[3])
