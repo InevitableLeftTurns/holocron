@@ -26,16 +26,50 @@ class SendConquestTips(commands.Cog):
         from util.tip_storage_manager import save_storage_to_file
         save_storage_to_file(self.tip_storage)
 
-    @commands.command(name="clear", aliases=["reset"], description="Resets and clears all tips from storage.")
-    async def clean_storage(self, ctx: commands.Context):
+    @commands.command(name="conquest", aliases=["c", "con", "conq"], description="Command for managing and branching to"
+                                                                                 " all conquest commands")
+    async def conquest_manager(self, ctx: commands.Context, *args):
+        response_method = get_response_type(ctx.guild, ctx.author, ctx.channel)
+        if len(args) == 0:
+            await response_method.send(f"This command requires extra information to have functionality. For a list of "
+                                       f"options, use `{ctx.prefix}help conquest`.")
+            return
+
+        clear_names = [
+            "clean",
+            "reset",
+            "clear"
+        ]
+        dummy_names = [
+            "dummy",
+            "populate",
+            "test"
+        ]
+        if args[0] in clear_names:
+            await self.clean_storage(ctx.guild, ctx.channel, ctx.author, response_method)
+            return
+
+        elif args[0] in dummy_names:
+            await self.dummy_populate(ctx.guild, ctx.author, response_method)
+            return
+
+        else:
+            if await self.valid_location(args[0], response_method):
+                try:
+                    to_edit = args[1]
+                except IndexError:
+                    to_edit = ""
+                await self.conquest_tips(ctx.guild, ctx.channel, ctx.author, args[0], to_edit)
+                return
+
+    async def clean_storage(self, guild, channel, author, response_method):
         def check_message(message):
             return message.channel.id == channel.id and message.author.id == user.id
 
-        channel = ctx.channel
-        user = ctx.author
-        response_method = get_response_type(ctx.guild, user, channel)
+        channel = channel
+        user = author
 
-        if not await check_higher_perms(user, ctx.guild):
+        if not await check_higher_perms(user, guild):
             await response_method.send("You do not have access to this command.")
             return
 
@@ -64,8 +98,11 @@ class SendConquestTips(commands.Cog):
 
         await response_method.send(feedback)
 
-    @commands.command(name="dummy", description="Populates tip storage with dummy data. Mostly for testing purposes.")
-    async def dummy_populate(self, ctx: commands.Context):
+    async def dummy_populate(self, guild, author, response_method):
+        if not await check_higher_perms(author, guild):
+            await response_method.send("You do not have permission to use this command")
+            return
+
         self.tip_storage["globals"][1].append(Tip("trich", "this is a tip for g1"))
         self.tip_storage["globals"][1].append(Tip("trich", "this is another tip for g1"))
 
@@ -101,7 +138,6 @@ class SendConquestTips(commands.Cog):
         self.tip_storage["globals"][1].append(Tip("uaq", "tip 4 to del in g1", user_id=490970360272125952))
         self.tip_storage["globals"][1].append(Tip("uaq", "tip 5 to del in g1", user_id=490970360272125952))
 
-        response_method = get_response_type(ctx.guild,  ctx.author, ctx.channel)
         await response_method.send("Data added.")
 
     async def valid_location(self, location, response_method):
@@ -212,22 +248,20 @@ class SendConquestTips(commands.Cog):
     syntax: global,number
     examples: g1, g4, g8
     """
-    @commands.command(name="conquest", aliases=["c", "con", "conq"],
-                      description="Sends tips and tricks for the active conquest")
-    async def conquest_tips(self, ctx: commands.Context, tip_location: str, to_edit="no"):
-        response_method = get_response_type(ctx.guild, ctx.author, ctx.channel)
+    async def conquest_tips(self, guild, channel, author, tip_location: str, to_edit="no"):
+        response_method = get_response_type(guild, author, channel)
         tip_location = tip_location.lower()
 
         if not await self.valid_location(tip_location, response_method):
             return
 
         modifying = {
-            "add": partial(self.add_tip, ctx.channel),
-            "edit": partial(self.edit_tip, to_edit, ctx.guild),
-            "delete": partial(self.edit_tip, to_edit, ctx.guild)
+            "add": partial(self.add_tip, channel),
+            "edit": partial(self.edit_tip, to_edit, guild),
+            "delete": partial(self.edit_tip, to_edit, guild)
         }
         try:
-            await modifying[to_edit](ctx.author, tip_location, response_method)
+            await modifying[to_edit](author, tip_location, response_method)
             return
         except KeyError:
             pass

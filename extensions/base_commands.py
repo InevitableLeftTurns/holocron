@@ -33,7 +33,7 @@ class BaseCommands(commands.Cog):
 
             if bot_command is not None:
                 aliases = "none" if len(bot_command.aliases) == 0 else ", ".join(bot_command.aliases)
-                to_send += f"**{ctx.prefix}{command}** (aliases: {aliases})\n"
+                to_send += f"**{ctx.prefix}{bot_command.name}** (aliases: {aliases})\n"
                 if command == "help":
                     to_send += f"A command that gives you a list of commands, or help on specific ones.\n" \
                                f"To get a list of commands, use `{ctx.prefix}help`, or for help on a certain command," \
@@ -51,7 +51,7 @@ class BaseCommands(commands.Cog):
                                f"{bot_command.description}\n\n"
 
             else:
-                to_send += f"The command `**{ctx.prefix}{command}**` does not exist"
+                to_send += f"The command `{ctx.prefix}{command}` does not exist"
 
         if to_send == "":
             to_send = f"**List of Commands**. For detailed help, use `{ctx.prefix}help [command]`\n"
