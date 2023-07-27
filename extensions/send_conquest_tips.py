@@ -1,43 +1,18 @@
 import discord
-from data.Tip import Tip
+
 from data.AwaitingReaction import AwaitingReaction
+from data.Tip import Tip
 from discord.ext import commands
 from functools import partial
-from util.response_handler import get_response_type
 from util.command_checks import check_higher_perms
+from util.response_handler import get_response_type
+from util.tip_storage_manager import load_tip_storage
 
 
 class SendConquestTips(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
-        self.tip_storage = {
-            # "sectors": {
-            #     1: {
-            #         "boss": {
-            #             "feats": {
-            #               1: [],
-            #               2: []
-            #             },
-            #             "tips": []
-            #         },
-            #         "mini": {}, # same as boss
-            #         "nodes": {},
-            #         "feats": {
-            #             1: ""  # through 4
-            #         }
-            #     },
-            #     2: {},
-            #     3: {},
-            #     4: {},
-            #     5: {}
-            # }
-            # "globals": {
-            #     1: [],
-            #     2: []  # through 8
-            # }
-        }
-        self.create_tip_storage()
-        self.dummy_populate()
+        self.tip_storage = load_tip_storage()
         self.awaiting_reactions = {}
 
     tip_types = {
@@ -47,22 +22,50 @@ class SendConquestTips(commands.Cog):
         "f": "feats"
     }
 
-    def create_tip_storage(self):
-        self.tip_storage["sectors"] = {}
-        for i in range(5):
-            self.tip_storage["sectors"][i+1] = {}
-            self.tip_storage["sectors"][i+1]["boss"] = {"feats": {1: [], 2: []}, "tips": []}
-            self.tip_storage["sectors"][i+1]["mini"] = {"feats": {1: [], 2: []}, "tips": []}
-            self.tip_storage["sectors"][i+1]["nodes"] = {}
-            self.tip_storage["sectors"][i+1]["feats"] = {}
-            for j in range(4):
-                self.tip_storage["sectors"][i+1]["feats"][j+1] = []
+    def save_storage(self):
+        from util.tip_storage_manager import save_storage_to_file
+        save_storage_to_file(self.tip_storage)
 
-        self.tip_storage["globals"] = {}
-        for i in range(8):
-            self.tip_storage["globals"][i+1] = []
+    @commands.command(name="clear", aliases=["reset"], description="Resets and clears all tips from storage.")
+    async def clean_storage(self, ctx: commands.Context):
+        def check_message(message):
+            return message.channel.id == channel.id and message.author.id == user.id
 
-    def dummy_populate(self):
+        channel = ctx.channel
+        user = ctx.author
+        response_method = get_response_type(ctx.guild, user, channel)
+
+        if not await check_higher_perms(user, ctx.guild):
+            await response_method.send("You do not have access to this command.")
+            return
+
+        await response_method.send("Are you sure you want to clear all tips from storage? Type `confirm` to confirm, or"
+                                   "`cancel` to cancel.")
+        confirm_message = await self.bot.wait_for("message", check=check_message)
+        if confirm_message.content != "confirm":
+            feedback = "Storage clearing canceled. All tips will remain."
+        else:
+            self.tip_storage["sectors"] = {}
+            for i in range(5):
+                self.tip_storage["sectors"][i+1] = {}
+                self.tip_storage["sectors"][i+1]["boss"] = {"feats": {1: [], 2: []}, "tips": []}
+                self.tip_storage["sectors"][i+1]["mini"] = {"feats": {1: [], 2: []}, "tips": []}
+                self.tip_storage["sectors"][i+1]["nodes"] = {}
+                self.tip_storage["sectors"][i+1]["feats"] = {}
+                for j in range(4):
+                    self.tip_storage["sectors"][i+1]["feats"][j+1] = []
+
+            self.tip_storage["globals"] = {}
+            for i in range(8):
+                self.tip_storage["globals"][i+1] = []
+
+            self.save_storage()
+            feedback = "Tip storage has been cleared."
+
+        await response_method.send(feedback)
+
+    @commands.command(name="dummy", description="Populates tip storage with dummy data. Mostly for testing purposes.")
+    async def dummy_populate(self, ctx: commands.Context):
         self.tip_storage["globals"][1].append(Tip("trich", "this is a tip for g1"))
         self.tip_storage["globals"][1].append(Tip("trich", "this is another tip for g1"))
 
@@ -97,6 +100,9 @@ class SendConquestTips(commands.Cog):
         self.tip_storage["globals"][1].append(Tip("uaq", "tip 3 to del in g1", user_id=490970360272125952))
         self.tip_storage["globals"][1].append(Tip("uaq", "tip 4 to del in g1", user_id=490970360272125952))
         self.tip_storage["globals"][1].append(Tip("uaq", "tip 5 to del in g1", user_id=490970360272125952))
+
+        response_method = get_response_type(ctx.guild,  ctx.author, ctx.channel)
+        await response_method.send("Data added.")
 
     async def valid_location(self, location, response_method):
         if location[0] == "g":
@@ -360,6 +366,8 @@ class SendConquestTips(commands.Cog):
             else:  # location[2] == "f"
                 sector[int(location[3])].append(Tip(tip_message))
 
+        self.save_storage()
+
     async def edit_tip(self, mod_type, guild, author, location, response_method):
         tips_list = self.get_tips(location)
 
@@ -518,6 +526,8 @@ class SendConquestTips(commands.Cog):
 
         await response_method.send(feedback)
 
+        self.save_storage()
+
     async def handle_tip_delete(self, response_method, tip, channel, user, location):
         def check_message(message):
             return message.channel.id == channel_id and message.author.id == user_id
@@ -539,23 +549,21 @@ class SendConquestTips(commands.Cog):
 
         await response_method.send(feedback)
 
+        self.save_storage()
+
     def delete_sector_tip(self, location, tip):
         sector_num = int(location[1])
         tip_type = self.tip_types[location[2]]
+        numbered_sector = self.tip_storage["sectors"][sector_num][tip_type]
         if tip_type == "boss" or tip_type == "mini":
             try:
                 boss_feat_num = int(location[3])
-                self.tip_storage["sectors"][sector_num][tip_type]["feats"][boss_feat_num].remove(tip)
+                numbered_sector["feats"][boss_feat_num].remove(tip)
             except IndexError:  # called if no loc[3]; signifies boss tip
-                self.tip_storage["sectors"][sector_num][tip_type]["tips"].remove(tip)
+                numbered_sector["tips"].remove(tip)
 
-        elif tip_type == "nodes":
-            node_num = int(location[3:])
-            self.tip_storage["sectors"][sector_num][tip_type][node_num].remove(tip)
-
-        else:  # tip_type == "feats
-            feat_num = int(location[3])
-            self.tip_storage["sectors"][sector_num][tip_type][feat_num].remove(tip)
+        else:  # tip_type == "feats" or "nodes"
+            numbered_sector[int(location[3:])].remove(tip)
 
 
 async def setup(bot):
