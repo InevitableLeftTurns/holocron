@@ -1,4 +1,6 @@
+import discord
 from discord.ext import commands
+from discord.utils import get
 from util.response_handler import get_response_type
 
 
@@ -9,6 +11,14 @@ class BaseCommands(commands.Cog):
     @commands.Cog.listener()
     async def on_ready(self):
         print(f"Bot loaded successfully. Logged in as '{self.bot.user}'")
+
+    @commands.Cog.listener()
+    async def on_guild_join(self, guild: discord.Guild):
+        bot_perm_role = get(guild.roles, name="Conquest Admin")
+        if bot_perm_role is None:
+            bot_perm_role = await guild.create_role(name="Conquest Admin")
+        bot = guild.get_member(self.bot.user.id)
+        await bot.add_roles(bot_perm_role)
 
     @commands.Cog.listener()
     async def on_command_error(self, ctx: commands.Context, exception):  # ignores response setting, always in-channel
