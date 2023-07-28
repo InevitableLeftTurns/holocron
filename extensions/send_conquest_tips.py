@@ -240,14 +240,6 @@ class SendConquestTips(commands.Cog):
 
         return True
 
-    """
-    tip_location- 
-    syntax: sector,sector number,node/mini/boss/feat,number (op)
-    examples: s1m, s3b, s3n13, s2f4
-    -or-
-    syntax: global,number
-    examples: g1, g4, g8
-    """
     async def conquest_tips(self, guild, channel, author, tip_location: str, to_edit="no"):
         response_method = get_response_type(guild, author, channel)
         tip_location = tip_location.lower()
