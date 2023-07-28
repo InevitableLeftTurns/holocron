@@ -64,12 +64,9 @@ class SendConquestTips(commands.Cog):
 
     async def clean_storage(self, guild, channel, author, response_method):
         def check_message(message):
-            return message.channel.id == channel.id and message.author.id == user.id
+            return message.channel.id == channel.id and message.author.id == author.id
 
-        channel = channel
-        user = author
-
-        if not await check_higher_perms(user, guild):
+        if not await check_higher_perms(author, guild):
             await response_method.send("You do not have access to this command.")
             return
 
@@ -544,9 +541,8 @@ class SendConquestTips(commands.Cog):
         if tip_message.content == "cancel":
             feedback = "Edit cancelled. Tip will remain as it was."
         else:
-            location_tips = self.get_tips(location)
-            tip_index = location_tips.index(tip)
-            location_tips[tip_index].content = tip_message.content
+            tip.content = tip_message.content
+            tip.edited = True
 
             feedback = "Edit success. The tip will now display your last message as its content."
 
