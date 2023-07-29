@@ -6,6 +6,7 @@ from discord.ext import commands
 from functools import partial
 from util.command_checks import check_higher_perms
 from util.settings.response_handler import get_response_type
+from util.settings.tip_sorting_handler import sort_tips
 from util.tip_storage_manager import load_tip_storage
 
 
@@ -113,16 +114,16 @@ class SendConquestTips(commands.Cog):
 
         self.tip_storage["sectors"][1]["nodes"][1] = [Tip("uaq", "tip for s1n1")]
         self.tip_storage["sectors"][1]["nodes"][13] = [
-            Tip("uaq", "tip for s1n12", 0),
-            Tip("uaq", "tip for s1n12", 7),
-            Tip("uaq", "tip for s1n12", -3)
+            Tip("uaq", "tip for s1n13a", 0),
+            Tip("uaq", "tip for s1n13b", 7),
+            Tip("uaq", "tip for s1n13c", -3)
         ]
 
         self.tip_storage["sectors"][1]["boss"]["feats"][1] = [
-            Tip("uaq", "tip for s1b1", 0),
-            Tip("uaq", "tip for s1b1", 7),
-            Tip("uaq", "tip for s1b1", 2),
-            Tip("uaq", "tip for s1b1", 4),
+            Tip("uaq", "tip for s1b1a", 0),
+            Tip("uaq", "tip for s1b1b", 7),
+            Tip("uaq", "tip for s1b1c", 2),
+            Tip("uaq", "tip for s1b1d", 4),
         ]
         self.tip_storage["sectors"][1]["boss"]["tips"].append(Tip("uaq", "tip for s1b"))
 
@@ -260,7 +261,7 @@ class SendConquestTips(commands.Cog):
             global_feat_num = int(tip_location[1])
 
             tip_list = self.tip_storage["globals"][global_feat_num]
-            tip_list.sort(reverse=True, key=lambda each_tip: each_tip.creation_time)
+            sort_tips(tip_list)
             top_three = tip_list[:3]
             total = len(tip_list)
 
@@ -289,14 +290,14 @@ class SendConquestTips(commands.Cog):
     async def boss_tips(self, sector_num, extra_pos, boss_type="boss"):
         if extra_pos == "":
             tips_list = self.tip_storage["sectors"][sector_num][boss_type]["tips"]
-            tips_list.sort(reverse=True, key=lambda each_tip: each_tip.creation_time)
+            sort_tips(tips_list)
             top_three = tips_list[:3]
 
         else:
             feat_num = int(extra_pos[0])
 
             tips_list = self.tip_storage["sectors"][sector_num][boss_type]["feats"][feat_num]
-            tips_list.sort(reverse=True, key=lambda each_tip: each_tip.creation_time)
+            sort_tips(tips_list)
             top_three = tips_list[:3]
 
         return top_three, len(tips_list)
@@ -308,7 +309,7 @@ class SendConquestTips(commands.Cog):
         node_num = int(node_num)
 
         tips_list = self.tip_storage["sectors"][sector_num]["nodes"][node_num]
-        tips_list.sort(reverse=True, key=lambda each_tip: each_tip.creation_time)
+        sort_tips(tips_list)
         top_three = tips_list[:3]
 
         return top_three, len(tips_list)
@@ -317,7 +318,7 @@ class SendConquestTips(commands.Cog):
         feat_num = int(feat_num[0])
 
         tips_list = self.tip_storage["sectors"][sector_num]["feats"][feat_num]
-        tips_list.sort(reverse=True, key=lambda each_tip: each_tip.creation_time)
+        sort_tips(tips_list)
         top_three = tips_list[:3]
 
         return top_three, len(tips_list)
@@ -368,7 +369,7 @@ class SendConquestTips(commands.Cog):
             user_tips = list(filter(lambda each_tip: each_tip.user_id == author.id, tips_list))
 
         if len(user_tips) > 0:
-            user_tips.sort(reverse=True, key=lambda each_tip: each_tip.creation_time.time())
+            sort_tips(user_tips)
             page_count = ((len(user_tips) - 1) // 5) + 1
             user_tips = user_tips[:5]
 
@@ -470,7 +471,7 @@ class SendConquestTips(commands.Cog):
             user_tips = all_tips
         else:
             user_tips = list(filter(lambda each_tip: each_tip.user_id == reaction.message.author.id, all_tips))
-        user_tips.sort(reverse=True, key=lambda each_tip: each_tip.creation_time.time())
+        sort_tips(user_tips)
 
         page_count = ((len(user_tips) - 1) // 5) + 1
         tip_list = all_tips[index_low:index_high]
