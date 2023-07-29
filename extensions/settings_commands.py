@@ -3,8 +3,8 @@ import json
 from discord.ext import commands
 from util.command_checks import check_higher_perms
 from collections import namedtuple
-from util.prefix_handler import bot_prefixes, check_prefix_valid, set_prefix
-from util.response_handler import response_settings, check_set_response, set_response_method, get_response_type
+from util.settings.prefix_handler import bot_prefixes, check_prefix_valid, set_prefix
+from util.settings.response_handler import response_settings, check_set_response, set_response_method, get_response_type
 
 AwaitingReaction = namedtuple("AwaitingReaction", ["user_id", "allowed_emoji"])
 
@@ -132,7 +132,7 @@ class SettingsCommands(commands.Cog):
 
             emoji_list = []
             for index, key in enumerate(current_settings.keys()):
-                response.append(f"{index + 1}: {key} (current value: `{current_settings[key]}`)")
+                response.append(f"{index + 1} - {key} (current value: `{current_settings[key]}`)")
                 emoji_list.append(str(index + 1) + "\u20E3")
 
             # ignores response setting, always in-channel (due to how settings are stored/changed. might be 'fixable')
@@ -146,7 +146,7 @@ class SettingsCommands(commands.Cog):
         else:
             response = ["**Current Settings**"]
             for setting, value in current_settings.items():
-                response.append(f"{setting}: `{value}`")
+                response.append(f"{setting} - `{value}`")
 
             await response_method.send("\n".join(response))
 

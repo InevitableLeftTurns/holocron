@@ -1,8 +1,8 @@
 import discord
 from discord.ext import commands
 from util.global_constants import bot_token
-from util.prefix_handler import bot_prefix
-from util.settings_initializer import check_default_settings
+from util.settings.prefix_handler import bot_prefix
+from util.settings.settings_initializer import check_default_settings
 
 # build intents
 bot_intents = discord.Intents.default()

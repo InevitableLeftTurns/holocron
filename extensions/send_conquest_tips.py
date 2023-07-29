@@ -5,7 +5,7 @@ from data.Tip import Tip
 from discord.ext import commands
 from functools import partial
 from util.command_checks import check_higher_perms
-from util.response_handler import get_response_type
+from util.settings.response_handler import get_response_type
 from util.tip_storage_manager import load_tip_storage
 
 
@@ -93,6 +93,7 @@ class SendConquestTips(commands.Cog):
             self.save_storage()
             feedback = "Tip storage has been cleared."
 
+        self.save_storage()
         await response_method.send(feedback)
 
     async def dummy_populate(self, guild, author, response_method):
@@ -111,11 +112,10 @@ class SendConquestTips(commands.Cog):
         ]
 
         self.tip_storage["sectors"][1]["nodes"][1] = [Tip("uaq", "tip for s1n1")]
-        self.tip_storage["sectors"][1]["nodes"][12] = [
+        self.tip_storage["sectors"][1]["nodes"][13] = [
             Tip("uaq", "tip for s1n12", 0),
             Tip("uaq", "tip for s1n12", 7),
-            Tip("uaq", "tip for s1n12", 2),
-            Tip("uaq", "tip for s1n12", 4)
+            Tip("uaq", "tip for s1n12", -3)
         ]
 
         self.tip_storage["sectors"][1]["boss"]["feats"][1] = [
@@ -135,6 +135,7 @@ class SendConquestTips(commands.Cog):
         self.tip_storage["globals"][1].append(Tip("uaq", "tip 4 to del in g1", user_id=490970360272125952))
         self.tip_storage["globals"][1].append(Tip("uaq", "tip 5 to del in g1", user_id=490970360272125952))
 
+        self.save_storage()
         await response_method.send("Data added.")
 
     async def valid_location(self, location, response_method):
@@ -259,18 +260,9 @@ class SendConquestTips(commands.Cog):
             global_feat_num = int(tip_location[1])
 
             tip_list = self.tip_storage["globals"][global_feat_num]
-            tip_list.sort(reverse=True, key=lambda each_tip: each_tip.rating)
+            tip_list.sort(reverse=True, key=lambda each_tip: each_tip.creation_time)
             top_three = tip_list[:3]
-
-            if len(top_three) > 0:
-                await response_method.send(f"__**Top {len(top_three)} tip{'s' if len(top_three) > 1 else ''} (of "
-                                           f"{len(tip_list)}) for Global Feat {global_feat_num}**__\n"
-                                           f"{top_three[0].create_tip_message()}")
-                for tip in top_three[1:]:
-                    await response_method.send(tip.create_tip_message())
-
-            else:
-                await response_method.send(f"There are currently no tips for Global Feat {global_feat_num}.")
+            total = len(tip_list)
 
         else:  # tip_location[0] == 's'
             sector_num = int(tip_location[1])  # in theory one of: [1, 2, 3, 4, 5]
@@ -283,76 +275,52 @@ class SendConquestTips(commands.Cog):
             }
 
             tip_type = tip_location[2]  # one of [b, m, n, f]
-            await type_functions[tip_type](response_method, sector_num, tip_location[3:])
+            top_three, total = await type_functions[tip_type](sector_num, tip_location[3:])
 
-    async def boss_tips(self, response_method, sector_num, extra_pos, boss_type="boss"):
+        if len(top_three) > 0:
+            response = [f"__**Recent {len(top_three)} tip{'' if len(top_three) == 1 else 's'} "
+                        f"(of {total}) for {tip_location}**__"]
+            for index, tip in enumerate(top_three):
+                response.append(f"{index + 1} - " + tip.create_tip_message())
+            await response_method.send('\n'.join(response))
+        else:
+            await response_method.send(f"There are no tips in {tip_location}.")
+
+    async def boss_tips(self, sector_num, extra_pos, boss_type="boss"):
         if extra_pos == "":
-            feat_num = None
-
             tips_list = self.tip_storage["sectors"][sector_num][boss_type]["tips"]
-            tips_list.sort(reverse=True, key=lambda each_tip: each_tip.rating)
+            tips_list.sort(reverse=True, key=lambda each_tip: each_tip.creation_time)
             top_three = tips_list[:3]
 
         else:
             feat_num = int(extra_pos[0])
 
             tips_list = self.tip_storage["sectors"][sector_num][boss_type]["feats"][feat_num]
-            tips_list.sort(reverse=True, key=lambda each_tip: each_tip.rating)
+            tips_list.sort(reverse=True, key=lambda each_tip: each_tip.creation_time)
             top_three = tips_list[:3]
 
-        boss_name = boss_type.capitalize()
-        boss_name += "boss" if boss_name == "mini" else ""
-        feats_included = f" Feat {feat_num}" if feat_num is not None else ""
+        return top_three, len(tips_list)
 
-        if len(top_three) > 0:
-            # attaches first place here to send fewer messages
-            await response_method.send(f"__**Top {len(top_three)} tip{'s' if len(top_three) > 1 else ''} (of "
-                                       f"{len(tips_list)}) for Sector {sector_num} {boss_name}{feats_included}**__\n"
-                                       f"{top_three[0].create_tip_message()}")
-            for tip in top_three[1:]:
-                await response_method.send(tip.create_tip_message())
+    async def mini_tips(self, sector_num, extra_pos):
+        return await self.boss_tips(sector_num, extra_pos, "mini")
 
-        else:
-            await response_method.send(f"There are currently no tips for Sector {sector_num} "
-                                       f"{boss_name}{feats_included}.")
-
-    async def mini_tips(self, response_method, sector_num, extra_pos):
-        await self.boss_tips(response_method, sector_num, extra_pos, "mini")
-
-    async def node_tips(self, response_method, sector_num, node_num):
+    async def node_tips(self, sector_num, node_num):
         node_num = int(node_num)
 
         tips_list = self.tip_storage["sectors"][sector_num]["nodes"][node_num]
-        tips_list.sort(reverse=True, key=lambda each_tip: each_tip.rating)
+        tips_list.sort(reverse=True, key=lambda each_tip: each_tip.creation_time)
         top_three = tips_list[:3]
 
-        if len(top_three) > 0:
-            # attaches first tip here to send fewer messages
-            await response_method.send(f"__**Top {len(top_three)} tip{'s' if len(top_three) > 1 else ''} "
-                                       f"(of {len(tips_list)}) for Sector {sector_num} Node {node_num}**__\n"
-                                       f"{top_three[0].create_tip_message()}")
-            for tip in top_three[1:]:
-                await response_method.send(tip.create_tip_message())
+        return top_three, len(tips_list)
 
-        else:
-            await response_method.send(f"There are currently no tips for Sector {sector_num} Node {node_num}.")
-
-    async def feat_tips(self, response_method, sector_num, feat_num):
+    async def feat_tips(self, sector_num, feat_num):
         feat_num = int(feat_num[0])
 
         tips_list = self.tip_storage["sectors"][sector_num]["feats"][feat_num]
-        tips_list.sort(reverse=True, key=lambda each_tip: each_tip.rating)
+        tips_list.sort(reverse=True, key=lambda each_tip: each_tip.creation_time)
         top_three = tips_list[:3]
 
-        if len(top_three) > 0:
-            await response_method.send(f"__**Top {len(top_three)} tip{'s' if len(top_three) > 1 else ''} (of "
-                                       f"{len(tips_list)}) for Sector {sector_num} Feat {feat_num}**__\n"
-                                       f"{top_three[0].create_tip_message()}")
-            for tip in top_three[1:]:
-                await response_method.send(tip.create_tip_message())
-
-        else:
-            await response_method.send(f"There are currently no tips for Sector {sector_num} Feat {feat_num}.")
+        return top_three, len(tips_list)
 
     async def add_tip(self, channel, author, location, response_method):
         def check_message(message):
@@ -453,10 +421,11 @@ class SendConquestTips(commands.Cog):
             return
         try:
             awaiting_reaction = self.awaiting_reactions[reaction.message.id]
-        except KeyError:
+            if awaiting_reaction.user_id == user.id and reaction.emoji in awaiting_reaction.allowed_emoji:
+                await self.handle_reaction_add(reaction, user)
             return
-        if awaiting_reaction.user_id == user.id and reaction.emoji in awaiting_reaction.allowed_emoji:
-            await self.handle_reaction_add(reaction, user)
+        except KeyError:
+            pass
 
     async def handle_reaction_add(self, reaction, user):
         response_method = get_response_type(reaction.message.guild, user, reaction.message.channel)
@@ -477,7 +446,7 @@ class SendConquestTips(commands.Cog):
         chosen_tip = tips[emoji_num - 1]
         channel = reaction.message.channel
         if mod_type == "edit":
-            await self.handle_tip_edit(response_method, chosen_tip, channel, user, awaiting_reaction.location)
+            await self.handle_tip_edit(response_method, chosen_tip, channel, user)
         else:  # mod_type == delete:
             await self.handle_tip_delete(response_method, chosen_tip, channel, user, awaiting_reaction.location)
 
@@ -526,7 +495,7 @@ class SendConquestTips(commands.Cog):
         for emoji in emoji_list:
             await reaction.message.add_reaction(emoji)
 
-    async def handle_tip_edit(self, response_method, tip, channel, user, location):
+    async def handle_tip_edit(self, response_method, tip, channel, user):
         def check_message(message):
             return message.channel.id == channel_id and message.author.id == user_id
 
