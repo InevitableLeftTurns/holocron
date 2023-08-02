@@ -4,6 +4,9 @@ from data.AwaitingReaction import AwaitingReaction
 from data.Tip import Tip
 from discord.ext import commands
 from functools import partial
+
+from extensions import base_commands
+from util import helpmgr
 from util.command_checks import check_higher_perms
 from util.settings.response_handler import get_response_type
 from util.settings.tip_sorting_handler import sort_tips
@@ -32,9 +35,11 @@ class SendConquestTips(commands.Cog):
     async def conquest_manager(self, ctx: commands.Context, *args):
         response_method = get_response_type(ctx.guild, ctx.author, ctx.channel)
         if len(args) == 0:
-            await response_method.send(f"This command requires extra information to have functionality. For a list of "
-                                       f"options, use `{ctx.prefix}help conquest`.")
+            await response_method.send(f"Conquest commands require extra information. For a list of commands and "
+                                       f"options, use `{ctx.prefix}conquest help`.")
             return
+
+        user_command = args[0]
 
         clear_names = [
             "clean",
@@ -46,21 +51,27 @@ class SendConquestTips(commands.Cog):
             "populate",
             "test"
         ]
-        if args[0] in clear_names:
+        if user_command in clear_names:
             await self.clean_storage(ctx.guild, ctx.channel, ctx.author, response_method)
             return
 
-        elif args[0] in dummy_names:
+        elif user_command in dummy_names:
             await self.dummy_populate(ctx.guild, ctx.author, response_method)
             return
 
+        elif user_command == 'help':
+            commands_args = args[1:]
+            response = helpmgr.generate_bot_help(self.bot.get_command('conquest'), ctx, *commands_args)
+            await response_method.send('\n'.join(response))
+            return
+
         else:
-            if await self.valid_location(args[0], response_method):
+            if await self.valid_location(user_command, response_method):
                 try:
                     to_edit = args[1]
                 except IndexError:
                     to_edit = ""
-                await self.conquest_tips(ctx.guild, ctx.channel, ctx.author, args[0], to_edit)
+                await self.conquest_tips(ctx.guild, ctx.channel, ctx.author, user_command, to_edit)
                 return
 
     async def clean_storage(self, guild, channel, author, response_method):
@@ -233,8 +244,8 @@ class SendConquestTips(commands.Cog):
                     await response_method.send("The number following `f` must be between 1 and 4 (inclusive).")
                     return False
         else:
-            await response_method.send("Queries to tips must start with an `s` to identify a sector or `g` to identify "
-                                       "global feats.")
+            await response_method.send("Invalid or missing location. Queries to tips must start with an `s` to "
+                                       "identify a sector or `g` to identify global feats.")
             return False
 
         return True
