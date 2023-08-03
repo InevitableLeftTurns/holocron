@@ -16,9 +16,9 @@ class BaseCommands(commands.Cog):
 
     @commands.Cog.listener()
     async def on_guild_join(self, guild: discord.Guild):
-        bot_perm_role = get(guild.roles, name="Conquest Admin")
+        bot_perm_role = get(guild.roles, name="Holocron Admin")
         if bot_perm_role is None:
-            bot_perm_role = await guild.create_role(name="Conquest Admin")
+            bot_perm_role = await guild.create_role(name="Holocron Admin")
         bot = guild.get_member(self.bot.user.id)
         await bot.add_roles(bot_perm_role)
 
