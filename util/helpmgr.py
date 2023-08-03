@@ -49,12 +49,12 @@ class ConquestHelp(HelpContent):
 
             "all": ["intro", "read", "modify_header", "add", "edit", "delete", "clear"],
 
-            "intro": f"A command to manage tips for the currently active conquest. Start with "
+            "intro": f"Manages tips for the currently active conquest.\nStart with "
                      f"`{self.prefix}conquest`, then follow with options from below.\n",
 
             "read": f"*Accessing Tips*- Simply place a `location` following `{self.prefix}conquest`. "
                     f"ex: `{self.prefix}conquest s1f2`.\n"
-                    f"For `location` codes, use `{self.prefix}help conquest location`.\n",
+                    f"\tFor `location` codes, use `{self.prefix}help conquest location`.\n",
 
             "modify_header": f"*Tip Modification*- For the below modifications, place the corresponding tag "
                              f"after your location.\nex: `{self.prefix}conquest <location> <command>`",
@@ -96,9 +96,12 @@ def generate_bot_help(command, ctx, subcommand=None, *command_args):
         com_name = command.name
         response.append(f"**{ctx.prefix}{com_name}** (aliases: {aliases})")
         if com_name == "help":
-            response.append(f"A command that gives you a list of commands, or help on specific ones.\n"
+            response.append(f"Provides a list of commands or help on specific ones.\n"
                             f"To get a list of commands, use `{ctx.prefix}help`, or for help on a certain "
-                            f"command, use `{ctx.prefix}help [command]`.")
+                            f"command, use `{ctx.prefix}help [command]` or `{ctx.prefix}help [command] [subcommand]`.\n"
+                            f"Help can also be displayed using `{ctx.prefix}[command] help [subcommand].`\n"
+                            f"examples: `!help conquest` | `!help conquest add` | `!conquest help`"
+                            f" | `!conquest help edit`")
 
         elif com_name == "settings":
             response.append(f"A list of settings applied to the server and their current values. To edit server "

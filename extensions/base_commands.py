@@ -36,7 +36,7 @@ class BaseCommands(commands.Cog):
         else:
             await ctx.send(f"[TEMP] Error on command `{ctx.prefix}{ctx.command.name}`: {exception}")
 
-    @commands.command(name="help", aliases=["h"], description="Gives info on certain commands, or a list of commands")
+    @commands.command(name="help", aliases=["h"], description="Provides help on Holocron and admin commands.")
     async def _help(self, ctx: commands.Context, *requested):
         response_method = get_response_type(ctx.guild, ctx.author, ctx.channel)
 
@@ -51,11 +51,22 @@ class BaseCommands(commands.Cog):
         response = helpmgr.generate_bot_help(bot_command, ctx, *commands_args)
 
         if len(response) == 0:
-            response = [f"**List of Commands**. For detailed help, use `{ctx.prefix}help [command]`"]
-            for com in self.bot.commands:
+            response = [f"**List of Holocrons and Commands**.\nFor detailed help, "
+                        f"use `{ctx.prefix}help [holocron|command]`\n"]
+            sorted_commands = sorted(self.bot.commands,
+                                     key=lambda comm: comm.name if comm.extras.get('is_holocron', False) is True
+                                     else 'zz' + comm.name)
+            response.append('**Holocrons**')
+
+            found_command = False
+            for com in sorted_commands:
+                if not found_command and not com.extras.get('is_holocron'):
+                    found_command = True
+                    response.append('**Commands**')
+
                 aliases = "none" if len(com.aliases) == 0 else ", ".join(com.aliases)
-                response.append(f"**{ctx.prefix}{com.name}** (aliases: {aliases})\n"
-                                f"{com.description}\n")
+                response.append(f"\t**{ctx.prefix}{com.name}** (aliases: {aliases})\n"
+                                f"\t{com.description}\n")
 
         await response_method.send("\n".join(response))
 

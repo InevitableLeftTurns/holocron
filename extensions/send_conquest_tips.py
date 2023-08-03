@@ -30,8 +30,8 @@ class SendConquestTips(commands.Cog):
         from util.tip_storage_manager import save_storage_to_file
         save_storage_to_file(self.tip_storage)
 
-    @commands.command(name="conquest", aliases=["c", "con", "conq"], description="Command for managing and branching to"
-                                                                                 " all conquest commands")
+    @commands.command(name="conquest", aliases=["c", "con", "conq"], extras={'is_holocron': True},
+                      description="Access the Conquest Holocron for reading and managing Conquest Tips")
     async def conquest_manager(self, ctx: commands.Context, *args):
         response_method = get_response_type(ctx.guild, ctx.author, ctx.channel)
         if len(args) == 0:

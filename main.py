@@ -1,6 +1,7 @@
+import os
+
 import discord
 from discord.ext import commands
-from util.global_constants import bot_token
 from util.settings.prefix_handler import bot_prefix
 from util.settings.settings_initializer import check_default_settings
 
@@ -28,4 +29,5 @@ async def setup_hook():
 check_default_settings()
 
 # run bot
+bot_token = os.environ['BOT_TOKEN']
 bot.run(bot_token)
