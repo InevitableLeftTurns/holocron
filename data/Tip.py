@@ -81,3 +81,12 @@ class Tip:
 
     def __repr__(self):
         return f"({self.rating}) {self.author}"
+
+    def to_json(self):
+        return {"author": self.author,
+                "rating": self.rating,
+                "content": self.content,
+                "edited": self.edited,
+                "userid": self.user_id,
+                "creation_time": self.creation_time
+                }

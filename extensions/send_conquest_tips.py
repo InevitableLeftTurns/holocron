@@ -1,5 +1,9 @@
+import json
+from copy import deepcopy
+
 import discord
 
+import util.jsonutils
 from data.AwaitingReaction import AwaitingReaction
 from data.Tip import Tip
 from discord.ext import commands
@@ -74,6 +78,26 @@ class SendConquestTips(commands.Cog):
                 await self.conquest_tips(ctx.guild, ctx.channel, ctx.author, user_command, to_edit)
                 return
 
+    def config_to_storage(self, config: dict, populate=False):
+        storage = {}
+        for section, section_config in config.items():
+            sub_sections = section_config.get('subs', {})
+            sub_section_storage = self.config_to_storage(sub_sections)
+
+            section_storage = {}
+            section_count = section_config.get('count', 0)
+            if section_count:
+                # duplicate subsection in a dict of index -> subsection data for count times
+                for idx in range(0, section_count):
+                    section_storage[idx+1] = deepcopy(sub_section_storage or [])
+            else:
+                if section_config.get('tips'):
+                    section_storage['tips'] = []
+                section_storage.update(sub_section_storage)
+
+            storage[section] = section_storage
+        return storage
+
     async def clean_storage(self, guild, channel, author, response_method):
         def check_message(message):
             return message.channel.id == channel.id and message.author.id == author.id
@@ -82,25 +106,32 @@ class SendConquestTips(commands.Cog):
             await response_method.send("You do not have access to this command.")
             return
 
-        await response_method.send("Are you sure you want to clear all tips from storage? Type `confirm` to confirm, or"
-                                   "`cancel` to cancel.")
-        confirm_message = await self.bot.wait_for("message", check=check_message)
-        if confirm_message.content != "confirm":
+        # await response_method.send("Are you sure you want to clear all tips from storage? Type `confirm` to confirm, or"
+        #                            "`cancel` to cancel.")
+        # confirm_message = await self.bot.wait_for("message", check=check_message)
+        # if confirm_message.content != "confirm":
+        if False:
             feedback = "Storage clearing canceled. All tips will remain."
         else:
-            self.tip_storage["sectors"] = {}
-            for i in range(5):
-                self.tip_storage["sectors"][i+1] = {}
-                self.tip_storage["sectors"][i+1]["boss"] = {"feats": {1: [], 2: []}, "tips": []}
-                self.tip_storage["sectors"][i+1]["mini"] = {"feats": {1: [], 2: []}, "tips": []}
-                self.tip_storage["sectors"][i+1]["nodes"] = {}
-                self.tip_storage["sectors"][i+1]["feats"] = {}
-                for j in range(4):
-                    self.tip_storage["sectors"][i+1]["feats"][j+1] = []
+            self.tip_storage = {}
+            with open("data/conquest/base.json") as config_file:
+                config = json.load(config_file)
 
-            self.tip_storage["globals"] = {}
-            for i in range(8):
-                self.tip_storage["globals"][i+1] = []
+            self.tip_storage = self.config_to_storage(config)
+
+            # self.tip_storage["sectors"] = {}
+            # for i in range(5):
+            #     self.tip_storage["sectors"][i+1] = {}
+            #     self.tip_storage["sectors"][i+1]["boss"] = {"feats": {1: [], 2: []}, "tips": []}
+            #     self.tip_storage["sectors"][i+1]["mini"] = {"feats": {1: [], 2: []}, "tips": []}
+            #     self.tip_storage["sectors"][i+1]["nodes"] = {}
+            #     self.tip_storage["sectors"][i+1]["feats"] = {}
+            #     for j in range(4):
+            #         self.tip_storage["sectors"][i+1]["feats"][j+1] = []
+            #
+            # self.tip_storage["globals"] = {}
+            # for i in range(8):
+            #     self.tip_storage["globals"][i+1] = []
 
             self.save_storage()
             feedback = "Tip storage has been cleared."
@@ -148,6 +179,8 @@ class SendConquestTips(commands.Cog):
         self.tip_storage["globals"][1].append(Tip("uaq", "tip 5 to del in g1", user_id=490970360272125952))
 
         self.save_storage()
+        import json
+        print(json.dumps(self.tip_storage, cls=util.jsonutils.JsonContextEncoder))
         await response_method.send("Data added.")
 
     async def valid_location(self, location, response_method):
