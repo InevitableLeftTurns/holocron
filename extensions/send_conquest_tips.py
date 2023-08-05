@@ -9,7 +9,6 @@ from data.Tip import Tip
 from discord.ext import commands
 from functools import partial
 
-from extensions import base_commands
 from util import helpmgr
 from util.command_checks import check_higher_perms
 from util.settings.response_handler import get_response_type
@@ -20,8 +19,10 @@ from util.tip_storage_manager import load_tip_storage
 class SendConquestTips(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
+        self.name = 'conquest'
         self.tip_storage = load_tip_storage()
         self.awaiting_reactions = {}
+        self.labels = self.load_labels()
 
     tip_types = {
         "b": "boss",
@@ -29,6 +30,10 @@ class SendConquestTips(commands.Cog):
         "n": "nodes",
         "f": "feats"
     }
+
+    def load_labels(self):
+        with open(f'data/{self.name}/labels.json') as labels_file:
+            return json.load(labels_file)
 
     def save_storage(self):
         from util.tip_storage_manager import save_storage_to_file
@@ -106,15 +111,15 @@ class SendConquestTips(commands.Cog):
             await response_method.send("You do not have access to this command.")
             return
 
-        # await response_method.send("Are you sure you want to clear all tips from storage? Type `confirm` to confirm, or"
-        #                            "`cancel` to cancel.")
-        # confirm_message = await self.bot.wait_for("message", check=check_message)
-        # if confirm_message.content != "confirm":
-        if False:
+        await response_method.send("Are you sure you want to clear all tips from storage? Type `confirm` to confirm, or"
+                                   "`cancel` to cancel.")
+        confirm_message = await self.bot.wait_for("message", check=check_message)
+        if confirm_message.content != "confirm":
+        # if False:
             feedback = "Storage clearing canceled. All tips will remain."
         else:
             self.tip_storage = {}
-            with open("data/conquest/base.json") as config_file:
+            with open(f"data/{self.name}/base.json") as config_file:
                 config = json.load(config_file)
 
             self.tip_storage = self.config_to_storage(config)
