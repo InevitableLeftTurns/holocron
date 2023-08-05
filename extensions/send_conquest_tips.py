@@ -240,26 +240,10 @@ class SendConquestTips(commands.Cog, Holocron):
         except KeyError:
             pass
 
-        if tip_location[0] == 'g':
-            global_feat_num = int(tip_location[1])
-
-            tip_list = self.tip_storage["globals"][global_feat_num]
-            sort_tips(tip_list)
-            top_three = tip_list[:3]
-            total = len(tip_list)
-
-        else:  # tip_location[0] == 's'
-            sector_num = int(tip_location[1])  # in theory one of: [1, 2, 3, 4, 5]
-
-            type_functions = {
-                "b": self.boss_tips,
-                "m": self.mini_tips,
-                "n": self.node_tips,
-                "f": self.feat_tips
-            }
-
-            tip_type = tip_location[2]  # one of [b, m, n, f]
-            top_three, total = await type_functions[tip_type](sector_num, tip_location[3:])
+        location_tips = self.get_tips(tip_location)
+        total = len(location_tips)
+        sort_tips(location_tips)
+        top_three = location_tips[:3]
 
         if len(top_three) > 0:
             response = [f"__**Recent {len(top_three)} tip{'' if len(top_three) == 1 else 's'} "
@@ -269,43 +253,6 @@ class SendConquestTips(commands.Cog, Holocron):
             await response_method.send('\n'.join(response))
         else:
             await response_method.send(f"There are no tips in {tip_location}.")
-
-    async def boss_tips(self, sector_num, extra_pos, boss_type="boss"):
-        if extra_pos == "":
-            tips_list = self.tip_storage["sectors"][sector_num][boss_type]["tips"]
-            sort_tips(tips_list)
-            top_three = tips_list[:3]
-
-        else:
-            feat_num = int(extra_pos[0])
-
-            tips_list = self.tip_storage["sectors"][sector_num][boss_type]["feats"][feat_num]
-            sort_tips(tips_list)
-            top_three = tips_list[:3]
-
-        return top_three, len(tips_list)
-
-    async def mini_tips(self, sector_num, extra_pos):
-        return await self.boss_tips(sector_num, extra_pos, "mini")
-
-    async def node_tips(self, sector_num, node_num):
-        node_num = int(node_num)
-
-        tips_list = self.tip_storage["sectors"][sector_num]["nodes"][node_num]
-        sort_tips(tips_list)
-        top_three = tips_list[:3]
-
-        return top_three, len(tips_list)
-
-    async def feat_tips(self, sector_num, feat_num):
-        feat_num = int(feat_num[0])
-
-        tips_list = self.tip_storage["sectors"][sector_num]["feats"][feat_num]
-        sort_tips(tips_list)
-        top_three = tips_list[:3]
-
-        return top_three, len(tips_list)
-
 
 async def setup(bot):
     await bot.add_cog(SendConquestTips(bot))
