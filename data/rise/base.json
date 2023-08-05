@@ -1,0 +1,42 @@
+{
+  "darkside": {
+    "count": 6,
+    "subs": {
+      "cm": {
+        "count": 4
+      },
+      "fleet": {},
+      "sm": {}
+    }
+  },
+  "mixed": {
+    "count": 6,
+    "subs": {
+      "cm": {
+        "count": 4
+      },
+      "fleet": {},
+      "sm": {}
+    }
+  },
+  "lightside": {
+    "count": 6,
+    "subs": {
+      "cm": {
+        "count": 4
+      },
+      "fleet": {},
+      "sm": {}
+    }
+  },
+  "lightsidebonus": {
+    "count": 6,
+    "subs": {
+      "cm": {
+        "count": 4
+      },
+      "fleet": {},
+      "sm": {}
+    }
+  }
+}
