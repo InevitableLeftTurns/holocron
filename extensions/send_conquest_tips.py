@@ -1,27 +1,15 @@
-import json
-from copy import deepcopy
-
-import discord
-
-import util.jsonutils
-from data.AwaitingReaction import AwaitingReaction
 from data.Tip import Tip
 from discord.ext import commands
 from functools import partial
-
-from extensions import base_commands
 from util import helpmgr
-from util.command_checks import check_higher_perms
+from util.Holocron import Holocron
 from util.settings.response_handler import get_response_type
 from util.settings.tip_sorting_handler import sort_tips
-from util.tip_storage_manager import load_tip_storage
 
 
-class SendConquestTips(commands.Cog):
+class SendConquestTips(commands.Cog, Holocron):
     def __init__(self, bot: commands.Bot):
-        self.bot = bot
-        self.tip_storage = load_tip_storage()
-        self.awaiting_reactions = {}
+        super().__init__(bot, "conquest")
 
     tip_types = {
         "b": "boss",
@@ -30,120 +18,8 @@ class SendConquestTips(commands.Cog):
         "f": "feats"
     }
 
-    def save_storage(self):
-        from util.tip_storage_manager import save_storage_to_file
-        save_storage_to_file(self.tip_storage)
-
-    @commands.command(name="conquest", aliases=["c", "con", "conq"], extras={'is_holocron': True},
-                      description="Access the Conquest Holocron for reading and managing Conquest Tips")
-    async def conquest_manager(self, ctx: commands.Context, *args):
-        response_method = get_response_type(ctx.guild, ctx.author, ctx.channel)
-        if len(args) == 0:
-            await response_method.send(f"Conquest commands require extra information. For a list of commands and "
-                                       f"options, use `{ctx.prefix}conquest help`.")
-            return
-
-        user_command = args[0]
-
-        clear_names = [
-            "clean",
-            "reset",
-            "clear"
-        ]
-        dummy_names = [
-            "dummy",
-            "populate",
-            "test"
-        ]
-        if user_command in clear_names:
-            await self.clean_storage(ctx.guild, ctx.channel, ctx.author, response_method)
-            return
-
-        elif user_command in dummy_names:
-            await self.dummy_populate(ctx.guild, ctx.author, response_method)
-            return
-
-        elif user_command == 'help':
-            commands_args = args[1:]
-            response = helpmgr.generate_bot_help(self.bot.get_command('conquest'), ctx, *commands_args)
-            await response_method.send('\n'.join(response))
-            return
-
-        else:
-            if await self.valid_location(user_command, response_method):
-                try:
-                    to_edit = args[1]
-                except IndexError:
-                    to_edit = ""
-                await self.conquest_tips(ctx.guild, ctx.channel, ctx.author, user_command, to_edit)
-                return
-
-    def config_to_storage(self, config: dict, populate=False):
-        storage = {}
-        for section, section_config in config.items():
-            sub_sections = section_config.get('subs', {})
-            sub_section_storage = self.config_to_storage(sub_sections)
-
-            section_storage = {}
-            section_count = section_config.get('count', 0)
-            if section_count:
-                # duplicate subsection in a dict of index -> subsection data for count times
-                for idx in range(0, section_count):
-                    section_storage[idx+1] = deepcopy(sub_section_storage or [])
-            else:
-                if section_config.get('tips'):
-                    section_storage['tips'] = []
-                section_storage.update(sub_section_storage)
-
-            storage[section] = section_storage
-        return storage
-
-    async def clean_storage(self, guild, channel, author, response_method):
-        def check_message(message):
-            return message.channel.id == channel.id and message.author.id == author.id
-
-        if not await check_higher_perms(author, guild):
-            await response_method.send("You do not have access to this command.")
-            return
-
-        # await response_method.send("Are you sure you want to clear all tips from storage? Type `confirm` to confirm, or"
-        #                            "`cancel` to cancel.")
-        # confirm_message = await self.bot.wait_for("message", check=check_message)
-        # if confirm_message.content != "confirm":
-        if False:
-            feedback = "Storage clearing canceled. All tips will remain."
-        else:
-            self.tip_storage = {}
-            with open("data/conquest/base.json") as config_file:
-                config = json.load(config_file)
-
-            self.tip_storage = self.config_to_storage(config)
-
-            # self.tip_storage["sectors"] = {}
-            # for i in range(5):
-            #     self.tip_storage["sectors"][i+1] = {}
-            #     self.tip_storage["sectors"][i+1]["boss"] = {"feats": {1: [], 2: []}, "tips": []}
-            #     self.tip_storage["sectors"][i+1]["mini"] = {"feats": {1: [], 2: []}, "tips": []}
-            #     self.tip_storage["sectors"][i+1]["nodes"] = {}
-            #     self.tip_storage["sectors"][i+1]["feats"] = {}
-            #     for j in range(4):
-            #         self.tip_storage["sectors"][i+1]["feats"][j+1] = []
-            #
-            # self.tip_storage["globals"] = {}
-            # for i in range(8):
-            #     self.tip_storage["globals"][i+1] = []
-
-            self.save_storage()
-            feedback = "Tip storage has been cleared."
-
-        self.save_storage()
-        await response_method.send(feedback)
-
-    async def dummy_populate(self, guild, author, response_method):
-        if not await check_higher_perms(author, guild):
-            await response_method.send("You do not have permission to use this command")
-            return
-
+    # Super Implementations
+    def dummy_populate(self):
         self.tip_storage["globals"][1].append(Tip("trich", "this is a tip for g1"))
         self.tip_storage["globals"][1].append(Tip("trich", "this is another tip for g1"))
 
@@ -167,21 +43,20 @@ class SendConquestTips(commands.Cog):
             Tip("uaq", "tip for s1b1c", 2),
             Tip("uaq", "tip for s1b1d", 4),
         ]
-        self.tip_storage["sectors"][1]["boss"]["tips"].append(Tip("uaq", "tip for s1b"))
+        self.tip_storage["sectors"][1]["boss"]["tips"] = [Tip("uaq", "tip for s1b")]
 
-        self.tip_storage["sectors"][1]["mini"]["feats"][1].append(Tip("uaq", "tip for s1m1"))
-        self.tip_storage["sectors"][1]["mini"]["tips"].append(Tip("uaq", "tip for s1m"))
+        self.tip_storage["sectors"][1]["mini"]["feats"][1] = [Tip("uaq", "tip for s1m1")]
+        self.tip_storage["sectors"][1]["mini"]["tips"] = [Tip("uaq", "tip for s1m")]
 
-        self.tip_storage["globals"][1].append(Tip("uaq", "tip 1 to del in g1", user_id=490970360272125952))
-        self.tip_storage["globals"][1].append(Tip("uaq", "tip 2 to del in g1", user_id=490970360272125952))
-        self.tip_storage["globals"][1].append(Tip("uaq", "tip 3 to del in g1", user_id=490970360272125952))
-        self.tip_storage["globals"][1].append(Tip("uaq", "tip 4 to del in g1", user_id=490970360272125952))
-        self.tip_storage["globals"][1].append(Tip("uaq", "tip 5 to del in g1", user_id=490970360272125952))
+        self.tip_storage["globals"][1] = [
+            Tip("uaq", "tip 1 to del in g1", user_id=490970360272125952),
+            Tip("uaq", "tip 2 to del in g1", user_id=490970360272125952),
+            Tip("uaq", "tip 3 to del in g1", user_id=490970360272125952),
+            Tip("uaq", "tip 4 to del in g1", user_id=490970360272125952),
+            Tip("uaq", "tip 5 to del in g1", user_id=490970360272125952)
+        ]
 
         self.save_storage()
-        import json
-        print(json.dumps(self.tip_storage, cls=util.jsonutils.JsonContextEncoder))
-        await response_method.send("Data added.")
 
     async def valid_location(self, location, response_method):
         if location[0] == "g":
@@ -283,6 +158,70 @@ class SendConquestTips(commands.Cog):
 
         return True
 
+    def get_tips(self, location):
+        if location[0] == "g":
+            tip_list = self.tip_storage["globals"][int(location[1])]
+
+        else:  # location[0] == "s"
+            tip_type = self.tip_types[location[2]]
+            sector = self.tip_storage["sectors"][int(location[1])][tip_type]
+            if tip_type == "boss" or tip_type == "mini":
+                feat_num = location[3:]
+                if feat_num == "":  # standard tips
+                    tip_list = sector["tips"]
+                else:  # feat tips
+                    tip_list = sector["feats"][int(feat_num)]
+
+            else:  # tip_type == "feats" or "nodes"
+                tip_list = sector[int(location[3:])]
+
+        return tip_list
+
+    # Command Managing
+    @commands.command(name="conquest", aliases=["c", "con", "conq"], extras={'is_holocron': True},
+                      description="Access the Conquest Holocron for reading and managing Conquest Tips")
+    async def conquest_manager(self, ctx: commands.Context, *args):
+        response_method = get_response_type(ctx.guild, ctx.author, ctx.channel)
+        if len(args) == 0:
+            await response_method.send(f"Conquest commands require extra information. For a list of commands and "
+                                       f"options, use `{ctx.prefix}conquest help`.")
+            return
+
+        user_command = args[0]
+
+        clear_names = [
+            "clean",
+            "reset",
+            "clear"
+        ]
+        dummy_names = [
+            "dummy",
+            "populate",
+            "test"
+        ]
+        if user_command in clear_names:
+            await self.request_clean_storage(ctx.guild, ctx.channel, ctx.author, response_method)
+            return
+
+        elif user_command in dummy_names:
+            await self.request_dummy_populate(ctx.guild, ctx.author, response_method)
+            return
+
+        elif user_command == 'help':
+            commands_args = args[1:]
+            response = helpmgr.generate_bot_help(self.bot.get_command('conquest'), ctx, *commands_args)
+            await response_method.send('\n'.join(response))
+            return
+
+        else:
+            if await self.valid_location(user_command, response_method):
+                try:
+                    to_edit = args[1]
+                except IndexError:
+                    to_edit = ""
+                await self.conquest_tips(ctx.guild, ctx.channel, ctx.author, user_command, to_edit)
+                return
+
     async def conquest_tips(self, guild, channel, author, tip_location: str, to_edit="no"):
         response_method = get_response_type(guild, author, channel)
         tip_location = tip_location.lower()
@@ -366,240 +305,6 @@ class SendConquestTips(commands.Cog):
         top_three = tips_list[:3]
 
         return top_three, len(tips_list)
-
-    async def add_tip(self, channel, author, location, response_method):
-        def check_message(message):
-            return message.channel.id == channel_id and message.author.id == user_id
-
-        await response_method.send(f"Your next message in this channel will be added as a tip in {location}. If you "
-                                   f"wish to cancel, respond with `cancel`.")
-        channel_id = channel.id
-        user_id = author.id
-        tip_message = await self.bot.wait_for("message", check=check_message)
-
-        if tip_message.content.lower() == "cancel":
-            await response_method.send("Tip addition has been cancelled.")
-            return
-
-        self.write_tip(location, tip_message)
-
-        await response_method.send(f"Your tip has been added to {location}")
-
-    def write_tip(self, location, tip_message: discord.Message):
-        if location[0] == "g":
-            global_num = int(location[1])
-            self.tip_storage["globals"][global_num].append(Tip(tip_message))
-
-        else:  # location[0] == "s"
-            sector = self.tip_storage["sectors"][int(location[1])][self.tip_types[location[2]]]
-            if location[2] == "b" or location[2] == "m":
-                if location[3:] == "":  # no number, normal tip
-                    sector["tips"].append(Tip(tip_message))
-                else:  # number, feat tip
-                    sector["feats"][int(location[3])].append(Tip(tip_message))
-            elif location[2] == "n":
-                sector[int(location[3:])].append(Tip(tip_message))
-            else:  # location[2] == "f"
-                sector[int(location[3])].append(Tip(tip_message))
-
-        self.save_storage()
-
-    async def edit_tip(self, mod_type, guild, author, location, response_method):
-        tips_list = self.get_tips(location)
-
-        if await check_higher_perms(author, guild):
-            user_tips = tips_list
-        else:
-            user_tips = list(filter(lambda each_tip: each_tip.user_id == author.id, tips_list))
-
-        if len(user_tips) > 0:
-            sort_tips(user_tips)
-            page_count = ((len(user_tips) - 1) // 5) + 1
-            user_tips = user_tips[:5]
-
-            tip_messages = [f"Which tip would you like to {mod_type}?"]
-            for index, tip in enumerate(user_tips):
-                tip_messages.append(f"{index+1} - {tip.create_selection_message()}")
-
-            emoji_list = []
-            for index in range(len(user_tips)):
-                emoji = str(index+1) + "\u20E3"
-                emoji_list.append(emoji)
-
-            if page_count > 1:
-                tip_messages.append(f"Page 1/{page_count}")
-                emoji_list.append("➡️")
-
-            sent_tip_message = await response_method.send("\n".join(tip_messages))
-
-            self.awaiting_reactions[sent_tip_message.id] = AwaitingReaction(author.id, emoji_list,
-                                                                            user_tips, mod_type, location)
-
-            for emoji in emoji_list:
-                await sent_tip_message.add_reaction(emoji)
-
-        else:
-            await response_method.send(f"There are no tips that you can {mod_type} in {location}.")
-
-    def get_tips(self, location):
-        if location[0] == "g":
-            tip_list = self.tip_storage["globals"][int(location[1])].copy()
-
-        else:  # location[0] == "s"
-            tip_type = self.tip_types[location[2]]
-            sector = self.tip_storage["sectors"][int(location[1])][tip_type]
-            if tip_type == "boss" or tip_type == "mini":
-                feat_num = location[3:]
-                if feat_num == "":  # standard tips
-                    tip_list = sector["tips"]
-                else:  # feat tips
-                    tip_list = sector["feats"][int(feat_num)]
-
-            else:  # tip_type == "feats" or "nodes"
-                tip_list = sector[int(location[3:])]
-
-        return tip_list
-
-    @commands.Cog.listener()
-    async def on_reaction_add(self, reaction: discord.Reaction, user: discord.Member):
-        if user.id == self.bot.user.id:
-            return
-        try:
-            awaiting_reaction = self.awaiting_reactions[reaction.message.id]
-            if awaiting_reaction.user_id == user.id and reaction.emoji in awaiting_reaction.allowed_emoji:
-                await self.handle_reaction_add(reaction, user)
-            return
-        except KeyError:
-            pass
-
-    async def handle_reaction_add(self, reaction, user):
-        response_method = get_response_type(reaction.message.guild, user, reaction.message.channel)
-
-        awaiting_reaction = self.awaiting_reactions[reaction.message.id]
-
-        tips = awaiting_reaction.tips
-        mod_type = awaiting_reaction.mod_type
-
-        try:
-            emoji_num = int(reaction.emoji[0])
-        except ValueError:
-            await self.edit_page_change(reaction, awaiting_reaction)
-            return
-
-        del self.awaiting_reactions[reaction.message.id]
-
-        chosen_tip = tips[emoji_num - 1]
-        channel = reaction.message.channel
-        if mod_type == "edit":
-            await self.handle_tip_edit(response_method, chosen_tip, channel, user)
-        else:  # mod_type == delete:
-            await self.handle_tip_delete(response_method, chosen_tip, channel, user, awaiting_reaction.location)
-
-    async def edit_page_change(self, reaction, awaiting_reaction):
-        page_num = awaiting_reaction.page_num
-
-        if reaction.emoji == "➡️":
-            page_num += 1
-        else:  # reaction.emoji == "⬅️"
-            page_num -= 1
-
-        awaiting_reaction.page_num = page_num
-        message = reaction.message
-        await message.clear_reactions()
-
-        all_tips = self.get_tips(awaiting_reaction.location)
-        index_low = (page_num-1) * 5
-        index_high = page_num * 5
-
-        if await check_higher_perms(reaction.message.author, reaction.message.guild):
-            user_tips = all_tips
-        else:
-            user_tips = list(filter(lambda each_tip: each_tip.user_id == reaction.message.author.id, all_tips))
-        sort_tips(user_tips)
-
-        page_count = ((len(user_tips) - 1) // 5) + 1
-        tip_list = all_tips[index_low:index_high]
-        tip_messages = [f"Which tip would you like to {awaiting_reaction.mod_type}?"]
-        for index, tip in enumerate(tip_list):
-            tip_messages.append(f"{index + 1}: {tip.create_selection_message()}")
-
-        emoji_list = []
-        for index in range(len(tip_list)):
-            emoji = str(index + 1) + "\u20E3"
-            emoji_list.append(emoji)
-
-        if page_count > page_num:
-            emoji_list.append("➡️")
-        if page_num > 1:
-            emoji_list.insert(0, "⬅️")
-        tip_messages.append(f"Page {page_num}/{page_count}")
-        awaiting_reaction.allowed_emoji = emoji_list
-        awaiting_reaction.tips = tip_list
-
-        await reaction.message.edit(content="\n".join(tip_messages))
-        for emoji in emoji_list:
-            await reaction.message.add_reaction(emoji)
-
-    async def handle_tip_edit(self, response_method, tip, channel, user):
-        def check_message(message):
-            return message.channel.id == channel_id and message.author.id == user_id
-
-        channel_id = channel.id
-        user_id = user.id
-        await user.send(tip.create_tip_message())
-        await response_method.send("A message containing the tip has been sent to you. The content of that tip will "
-                                   "update to the content of your next message in this channel. If you wish to cancel "
-                                   "the edit, type `cancel`.")
-        tip_message = await self.bot.wait_for("message", check=check_message)
-
-        if tip_message.content == "cancel":
-            feedback = "Edit cancelled. Tip will remain as it was."
-        else:
-            tip.content = tip_message.content
-            tip.edited = True
-
-            feedback = "Edit success. The tip will now display your last message as its content."
-
-        await response_method.send(feedback)
-
-        self.save_storage()
-
-    async def handle_tip_delete(self, response_method, tip, channel, user, location):
-        def check_message(message):
-            return message.channel.id == channel_id and message.author.id == user_id
-
-        channel_id = channel.id
-        user_id = user.id
-        await response_method.send(f"Are you sure you want to delete the tip:\n`{tip.create_delete_message()}`?\n\n"
-                                   f"Please type `confirm` to confirm and permanently delete this tip, or `cancel` to "
-                                   f"cancel.")
-        confirm_message = await self.bot.wait_for("message", check=check_message)
-        if confirm_message.content == "confirm":
-            if location[0] == "g":
-                self.tip_storage["globals"][int(location[1])].remove(tip)
-            else:  # location[0] == "s"
-                self.delete_sector_tip(location, tip)
-            feedback = "Tip deleted."
-        else:
-            feedback = "Deletion canceled. Tip not deleted."
-
-        await response_method.send(feedback)
-
-        self.save_storage()
-
-    def delete_sector_tip(self, location, tip):
-        sector_num = int(location[1])
-        tip_type = self.tip_types[location[2]]
-        numbered_sector = self.tip_storage["sectors"][sector_num][tip_type]
-        if tip_type == "boss" or tip_type == "mini":
-            try:
-                boss_feat_num = int(location[3])
-                numbered_sector["feats"][boss_feat_num].remove(tip)
-            except IndexError:  # called if no loc[3]; signifies boss tip
-                numbered_sector["tips"].remove(tip)
-
-        else:  # tip_type == "feats" or "nodes"
-            numbered_sector[int(location[3:])].remove(tip)
 
 
 async def setup(bot):
