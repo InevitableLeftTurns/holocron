@@ -14,7 +14,7 @@ def string_to_datetime(instr):
     return datetime.datetime.strptime(instr, "%Y-%m-%dT%H:%M:%S" )
 
 
-def datetime_to_string(indate):
+def datetime_to_string(indate, dtformat=None):
     return indate.isoformat()
 
 
