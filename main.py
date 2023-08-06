@@ -12,17 +12,20 @@ bot_intents.message_content = True
 bot_intents.reactions = True
 
 # bot init
+# noinspection PyTypeChecker
 bot = commands.Bot(command_prefix=bot_prefix, intents=bot_intents)
 bot.remove_command("help")
 
 # add extensions
-extensions = ("extensions.base_commands", "extensions.send_conquest_tips", "extensions.settings_commands")
-
-
 @bot.event
 async def setup_hook():
-    for extension in extensions:
-        await bot.load_extension(extension)
+    for dir_object in os.scandir("extensions"):
+        if dir_object.is_file():
+            await bot.load_extension(f"extensions.{dir_object.name[:-3]}")
+
+    for dir_object in os.scandir("extensions/holocrons"):
+        if dir_object.is_file():
+            await bot.load_extension(f"extensions.holocrons.{dir_object.name[:-3]}")
 
 
 # settings init

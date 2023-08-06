@@ -6,6 +6,8 @@ from copy import deepcopy
 from data.AwaitingReaction import AwaitingReaction
 from data.Tip import Tip
 from discord.ext import commands
+from functools import partial
+from util import helpmgr
 from util.command_checks import check_higher_perms
 from util.settings.response_handler import get_response_type
 from util.settings.tip_sorting_handler import sort_tips
@@ -101,8 +103,82 @@ class Holocron:
             await response_method.send("You do not have access to this command.")
             return
 
-        self.dummy_populate()
+        try:
+            self.dummy_populate()
+        except NotImplementedError:
+            await response_method.send("Dummy popuation not yet implemented.")
+            return
+
         await response_method.send("Data added.")
+
+    async def holocron_command_manager(self, ctx: commands.Context, *args):
+        response_method = get_response_type(ctx.guild, ctx.author, ctx.channel)
+        if len(args) == 0:
+            await response_method.send(f"Conquest commands require extra information. For a list of commands and "
+                                       f"options, use `{ctx.prefix}conquest help`.")
+            return
+
+        user_command = args[0]
+
+        clear_names = [
+            "clean",
+            "reset",
+            "clear"
+        ]
+        dummy_names = [
+            "dummy",
+            "populate",
+            "test"
+        ]
+        if user_command in clear_names:
+            await self.request_clean_storage(ctx.guild, ctx.channel, ctx.author, response_method)
+            return
+
+        elif user_command in dummy_names:
+            await self.request_dummy_populate(ctx.guild, ctx.author, response_method)
+            return
+
+        elif user_command == 'help':
+            commands_args = args[1:]
+            response = helpmgr.generate_bot_help(self.bot.get_command(self.name), ctx, *commands_args)
+            await response_method.send('\n'.join(response))
+            return
+
+        else:
+            location = user_command.lower()
+            if await self.valid_location(location, response_method):
+                try:
+                    to_edit = args[1]
+                except IndexError:
+                    to_edit = ""
+                await self.holocron_tips(ctx.guild, ctx.channel, ctx.author, response_method, location, to_edit)
+                return
+
+    async def holocron_tips(self, guild, channel, author, response_method, tip_location: str, to_edit):
+        modifying = {
+            "add": partial(self.add_tip, channel),
+            "edit": partial(self.edit_tip, to_edit, guild),
+            "delete": partial(self.edit_tip, to_edit, guild)
+        }
+        try:
+            await modifying[to_edit](author, tip_location, response_method)
+            return
+        except KeyError:
+            pass
+
+        location_tips = self.get_tips(tip_location)
+        total = len(location_tips)
+        sort_tips(location_tips)
+        top_three = location_tips[:3]
+
+        if len(top_three) > 0:
+            response = [f"__**Recent {len(top_three)} tip{'' if len(top_three) == 1 else 's'} "
+                        f"(of {total}) for {tip_location}**__"]
+            for index, tip in enumerate(top_three):
+                response.append(f"{index + 1} - " + tip.create_tip_message())
+            await response_method.send('\n'.join(response))
+        else:
+            await response_method.send(f"There are no tips in {tip_location}.")
 
     async def add_tip(self, channel, author, location, response_method):
         def check_message(message):

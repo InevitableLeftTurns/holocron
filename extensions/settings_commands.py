@@ -13,11 +13,12 @@ class SettingsCommands(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
         self.settings = None
-        self.load_settings()
         self.waiting_for_reactions = {}
+        self.settings_path = "data/settings/settings.json"
+        self.load_settings()
 
     def load_settings(self):
-        with open("data/settings.json") as settings_file:
+        with open(self.settings_path) as settings_file:
             settings = json.load(settings_file)["guild_id"]
         self.settings = settings
 
@@ -27,7 +28,7 @@ class SettingsCommands(commands.Cog):
             response_settings[guild_id] = settings.get("Response Method", defaults["Response Method"])
 
     def update_settings(self):
-        with open("data/settings.json", "w") as settings_file:
+        with open(self.settings_path, "w") as settings_file:
             json.dump({"guild_id": self.settings}, settings_file)
 
     def get_server_settings(self, guild: discord.Guild):

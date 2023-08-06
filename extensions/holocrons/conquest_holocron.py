@@ -1,13 +1,9 @@
 from data.Tip import Tip
 from discord.ext import commands
-from functools import partial
-from util import helpmgr
 from util.Holocron import Holocron
-from util.settings.response_handler import get_response_type
-from util.settings.tip_sorting_handler import sort_tips
 
 
-class SendConquestTips(commands.Cog, Holocron):
+class ConquestHolocron(commands.Cog, Holocron):
     def __init__(self, bot: commands.Bot):
         super().__init__(bot, "conquest")
 
@@ -18,7 +14,6 @@ class SendConquestTips(commands.Cog, Holocron):
         "f": "feats"
     }
 
-    # Super Implementations
     def dummy_populate(self):
         self.tip_storage["globals"][1].append(Tip("trich", "this is a tip for g1"))
         self.tip_storage["globals"][1].append(Tip("trich", "this is another tip for g1"))
@@ -177,82 +172,19 @@ class SendConquestTips(commands.Cog, Holocron):
 
         return tip_list
 
-    # Command Managing
     @commands.command(name="conquest", aliases=["c", "con", "conq"], extras={'is_holocron': True},
                       description="Access the Conquest Holocron for reading and managing Conquest Tips")
     async def conquest_manager(self, ctx: commands.Context, *args):
-        response_method = get_response_type(ctx.guild, ctx.author, ctx.channel)
-        if len(args) == 0:
-            await response_method.send(f"Conquest commands require extra information. For a list of commands and "
-                                       f"options, use `{ctx.prefix}conquest help`.")
-            return
+        await self.holocron_command_manager(ctx, *args)
 
-        user_command = args[0]
+    # ALTERNATIVE TO ABOVE
+    # holocron_command_manager = (
+    #     commands.command(name="conquest", aliases=["c", "con", "conq"],
+    #                      extras={'is_holocron': True},
+    #                      description="Access the Conquest Holocron for reading and managing "
+    #                                  "Conquest Tips")
+    #     (Holocron.holocron_command_manager))
 
-        clear_names = [
-            "clean",
-            "reset",
-            "clear"
-        ]
-        dummy_names = [
-            "dummy",
-            "populate",
-            "test"
-        ]
-        if user_command in clear_names:
-            await self.request_clean_storage(ctx.guild, ctx.channel, ctx.author, response_method)
-            return
-
-        elif user_command in dummy_names:
-            await self.request_dummy_populate(ctx.guild, ctx.author, response_method)
-            return
-
-        elif user_command == 'help':
-            commands_args = args[1:]
-            response = helpmgr.generate_bot_help(self.bot.get_command('conquest'), ctx, *commands_args)
-            await response_method.send('\n'.join(response))
-            return
-
-        else:
-            if await self.valid_location(user_command, response_method):
-                try:
-                    to_edit = args[1]
-                except IndexError:
-                    to_edit = ""
-                await self.conquest_tips(ctx.guild, ctx.channel, ctx.author, user_command, to_edit)
-                return
-
-    async def conquest_tips(self, guild, channel, author, tip_location: str, to_edit="no"):
-        response_method = get_response_type(guild, author, channel)
-        tip_location = tip_location.lower()
-
-        if not await self.valid_location(tip_location, response_method):
-            return
-
-        modifying = {
-            "add": partial(self.add_tip, channel),
-            "edit": partial(self.edit_tip, to_edit, guild),
-            "delete": partial(self.edit_tip, to_edit, guild)
-        }
-        try:
-            await modifying[to_edit](author, tip_location, response_method)
-            return
-        except KeyError:
-            pass
-
-        location_tips = self.get_tips(tip_location)
-        total = len(location_tips)
-        sort_tips(location_tips)
-        top_three = location_tips[:3]
-
-        if len(top_three) > 0:
-            response = [f"__**Recent {len(top_three)} tip{'' if len(top_three) == 1 else 's'} "
-                        f"(of {total}) for {tip_location}**__"]
-            for index, tip in enumerate(top_three):
-                response.append(f"{index + 1} - " + tip.create_tip_message())
-            await response_method.send('\n'.join(response))
-        else:
-            await response_method.send(f"There are no tips in {tip_location}.")
 
 async def setup(bot):
-    await bot.add_cog(SendConquestTips(bot))
+    await bot.add_cog(ConquestHolocron(bot))
