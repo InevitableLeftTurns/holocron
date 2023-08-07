@@ -1,0 +1,91 @@
+from discord.ext import commands
+from re import compile
+from util.Holocron import Holocron
+
+
+class RiseHolocron(commands.Cog, Holocron):
+    def __init__(self, bot=commands.Bot):
+        super().__init__(bot, "rise")
+        self.location_regex = compile(r"([a-z]+)?([0-9]+)?([a-z]+)?([0-9]+)?")
+
+    valid_sides = {
+        "ds": "darkside",
+        "mx": "mixed",
+        "ls": "lightside",
+        "lsb": "lightsidebonus"
+    }
+    valid_missions = {
+        "cm": "cm",
+        "f": "fleet",
+        "sm": "sm"
+    }
+
+    async def valid_location(self, location, response_method):
+        location_fragments = self.location_regex.match(location).groups()
+
+        try:
+            side = self.valid_sides[location_fragments[0]]
+        except (IndexError, KeyError):
+            await response_method.send("Invalid or missing location. Queries to tips must start with `ds` for "
+                                       "`darkside`, `mx` for `mixed`, `ls` for `lightside`, or `lsb` for `lightside "
+                                       "bonus`.")
+            return False
+
+        try:
+            planet_num = int(location_fragments[1])
+            # noinspection PyStatementEffect
+            self.tip_storage[side][planet_num]
+        except (IndexError, ValueError, TypeError):
+            await response_method.send("The character following your side must be a number identifying which planet to "
+                                       "query.")
+            return False
+        except KeyError:
+            await response_method.send("The number following your side must be between 1 and 6 (inclusive).")
+            return False
+
+        try:
+            mission_type = self.valid_missions[location_fragments[2]]
+        except (IndexError, KeyError, TypeError):
+            await response_method.send("Characters following planet number must be `cm` for `combat missions`, `f` for "
+                                       "`fleet battles`, or `sm` for `special missions`.")
+            return False
+
+        if mission_type == "cm":
+            try:
+                combat_num = int(location_fragments[3])
+                # noinspection PyStatementEffect
+                self.tip_storage[side][planet_num][mission_type][combat_num]
+            except (IndexError, ValueError, TypeError):
+                await response_method.send("Combat missions require numbers indicating which mission to query. Combat "
+                                           "missions are numbered from left to right.")
+                return False
+            except KeyError:
+                # noinspection PyUnboundLocalVariable
+                await response_method.send(f"Combat mission {combat_num} does not exist. Combat mission number for this"
+                                           f" planet must be between 1 and "
+                                           f"{len(self.tip_storage[side][planet_num][mission_type].keys())} "
+                                           f"(inclusive).")
+                return False
+
+        return True
+
+    def get_tips(self, location):
+        location_fragments = self.location_regex.match(location).groups()
+
+        side = self.valid_sides[location_fragments[0]]
+        planet = int(location_fragments[1])
+        mission = self.valid_missions[location_fragments[2]]
+
+        if mission == "cm":
+            mission_num = int(location_fragments[3])
+            return self.tip_storage[side][planet][mission][mission_num]
+        return self.tip_storage[side][planet][mission]["tips"]
+
+    @commands.command(name="rise", aliases=["r"], extras={'is_holocron': True},
+                      description="Access the Rise Holocron for reading and managing Rise Tips")
+    async def rise_manager(self, ctx: commands.Context, *args):
+        await self.holocron_command_manager(ctx, *args)
+
+
+async def setup(bot):
+    await bot.add_cog(RiseHolocron(bot))
