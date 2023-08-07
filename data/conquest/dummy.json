@@ -1,0 +1,644 @@
+{
+  "sectors": {
+    "1": {
+      "boss": {
+        "feats": {
+          "1": [
+            {
+              "author": "uaq",
+              "rating": 0,
+              "content": "tip for s1b1a",
+              "edited": false,
+              "userid": 0,
+              "creation_time": "2023-08-04T21:18:33.326585"
+            },
+            {
+              "author": "uaq",
+              "rating": 7,
+              "content": "tip for s1b1b",
+              "edited": false,
+              "userid": 0,
+              "creation_time": "2023-08-04T21:18:33.326588"
+            },
+            {
+              "author": "uaq",
+              "rating": 2,
+              "content": "tip for s1b1c",
+              "edited": false,
+              "userid": 0,
+              "creation_time": "2023-08-04T21:18:33.326592"
+            },
+            {
+              "author": "uaq",
+              "rating": 4,
+              "content": "tip for s1b1d",
+              "edited": false,
+              "userid": 0,
+              "creation_time": "2023-08-04T21:18:33.326596"
+            }
+          ],
+          "2": []
+        },
+        "tips": [
+          {
+            "author": ".cabal.",
+            "rating": 0,
+            "content": "this would be the text describing team and strategy to beat a Sector 1 Boss",
+            "edited": false,
+            "userid": 694757137171218454,
+            "creation_time": "2023-08-03T03:23:50.560142"
+          },
+          {
+            "author": "uaq",
+            "rating": 0,
+            "content": "tip for s1b",
+            "edited": false,
+            "userid": 0,
+            "creation_time": "2023-08-04T20:13:36.727409"
+          },
+          {
+            "author": "uaq",
+            "rating": 0,
+            "content": "tip for s1b",
+            "edited": false,
+            "userid": 0,
+            "creation_time": "2023-08-04T20:33:03.545779"
+          },
+          {
+            "author": "uaq",
+            "rating": 0,
+            "content": "tip for s1b",
+            "edited": false,
+            "userid": 0,
+            "creation_time": "2023-08-04T21:14:59.566737"
+          },
+          {
+            "author": "uaq",
+            "rating": 0,
+            "content": "tip for s1b",
+            "edited": false,
+            "userid": 0,
+            "creation_time": "2023-08-04T21:16:44.417853"
+          },
+          {
+            "author": "uaq",
+            "rating": 0,
+            "content": "tip for s1b",
+            "edited": false,
+            "userid": 0,
+            "creation_time": "2023-08-04T21:18:33.326613"
+          }
+        ]
+      },
+      "mini": {
+        "feats": {
+          "1": [
+            {
+              "author": "uaq",
+              "rating": 0,
+              "content": "tip for s1m1",
+              "edited": false,
+              "userid": 0,
+              "creation_time": "2023-08-04T20:13:36.727417"
+            },
+            {
+              "author": "uaq",
+              "rating": 0,
+              "content": "tip for s1m1",
+              "edited": false,
+              "userid": 0,
+              "creation_time": "2023-08-04T20:33:03.545788"
+            },
+            {
+              "author": "uaq",
+              "rating": 0,
+              "content": "tip for s1m1",
+              "edited": false,
+              "userid": 0,
+              "creation_time": "2023-08-04T21:14:59.566743"
+            },
+            {
+              "author": "uaq",
+              "rating": 0,
+              "content": "tip for s1m1",
+              "edited": false,
+              "userid": 0,
+              "creation_time": "2023-08-04T21:16:44.417860"
+            },
+            {
+              "author": "uaq",
+              "rating": 0,
+              "content": "tip for s1m1",
+              "edited": false,
+              "userid": 0,
+              "creation_time": "2023-08-04T21:18:33.326620"
+            }
+          ],
+          "2": []
+        },
+        "tips": [
+          {
+            "author": "uaq",
+            "rating": 0,
+            "content": "tip for s1m",
+            "edited": false,
+            "userid": 0,
+            "creation_time": "2023-08-04T20:13:36.727423"
+          },
+          {
+            "author": "uaq",
+            "rating": 0,
+            "content": "tip for s1m",
+            "edited": false,
+            "userid": 0,
+            "creation_time": "2023-08-04T20:33:03.545807"
+          },
+          {
+            "author": "uaq",
+            "rating": 0,
+            "content": "tip for s1m",
+            "edited": false,
+            "userid": 0,
+            "creation_time": "2023-08-04T21:14:59.566749"
+          },
+          {
+            "author": "uaq",
+            "rating": 0,
+            "content": "tip for s1m",
+            "edited": false,
+            "userid": 0,
+            "creation_time": "2023-08-04T21:16:44.417866"
+          },
+          {
+            "author": "uaq",
+            "rating": 0,
+            "content": "tip for s1m",
+            "edited": false,
+            "userid": 0,
+            "creation_time": "2023-08-04T21:18:33.326625"
+          }
+        ]
+      },
+      "nodes": {
+        "1": [
+          {
+            "author": "uaq",
+            "rating": 0,
+            "content": "tip for s1n1",
+            "edited": false,
+            "userid": 0,
+            "creation_time": "2023-08-04T21:18:33.326559"
+          }
+        ],
+        "13": [
+          {
+            "author": "uaq",
+            "rating": 0,
+            "content": "tip for s1n13a",
+            "edited": false,
+            "userid": 0,
+            "creation_time": "2023-08-04T21:18:33.326568"
+          },
+          {
+            "author": "uaq",
+            "rating": 7,
+            "content": "tip for s1n13b",
+            "edited": false,
+            "userid": 0,
+            "creation_time": "2023-08-04T21:18:33.326572"
+          },
+          {
+            "author": "uaq",
+            "rating": -3,
+            "content": "tip for s1n13c",
+            "edited": false,
+            "userid": 0,
+            "creation_time": "2023-08-04T21:18:33.326576"
+          }
+        ]
+      },
+      "feats": {
+        "1": [
+          {
+            "author": "uaq",
+            "rating": 0,
+            "content": "tip for s1f1a",
+            "edited": false,
+            "userid": 0,
+            "creation_time": "2023-08-04T21:18:33.326533"
+          },
+          {
+            "author": "uaq",
+            "rating": 7,
+            "content": "tip for s1f1b",
+            "edited": false,
+            "userid": 0,
+            "creation_time": "2023-08-04T21:18:33.326537"
+          },
+          {
+            "author": "uaq",
+            "rating": 2,
+            "content": "tip for s1f1c",
+            "edited": false,
+            "userid": 0,
+            "creation_time": "2023-08-04T21:18:33.326541"
+          },
+          {
+            "author": "uaq",
+            "rating": 4,
+            "content": "tip for s1f1d",
+            "edited": false,
+            "userid": 0,
+            "creation_time": "2023-08-04T21:18:33.326544"
+          }
+        ],
+        "2": [],
+        "3": [],
+        "4": []
+      }
+    },
+    "2": {
+      "boss": {
+        "feats": {
+          "1": [],
+          "2": []
+        },
+        "tips": []
+      },
+      "mini": {
+        "feats": {
+          "1": [],
+          "2": []
+        },
+        "tips": []
+      },
+      "nodes": {},
+      "feats": {
+        "1": [],
+        "2": [],
+        "3": [],
+        "4": []
+      }
+    },
+    "3": {
+      "boss": {
+        "feats": {
+          "1": [],
+          "2": []
+        },
+        "tips": []
+      },
+      "mini": {
+        "feats": {
+          "1": [],
+          "2": []
+        },
+        "tips": []
+      },
+      "nodes": {},
+      "feats": {
+        "1": [],
+        "2": [],
+        "3": [],
+        "4": []
+      }
+    },
+    "4": {
+      "boss": {
+        "feats": {
+          "1": [],
+          "2": []
+        },
+        "tips": []
+      },
+      "mini": {
+        "feats": {
+          "1": [],
+          "2": []
+        },
+        "tips": []
+      },
+      "nodes": {},
+      "feats": {
+        "1": [],
+        "2": [],
+        "3": [],
+        "4": []
+      }
+    },
+    "5": {
+      "boss": {
+        "feats": {
+          "1": [],
+          "2": []
+        },
+        "tips": []
+      },
+      "mini": {
+        "feats": {
+          "1": [],
+          "2": []
+        },
+        "tips": []
+      },
+      "nodes": {},
+      "feats": {
+        "1": [],
+        "2": [],
+        "3": [],
+        "4": []
+      }
+    }
+  },
+  "globals": {
+    "1": [
+      {
+        "author": "trich",
+        "rating": 0,
+        "content": "this is a tip for g1",
+        "edited": false,
+        "userid": 0,
+        "creation_time": "2023-08-04T20:13:36.727306"
+      },
+      {
+        "author": "trich",
+        "rating": 0,
+        "content": "this is another tip for g1",
+        "edited": false,
+        "userid": 0,
+        "creation_time": "2023-08-04T20:13:36.727323"
+      },
+      {
+        "author": "uaq",
+        "rating": 0,
+        "content": "tip 1 to del in g1",
+        "edited": false,
+        "userid": 490970360272125952,
+        "creation_time": "2023-08-04T20:13:36.727431"
+      },
+      {
+        "author": "uaq",
+        "rating": 0,
+        "content": "tip 2 to del in g1",
+        "edited": false,
+        "userid": 490970360272125952,
+        "creation_time": "2023-08-04T20:13:36.727437"
+      },
+      {
+        "author": "uaq",
+        "rating": 0,
+        "content": "tip 3 to del in g1",
+        "edited": false,
+        "userid": 490970360272125952,
+        "creation_time": "2023-08-04T20:13:36.727444"
+      },
+      {
+        "author": "uaq",
+        "rating": 0,
+        "content": "tip 4 to del in g1",
+        "edited": false,
+        "userid": 490970360272125952,
+        "creation_time": "2023-08-04T20:13:36.727451"
+      },
+      {
+        "author": "uaq",
+        "rating": 0,
+        "content": "tip 5 to del in g1",
+        "edited": false,
+        "userid": 490970360272125952,
+        "creation_time": "2023-08-04T20:13:36.727458"
+      },
+      {
+        "author": "trich",
+        "rating": 0,
+        "content": "this is a tip for g1",
+        "edited": false,
+        "userid": 0,
+        "creation_time": "2023-08-04T20:33:03.545621"
+      },
+      {
+        "author": "trich",
+        "rating": 0,
+        "content": "this is another tip for g1",
+        "edited": false,
+        "userid": 0,
+        "creation_time": "2023-08-04T20:33:03.545639"
+      },
+      {
+        "author": "uaq",
+        "rating": 0,
+        "content": "tip 1 to del in g1",
+        "edited": false,
+        "userid": 490970360272125952,
+        "creation_time": "2023-08-04T20:33:03.545816"
+      },
+      {
+        "author": "uaq",
+        "rating": 0,
+        "content": "tip 2 to del in g1",
+        "edited": false,
+        "userid": 490970360272125952,
+        "creation_time": "2023-08-04T20:33:03.545824"
+      },
+      {
+        "author": "uaq",
+        "rating": 0,
+        "content": "tip 3 to del in g1",
+        "edited": false,
+        "userid": 490970360272125952,
+        "creation_time": "2023-08-04T20:33:03.545833"
+      },
+      {
+        "author": "uaq",
+        "rating": 0,
+        "content": "tip 4 to del in g1",
+        "edited": false,
+        "userid": 490970360272125952,
+        "creation_time": "2023-08-04T20:33:03.545841"
+      },
+      {
+        "author": "uaq",
+        "rating": 0,
+        "content": "tip 5 to del in g1",
+        "edited": false,
+        "userid": 490970360272125952,
+        "creation_time": "2023-08-04T20:33:03.545852"
+      },
+      {
+        "author": "trich",
+        "rating": 0,
+        "content": "this is a tip for g1",
+        "edited": false,
+        "userid": 0,
+        "creation_time": "2023-08-04T21:14:59.566631"
+      },
+      {
+        "author": "trich",
+        "rating": 0,
+        "content": "this is another tip for g1",
+        "edited": false,
+        "userid": 0,
+        "creation_time": "2023-08-04T21:14:59.566645"
+      },
+      {
+        "author": "uaq",
+        "rating": 0,
+        "content": "tip 1 to del in g1",
+        "edited": false,
+        "userid": 490970360272125952,
+        "creation_time": "2023-08-04T21:14:59.566755"
+      },
+      {
+        "author": "uaq",
+        "rating": 0,
+        "content": "tip 2 to del in g1",
+        "edited": false,
+        "userid": 490970360272125952,
+        "creation_time": "2023-08-04T21:14:59.566761"
+      },
+      {
+        "author": "uaq",
+        "rating": 0,
+        "content": "tip 3 to del in g1",
+        "edited": false,
+        "userid": 490970360272125952,
+        "creation_time": "2023-08-04T21:14:59.566767"
+      },
+      {
+        "author": "uaq",
+        "rating": 0,
+        "content": "tip 4 to del in g1",
+        "edited": false,
+        "userid": 490970360272125952,
+        "creation_time": "2023-08-04T21:14:59.566772"
+      },
+      {
+        "author": "uaq",
+        "rating": 0,
+        "content": "tip 5 to del in g1",
+        "edited": false,
+        "userid": 490970360272125952,
+        "creation_time": "2023-08-04T21:14:59.566778"
+      },
+      {
+        "author": "trich",
+        "rating": 0,
+        "content": "this is a tip for g1",
+        "edited": false,
+        "userid": 0,
+        "creation_time": "2023-08-04T21:16:44.417735"
+      },
+      {
+        "author": "trich",
+        "rating": 0,
+        "content": "this is another tip for g1",
+        "edited": false,
+        "userid": 0,
+        "creation_time": "2023-08-04T21:16:44.417758"
+      },
+      {
+        "author": "uaq",
+        "rating": 0,
+        "content": "tip 1 to del in g1",
+        "edited": false,
+        "userid": 490970360272125952,
+        "creation_time": "2023-08-04T21:16:44.417872"
+      },
+      {
+        "author": "uaq",
+        "rating": 0,
+        "content": "tip 2 to del in g1",
+        "edited": false,
+        "userid": 490970360272125952,
+        "creation_time": "2023-08-04T21:16:44.417878"
+      },
+      {
+        "author": "uaq",
+        "rating": 0,
+        "content": "tip 3 to del in g1",
+        "edited": false,
+        "userid": 490970360272125952,
+        "creation_time": "2023-08-04T21:16:44.417888"
+      },
+      {
+        "author": "uaq",
+        "rating": 0,
+        "content": "tip 4 to del in g1",
+        "edited": false,
+        "userid": 490970360272125952,
+        "creation_time": "2023-08-04T21:16:44.417893"
+      },
+      {
+        "author": "uaq",
+        "rating": 0,
+        "content": "tip 5 to del in g1",
+        "edited": false,
+        "userid": 490970360272125952,
+        "creation_time": "2023-08-04T21:16:44.417900"
+      },
+      {
+        "author": "trich",
+        "rating": 0,
+        "content": "this is a tip for g1",
+        "edited": false,
+        "userid": 0,
+        "creation_time": "2023-08-04T21:18:33.326513"
+      },
+      {
+        "author": "trich",
+        "rating": 0,
+        "content": "this is another tip for g1",
+        "edited": false,
+        "userid": 0,
+        "creation_time": "2023-08-04T21:18:33.326528"
+      },
+      {
+        "author": "uaq",
+        "rating": 0,
+        "content": "tip 1 to del in g1",
+        "edited": false,
+        "userid": 490970360272125952,
+        "creation_time": "2023-08-04T21:18:33.326632"
+      },
+      {
+        "author": "uaq",
+        "rating": 0,
+        "content": "tip 2 to del in g1",
+        "edited": false,
+        "userid": 490970360272125952,
+        "creation_time": "2023-08-04T21:18:33.326637"
+      },
+      {
+        "author": "uaq",
+        "rating": 0,
+        "content": "tip 3 to del in g1",
+        "edited": false,
+        "userid": 490970360272125952,
+        "creation_time": "2023-08-04T21:18:33.326641"
+      },
+      {
+        "author": "uaq",
+        "rating": 0,
+        "content": "tip 4 to del in g1",
+        "edited": false,
+        "userid": 490970360272125952,
+        "creation_time": "2023-08-04T21:18:33.326645"
+      },
+      {
+        "author": "uaq",
+        "rating": 0,
+        "content": "tip 5 to del in g1",
+        "edited": false,
+        "userid": 490970360272125952,
+        "creation_time": "2023-08-04T21:18:33.326649"
+      }
+    ],
+    "2": [],
+    "3": [],
+    "4": [],
+    "5": [],
+    "6": [],
+    "7": [],
+    "8": []
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "sectors": {
+    "count": 5,
+    "tags": "s",
+    "subs": {
+      "feats": {
+        "tags": "f",
+        "count": 4
+      },
+      "boss": {
+        "tags": "b",
+        "tips": true,
+        "subs": {
+          "feats": {
+            "count": 2
+          }
+        }
+      },
+      "mini": {
+        "tags": "m",
+        "tips": true,
+        "subs": {
+          "feats": {
+            "count": 2
+          }
+        }
+      },
+      "nodes": {
+        "tags": "n"
+      }
+    }
+  },
+  "globals": {
+    "count": 8,
+    "tags": "g"
+  }
+}

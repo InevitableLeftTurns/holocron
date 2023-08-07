@@ -1,0 +1,96 @@
+{
+  "ds": {
+    "ds1": {
+      "name": "Mustafar",
+      "ds1cm1": {
+        "reqs": "5x Dark Side or Neutral (Relic 5+)",
+        "enemies": [
+          "Command Battle Droid (L), 2x Magnaguard, B2, B1, Droideka",
+          "Nute Gunray (L), 2x Magnaguard, 2x B2, Security Battle Droid"
+        ]
+      },
+      "ds1cm2": {
+        "reqs": "Lord Vader",
+        "enemies": [
+          "Wat Tambor (L), Nute Gunray, Poggle the Lesser",
+          "Jedi Master Kenobi"
+        ]
+      },
+      "ds1cm3": {
+        "reqs": "5x Dark Side or Neutral (Relic 5+)",
+        "enemies": [
+          "Command Battle Droid (L), 2x Magnaguard, B2, B1, Droideka",
+          "Geonosian Brood Alpha (L), Geo Spy, Geo Soldier, Poggle, Sun Fac"
+        ]
+      },
+      "ds1cm4": {
+        "reqs": "5x Dark Side or Neutral (Relic 5+)",
+        "enemies": [
+          "Command Battle Droid (L), 2x Magnaguard, B2, B1, Droideka",
+          "Wat Tambor (L), 2x Magnaguard, 2x B2, Security Battle Droid"
+        ]
+      },
+      "ds1f": {
+        "reqs": "Scythe",
+        "enemies": "Malevolence, Hyena Bomber, Vulture Droid, Geo Starfighter"
+      }
+    },
+    "ds2": {
+      "name": "Geonesis",
+      "ds2cm1": {
+        "reqs": "5x Dark Side or Neutral (Relic 6+)",
+        "enemies": "Geonosian Brood Alpha, Geonosian Soldier, Reek"
+      },
+      "ds2cm2": {
+        "reqs": "5x Dark Side or Neutral (Relic 6+)",
+        "enemies": "Acklay"
+      },
+      "ds2cm3": {
+        "reqs": "5x Geonosian (Relic 7+)",
+        "enemies": [
+          "3x Partisan Fighter, 2x Rebel Spy",
+          "Kanan Jarrus (L), Ezra Bridger, Chopper, Rex, Partisan Fighter"
+        ]
+      },
+      "ds2cm4": {
+        "reqs": "5x Dark Side or Neutral (Relic 6+)",
+        "enemies": [
+          "Geonosian Brood Alpha (L), Geo Spy, Geo Soldier, Poggle, Sun Fac",
+          "Nexu"
+        ]
+      },
+      "ds2f": {
+        "reqs": "Dark Side Ships (7-Star)",
+        "enemies": "Malevolence, Sun Fac's Starfigher, Geo Spy's Starfighter, Geo Starfighter\n"
+      }
+    },
+    "ds3": {
+      "name": "Dathomir",
+      "ds3sm1": {
+        "reqs": "Nightsisters (Relic 7+), Merrin",
+        "enemies": ["Hondo Onaka (L), IG-88, 2x Jabba's Enforcer, Weequay Saboteur",
+                    "Maul (L), Qi-ra, Dash Rendar, Cartel Spy, Cartel Bruiser"]
+      },
+      "ds3cm1": {
+        "reqs": "Empire (Relic 7+)",
+        "enemies": ["2x Nightsister Acolyte (L), Nightsister Initiate, Nightsister Zombie, Nightsister Spirit",
+                    "Mother Talzin (L), Old Daka, Nightsister Acolyte, Nightsister Zombie, Nightsister Spirit"]
+      },
+      "ds3cm2": {
+        "reqs": "Dark Side or Neutral (Relic 7+)",
+        "enemies": ["2x Nightsister Acolyte (L), Nightsister Initiate, Nightsister Zombie, Nightsister Spirit",
+                    "Mother Talzin (L), Old Daka, Nightsister Acolyte, Nightsister Zombie, Nightsister Spirit"]
+      },
+      "ds3cm3": {
+        "reqs": "Dark Side or Neutral (Relic 7+), Doctor Aphra",
+        "enemies": ["2x Nightsister Acolyte (L), Nightsister Initiate, Nightsister Zombie, Nightsister Spirit",
+                    "Mother Talzin (L), Old Daka, Nightsister Acolyte, Nightsister Zombie, Nightsister Spirit"]
+      },
+      "ds3cm4": {
+        "reqs": "Dark Side or Neutral (Relic 7+)",
+        "enemies": ["2x Nightsister Acolyte (L), Nightsister Initiate, Nightsister Zombie, Nightsister Spirit",
+                    "Mother Talzin (L), Old Daka, Nightsister Acolyte, Nightsister Zombie, Nightsister Spirit"]
+      }
+    }
+  }
+}

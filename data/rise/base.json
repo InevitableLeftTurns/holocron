@@ -1,0 +1,58 @@
+{
+  "darkside": {
+    "count": 6,
+    "subs": {
+      "cm": {
+        "count": 4
+      },
+      "fleet": {
+        "tips": true
+      },
+      "sm": {
+        "tips": true
+      }
+    }
+  },
+  "mixed": {
+    "count": 6,
+    "subs": {
+      "cm": {
+        "count": 4
+      },
+      "fleet": {
+        "tips": true
+      },
+      "sm": {
+        "tips": true
+      }
+    }
+  },
+  "lightside": {
+    "count": 6,
+    "subs": {
+      "cm": {
+        "count": 4
+      },
+      "fleet": {
+        "tips": true
+      },
+      "sm": {
+        "tips": true
+      }
+    }
+  },
+  "lightsidebonus": {
+    "count": 6,
+    "subs": {
+      "cm": {
+        "count": 4
+      },
+      "fleet": {
+        "tips": true
+      },
+      "sm": {
+        "tips": true
+      }
+    }
+  }
+}
