@@ -81,6 +81,26 @@ class RiseHolocron(commands.Cog, Holocron):
             return self.tip_storage[side][planet][mission][mission_num]
         return self.tip_storage[side][planet][mission]["tips"]
 
+    def get_label(self, location):
+        track_loc = location[0:2]
+        planet_loc = location[0:3]
+        try:
+            track = self.labels[track_loc]
+            planet = track[planet_loc]
+            labels = planet[location]
+
+            planetname = planet['name']
+            reqs = labels['reqs']
+
+            waves = labels['enemies']
+            if isinstance(waves, list):
+                waves = [f"Wave {idx+1}: {wave}" for idx, wave in enumerate(waves)]
+                waves = '\n'.join(waves)
+
+            return f"{planetname}\nRequirements: {reqs}\n{waves}"
+        except KeyError:
+            return None
+
     @commands.command(name="rise", aliases=["r"], extras={'is_holocron': True},
                       description="Access the Rise Holocron for reading and managing Rise Tips")
     async def rise_manager(self, ctx: commands.Context, *args):

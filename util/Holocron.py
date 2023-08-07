@@ -52,6 +52,9 @@ class Holocron:
         with open(f'data/{self.name}/labels.json') as labels_file:
             return json.load(labels_file)
 
+    def get_label(self, location):
+        return self.labels.get(location)
+
     def clean_storage(self):
         self.tip_storage = {}
         with open(f"data/{self.name}/base.json") as config_file:
@@ -175,14 +178,14 @@ class Holocron:
         total = len(location_tips)
         sort_tips(location_tips)
         top_three = location_tips[:3]
-        label = self.labels.get(tip_location)
+        label = self.get_label(tip_location)
 
         if len(top_three) > 0:
             response = [f"__**Recent {len(top_three)} tip{'' if len(top_three) == 1 else 's'} "
                         f"(of {total}) for {tip_location}**__"]
 
             if label:
-                response.append(f"Feat: {label}")
+                response.append(label)
 
             for index, tip in enumerate(top_three):
                 response.append(f"{index + 1} - " + tip.create_tip_message())
@@ -190,7 +193,7 @@ class Holocron:
         else:
             response = f"There are no tips in {tip_location}."
             if label:
-                response += f"\nFeat: {label}"
+                response += f"\n{label}"
             await response_method.send(response)
 
     async def add_tip(self, channel, author, location, response_method):

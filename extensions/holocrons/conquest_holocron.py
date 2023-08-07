@@ -185,6 +185,11 @@ class ConquestHolocron(commands.Cog, Holocron):
     #                                  "Conquest Tips")
     #     (Holocron.holocron_command_manager))
 
+    def get_label(self, location):
+        label = super().get_label(location)
+        if label:
+            return f"Feat: {label}"
+        return None
 
 async def setup(bot):
     await bot.add_cog(ConquestHolocron(bot))

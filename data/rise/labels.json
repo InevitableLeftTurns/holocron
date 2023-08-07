@@ -34,7 +34,7 @@
         "reqs": "Scythe",
         "enemies": "Malevolence, Hyena Bomber, Vulture Droid, Geo Starfighter"
       }
-    }
+    },
     "ds2": {
       "name": "Geonesis",
       "ds2cm1": {
@@ -69,32 +69,28 @@
       "ds3sm1": {
         "reqs": "Nightsisters (Relic 7+), Merrin",
         "enemies": ["Hondo Onaka (L), IG-88, 2x Jabba's Enforcer, Weequay Saboteur",
-                    "Maul (L), Qi-ra, Dash Rendar, Cartel Spy, Cartel Bruiser"],
+                    "Maul (L), Qi-ra, Dash Rendar, Cartel Spy, Cartel Bruiser"]
       },
       "ds3cm1": {
         "reqs": "Empire (Relic 7+)",
         "enemies": ["2x Nightsister Acolyte (L), Nightsister Initiate, Nightsister Zombie, Nightsister Spirit",
-                    "Mother Talzin (L), Old Daka, Nightsister Acolyte, Nightsister Zombie, Nightsister Spirit"
-        ],
+                    "Mother Talzin (L), Old Daka, Nightsister Acolyte, Nightsister Zombie, Nightsister Spirit"]
       },
       "ds3cm2": {
         "reqs": "Dark Side or Neutral (Relic 7+)",
         "enemies": ["2x Nightsister Acolyte (L), Nightsister Initiate, Nightsister Zombie, Nightsister Spirit",
-                    "Mother Talzin (L), Old Daka, Nightsister Acolyte, Nightsister Zombie, Nightsister Spirit"
-        ]
+                    "Mother Talzin (L), Old Daka, Nightsister Acolyte, Nightsister Zombie, Nightsister Spirit"]
       },
       "ds3cm3": {
         "reqs": "Dark Side or Neutral (Relic 7+), Doctor Aphra",
         "enemies": ["2x Nightsister Acolyte (L), Nightsister Initiate, Nightsister Zombie, Nightsister Spirit",
-                    "Mother Talzin (L), Old Daka, Nightsister Acolyte, Nightsister Zombie, Nightsister Spirit"
-        ]
+                    "Mother Talzin (L), Old Daka, Nightsister Acolyte, Nightsister Zombie, Nightsister Spirit"]
       },
       "ds3cm4": {
         "reqs": "Dark Side or Neutral (Relic 7+)",
         "enemies": ["2x Nightsister Acolyte (L), Nightsister Initiate, Nightsister Zombie, Nightsister Spirit",
-                    "Mother Talzin (L), Old Daka, Nightsister Acolyte, Nightsister Zombie, Nightsister Spirit"
-        ]
-      },
+                    "Mother Talzin (L), Old Daka, Nightsister Acolyte, Nightsister Zombie, Nightsister Spirit"]
+      }
     }
   }
 }
