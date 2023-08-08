@@ -92,5 +92,195 @@
                     "Mother Talzin (L), Old Daka, Nightsister Acolyte, Nightsister Zombie, Nightsister Spirit"]
       }
     }
+  },
+  "mx": {
+    "mx1": {
+      "name": "Corellia",
+      "mx1cm1": {
+        "reqs": "5x characters (Relic 5+)",
+        "enemies": [
+          "Stormtrooper Commander (L), Stormtrooper, Tie Pilot, Recon Trooper, Scout Trooper",
+          "Imperial Officer (L), Stormtrooper Commander, Stormtrooper, Tie Pilot, Recon Trooper, Scout Trooper"
+        ]
+      },
+      "mx1cm2": {
+        "reqs": "5x characters (Relic 5+), Doctor Aphra",
+        "enemies": [
+          "5x characters (Relic 5+), Doctor Aphra",
+          "Imperial Officer (L), Stormtrooper Commander, Stormtrooper, Recon Trooper, Scout Trooper"
+        ]
+      },
+      "mx1cm3": {
+        "reqs": "5x characters (Relic 5+), Jabba the Hutt",
+        "enemies": [
+          "Mob Enforcer (L), Cartel Spy, 2x Cartel Bruiser, Cartel Saboteur",
+          "Qi'ra (L), Young Han, Cartel Bruiser, Cartel Spy, Cartel Saboteur"
+        ]
+      },
+      "mx1sm1": {
+        "reqs": "5x characters (Relic 5+), Qi'ra, Young Han Solo",
+        "enemies": [
+          "Stormtrooper Commander (L), Stormtrooper, Tie Pilot, Recon Trooper, Scout Trooper",
+          "General Veers (L), Colonel Starck, Stormtrooper Commander, 2x Stormtrooper, Tie Pilot"
+        ]
+      },
+      "mx1f": {
+        "reqs": "Lando's Millenium Falcon (7-Star)",
+        "enemies": "Executrix, Tie Advanced X1, Tie Bomber, Tie Fighter, Tie Interceptor (R)"
+      }
+    },
+    "mx2": {
+      "name": "Fellucia",
+      "mx2cm1": {
+        "reqs": "5x characters (Relic 6+), Young Lando Calrissian",
+        "enemies": ["Imperial Officer (L), Stormtrooper Commander, Stormtrooper, Recon Trooper, Range Trooper",
+                    "Iden Versio (L), Stormtrooper Commander, Stormtrooper, Recon Trooper, Range Trooper, Scout Trooper"]
+      },
+      "mx2cm2": {
+        "reqs": "5x characters (Relic 6+), Hondo Ohnaka",
+        "enemies": ["Imperial Officer (L), Stormtrooper Commander, Stormtrooper, Recon Trooper, Range Trooper",
+                    "Grand Moff Tarkin (L), Imperial Officer, Stormtrooper Commander, Stormtrooper, Recon Trooper, Range Trooper"]
+      },
+      "mx2cm3": {
+        "reqs": "5x characters (Relic 6+)",
+        "enemies": [
+          "Pirate Leader (L), Pirate Enforcer, Pirate Saboteur, Pirate Spy, Pirate Bruiser",
+          "Hondo Ohnaka (L), Pirate Enforcer, Pirate Saboteur, Pirate Spy, Pirate Bruiser"
+        ]
+      },
+      "mx2cm4": {
+        "reqs": "5x characters (Relic 6+), Jabba the Hutt",
+        "enemies": [
+          "Imperial Officer (L), Stormtrooper Commander, Stormtrooper, Recon Trooper, Range Trooper",
+          "Imperial Officer (L), Stormtrooper Commander, Stormtrooper, Recon Trooper, Range Trooper, Scout Trooper"
+        ]
+      },
+      "mx2f": {
+        "reqs": "Ships (7-Star)",
+        "enemies": "Chimaera, Tie Advanced X1, Tie Bomber, Tie Fighter, Tie Interceptor (R)"
+      }
+    },
+    "mx3": {
+      "name": "Tatooine",
+      "mx3cm1": {
+        "reqs": "5x characters (Relic 7+), Fennec Shand",
+        "enemies": ["Tusken Elder, Tusken Brute, 2x Tusken Raider, Tusken Shaman, (?)Pirate Leader",
+                    "Tusken Elder, Tusken Brute, 2x Tusken Raider, Tusken Shaman, (?)Pirate Leader"]
+      },
+      "mx3cm2": {
+        "reqs": "5x characters (Relic 7+)",
+        "enemies": ["Sandtrooper Commander (L), 2x Sandtrooper, 2x Sandtrooper Scout, (?)Pirate Leader",
+                    "Imperial Officer, 2x Sandtrooper, 2x Sandtrooper Scout, Sandtrooper Commander"]
+      },
+      "mx3cm3": {
+        "reqs": "5x characters (Relic 7+), Jabba the Hutt",
+        "enemies": ["2x Pirate Leader (L), Pirate Spy, Pirate Bruiser, Pirate Enforcer, Pirate Saboteur",
+                    "Hondo Ohnaka (L), Pirate Leader , Pirate Spy, Pirate Bruiser, Pirate Enforcer, Pirate Saboteur"]
+      },
+      "mx3sm1": {
+        "reqs": "5x Inquisitorius (Relic 7+), Grand Inquisitor",
+        "enemies": ["Chief Nebit (L), Jawa Scavenger, Jawa Engineer, Jawa, Dathcha, (?)Pirate Leader",
+                    "Jedi Master Kenobi, (?)Pirate Leader"]
+      },
+      "mx3f": {
+        "reqs": "Ships (7-Star), Executor",
+        "enemies": "Chimeara, Tie Advanced X1, Tie Bomber, Tie Fighter, Tie Interceptor (R)"
+      }
+    }
+  },
+  "ls": {
+    "ls1": {
+      "name": "Coruscant",
+      "ls1cm1": {
+        "reqs": "5x Light Side or Neutral (Relic 5+)",
+        "enemies": [
+          "Clone Commander (L), Arc Trooper, Clone Medic, Clone Trooper, Clone Sharpshooter",
+          "Clone Commander (L), Arc Trooper, 2x Clone Medic, Clone Trooper, Clone Sharpshooter"
+        ]
+      },
+      "ls1cm2": {
+        "reqs": "5x Light Side or Neutral (Relic 5+)",
+        "enemies": [
+          "Clone Commander (L), Arc Trooper, Clone Medic, Clone Trooper, Clone Sharpshooter",
+          "Clone Commander (L), Arc Trooper, 2x Clone Medic, Clone Trooper, Clone Sharpshooter"
+        ]
+      },
+      "ls1cm3": {
+        "reqs": "5x Jedi (Relic 5+)",
+        "enemies": [
+          "Clone Commander (L), Arc Trooper, Clone Medic, Clone Trooper, Clone Sharpshooter",
+          "Lord Vader (L), Clone Commander, Arc Trooper, Clone Medic, Clone Sharpshooter"
+        ]
+      },
+      "ls1cm4": {
+        "reqs": "5x Jedi (Relic 5+), Mace Windu, Kit Fisto",
+        "enemies": [
+          "Clone Commander (L), 2x Royal Guard, Clone Medic, Clone Sharpshooter",
+          "Darth Sideous (L), Jedi Knight Anakin, 2x Royal Guard, Clone Medic, Clone Sharpshooter\n"
+        ]
+      },
+      "ls1f": {
+        "reqs": "Light Side Ships (7-Star), Outrider",
+        "enemies": "Endurance, BTL-B YWing, Rex's Arc-170, Clone Sergeant's ARC-170"
+      }
+    },
+    "ls2": {
+      "name": "Bracca",
+      "ls2cm1": {
+        "reqs": "5x Light Side or Neutral (Relic 6+)",
+        "enemies": ["Stormtrooper Commando (L), 2x Purge Trooper, Stormtrooper, Recon Trooper",
+                    "Crosshair, 2x Purge Trooper, Stormtrooper, Stormtrooper Commando"]
+      },
+      "ls2cm2": {
+        "reqs": "5x Jedi (Relic 6+)",
+        "enemies": ["Stormtrooper Commando (L), 2x Purge Trooper, Stormtrooper, Recon Trooper",
+                    "Ninth Sister (L), 3x Purge Trooper, Stormtrooper"]
+      },
+      "ls2cm3": {
+        "reqs": "5x Light Side or Neutral (Relic 6+)",
+        "enemies": [
+          "Stormtrooper Commando (L), 2x Purge Trooper, Stormtrooper, Recon Trooper",
+          "Second Sister, 3x Purge Trooper, Stormtrooper"
+        ]
+      },
+      "ls2sm1": {
+        "reqs": "Cere Junda (Relic 7+), Any Cal Kestis(Relic 7+)",
+        "enemies": [
+          "2x Purge Trooper",
+          "Second Sister (L), Purge Trooper"
+        ]
+      },
+      "ls2f": {
+        "reqs": "Light Side Ships (7-Star)",
+        "enemies": "Chimaera, Tie Advanced X1, Scythe, Tie Fighter, Tie Interceptor (R)"
+      }
+    },
+    "ls3": {
+      "name": "Kashyyyk",
+      "ls3cm1": {
+        "reqs": "5x Light Side or Neutral (Relic 7+)",
+        "enemies": ["Stormtrooper Commander (L), Stormtrooper, Recon Trooper, Scout Trooper",
+                    "Imperial Officer (L), Stormtrooper Commander, Stormtrooper, Recon Trooper, Tie Pilot, Scout Trooper"]
+      },
+      "ls3cm2": {
+        "reqs": "5x Light Side Wookiees (Relic 7+)",
+        "enemies": ["Stormtrooper Commander (L), Stormtrooper, Recon Trooper, Scout Trooper",
+                    "Ninth Sister (L), 2x Purge Trooper"]
+      },
+      "ls3cm3": {
+        "reqs": "5x Light Side or Neutral (Relic 7+)",
+        "enemies": ["Stormtrooper Commander (L), Stormtrooper, Recon Trooper, Scout Trooper",
+                    "Mara Jade (L), 2x Purge Trooper, Stormtrooper Commander, Stormtrooper, Recon Trooper"]
+      },
+      "ls3sm1": {
+        "reqs": "Rebel Fighter (Relic 7+), Saw Gerrera",
+        "enemies": ["AT-ST Driver (L), 2x Purge Trooper, Imperial Officer, Recon Trooper",
+                    "Stormtrooper Commander (L), Recon Trooper, AT-ST Driver, Purge Trooper, Imperial Officer\n"]
+      },
+      "ls3f": {
+        "reqs": "Light Side Ships (7-Star), Profundity",
+        "enemies": "Executrix, Tie Advanced X1, Scythe, Tie Fighter, Tie Interceptor (R)"
+      }
+    }
   }
 }
