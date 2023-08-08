@@ -81,6 +81,17 @@ class RiseHolocron(commands.Cog, Holocron):
             return self.tip_storage[side][planet][mission][mission_num]
         return self.tip_storage[side][planet][mission]["tips"]
 
+    def get_map_name(self, location, *args):
+        try:
+            track_loc = location[0:2]
+            planet_loc = location[0:3]
+        except IndexError:
+            return "Invalid location given `location`. Must be a 3-character track+planet location. ex: `ds2`"
+
+        track_data = self.labels.get(track_loc, {})
+        planet_data = track_data.get(planet_loc, location)
+        return planet_data['name']
+
     def get_label(self, location):
         track_loc = location[0:2]
         planet_loc = location[0:3]
@@ -89,7 +100,7 @@ class RiseHolocron(commands.Cog, Holocron):
             planet = track[planet_loc]
             labels = planet[location]
 
-            planetname = planet['name']
+            planet_name = planet['name']
             reqs = labels['reqs']
 
             waves = labels['enemies']
@@ -97,7 +108,7 @@ class RiseHolocron(commands.Cog, Holocron):
                 waves = [f"Wave {idx+1}: {wave}" for idx, wave in enumerate(waves)]
                 waves = '\n'.join(waves)
 
-            return f"{planetname}\nRequirements: {reqs}\n{waves}"
+            return f"{planet_name}\nRequirements: {reqs}\n{waves}"
         except KeyError:
             return None
 

@@ -27,6 +27,7 @@ class Holocron:
 
         self.load_storage()
         self.labels = self.load_labels()
+        self.map_data = self.load_map()
 
     # Requires Implementation
 
@@ -54,6 +55,13 @@ class Holocron:
 
     def get_label(self, location):
         return self.labels.get(location)
+
+    def load_map(self):
+        with open(f'data/{self.name}/map.json') as map_file:
+            return json.load(map_file)
+
+    def get_map_name(self, location, *args):
+        return "Map not available yet."
 
     def clean_storage(self):
         self.tip_storage = {}
@@ -145,6 +153,11 @@ class Holocron:
         elif user_command in dummy_names:
             await self.request_dummy_populate(ctx.guild, ctx.author, response_method)
             return
+
+        elif user_command == 'map':
+            map_name = self.get_map_name(*args[1:])
+            await response_method.send(map_name,
+                                       file=discord.File(f'data/{self.name}/images/{map_name.lower()}.png'))
 
         elif user_command == 'help':
             commands_args = args[1:]
