@@ -27,7 +27,6 @@ class Holocron:
 
         self.load_storage()
         self.labels = self.load_labels()
-        self.map_data = self.load_map()
 
     # Requires Implementation
 
@@ -55,10 +54,6 @@ class Holocron:
 
     def get_label(self, location):
         return self.labels.get(location)
-
-    def load_map(self):
-        with open(f'data/{self.name}/map.json') as map_file:
-            return json.load(map_file)
 
     def get_map_name(self, location, *args):
         return "Map not available yet."
