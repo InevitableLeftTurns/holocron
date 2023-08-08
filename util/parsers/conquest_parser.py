@@ -31,7 +31,7 @@ with open('data/conquest/import.txt') as importfile:
                 if ' - ' in desc_text:
                     boss_type_data, desc_text = desc_text.split(' - ')
                     boss_type = boss_type_data.split(' ')[-1]
-                    print(f"boss: {boss_type}")
+                    # print(f"boss: {boss_type}")
                 else:
                     feat_counter += 1
 

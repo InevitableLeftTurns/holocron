@@ -1,220 +1,193 @@
 @@GLOBALS
-Defeat 500 Enemies: Ignore. This is a freebie that you'll get just by playing.
 
-Win 40 battles with Unaligned Force User teams:
+Defeat 250 Enemies in the gold challenge track: Ignore-ish. This is a freebie that you'll get just by playing. I say this because I always, and I mean ALWAYS do the gold challenge track. More options for reward discs = more reliable loadouts. You should try to do this, too. If you absolutely have to break from the golden path, then, uh, major spoilers for Tunic would happen, but seeing as how that’s a different game (that you all should play), I won’t discuss them here. Stay on the path.
 
-- Inks: GI / 7th / 8th / 5th / 9th. Doubles up with blind in sector 1, health steal in sector 2, purge in sector 3, stealth in sector 4, defeat enemies with inks in sector 5, and armor shred in sector 5. With Amplify Agony, this team demolishes a lot of squads, especially Jedi and Geos.
+Win 40 battles with Darth Malgus Surviving:
 
-- Rey: Rey / JTR / Scav / Hobo Ben / Visas. Doubles up with ability block in sector 4. Very good vs. Jawas, Ewoks, Imp Troopers, Padme, GAS.
+- SE: DR / Malgus / Malak / Badstila / HK (or Talon or Marauder or SET or really you have lots of options here). This is a great team that can handle any bad guy that throws out a lot of debuffs. Think inks or EP leads.
 
-- SLKR: SLKR / KRU / Kylo / SK / Maul. This team doesn't have great utility down the stretch, but for the first couple of days they're great.
+- JKL / JML / Wat cheese will also work if your malgus is inexplicably low gear.
 
-It's possible to make other teams, but the above 3 are who I use.
+40 wins with Clones: (I’ll be skipping this feat)
 
-40 wins with Daka / Talzin / Merrin in your team: (This feat requires all three to survive)
+-501st: Rex / 5555s / Echo / ARC / I don’t even remember who the last one is. Cody? Sure.
 
-- Talzin / Daka / Merrin / Zombie / Asajj. Even if your NS kinda stink, you can just roll with them. Seriously. Take this team against inks in sector 2. You need the following, truly onerous gear levels: G11 Talzin, Daka, Zombie, and Asajj, g8 Merrin. Now, I recommend at least g12 for the first 4 and g9 for Merrin, but you do you. Anyway, this is an unbelievably easy matchup. Credit to my guild mate RtuaDetoa for this one. This also counts for plagues and "no attackers" because somehow Asaaj is support. Wild. of note: Don't try this until you've got good data discs. Once you have great data discs, this team can beat the Tusken bonus fight at the end of sector 4. You'll want the G12-ish (g9 merrin) version of the team for that.
+-Bad Batch: This team is actually good and will win things sometimes.
 
-- Talzin / Daka / Merrin / JML / Wat. This is my preferred cheese team for this feat until I get good data discs (I have g12 Talzin, g12 Daka, g8 3 star Merrin). Fight a MM team. Bonus: Use this team in sector 2 and it counts for both "no attackers" and "apply purge" feats on top of the global to win with these three NS alive.
+Win 20 Battles with Captain Rex, Chopper, Hera, Kanaan, and Ezra surviving:
 
-- SLKR / KRU / Daka / Talzin / Merrin. This team will work against any team without AoE, like Tuskens or some Phoenix squads. SLKR is the hammer, KRU is the anvil, and the three NS just stand back and try not to get hurt. This is fine until you get good data discs.
+- Hera / Captain rex / Chopper / Kanaan / Ezra, fucking obviously. Why didn’t they list them in this order? Come on CG, be better. Even relatively bad PHX can still beat the datacron node at the end of sector 1. The lowest I've heard of is g12 Hera / 3 star g8 Captain Rex / g10 Chopper / g12 Kanaan / g11 Ezra. You'll need VA + AA, but as long as you initially outspeed the bad batch guys (you want 261+ speed on hera and 236+ speed on Crexy, minimum), you should be able to pull it off. Always call rex when you call assists.
 
-Win 20 Battles with 0-0-0 and BT-1 in your squad:
+20 wins with a full squad of Wookiees:
 
-- 5OR-T / BT-1 / 0-0-0 / BB8 / 3PAC. Pretty decent team in conquest, great for blinds in sector 1, plus secret intel for sector 1. Also good for droid kills when you need those.
+- Tarfful / any other 4 wookiees: I'm using g8 3-star tarfful (both zetas) / r2 Krrsantan / r3 Vet Chewie / g12 Zaalbar / g12 Vandor Chewie. I had VA + AA, which I'm sure helped. This team is shockingly good in conquest, especially against TM train teams. I smoked ewoks in sector 2, for example, and it wasn't close. Also beats bad batch at the end of sector 1, BH teams (tarfful does die sometimes), sector 2 midboss (tarfful died but it was good for the "no force users" win)... the damage reflection + VA + AA is absolutely insane. I beat a clone trooper team and I never even took a turn.
 
-- JKL murderdroids cheese. See the separate cheese strategy post linked at the top of this guide.
+- CWC / any other 4 wookiees: Not nearly as good, but if tarfful just doesn't work out, maybe your CWC is higher gear? Dunno.
 
-20 wins with a full squad of Tusken:
+Defeat 100 enemies with Cal or Cere or JKCK:
 
-- Chieftain / Warrior / UR / Shaman / Raider. Even if your tusken SUCK, (3 star g9 cheif / g12 UR / g12 Raider / g12 Shaman / 3 star g9 warrior) they are able to win against imp troopers in sector 1 (data discs definitely help). Some will die so these aren't 3 star victories, but it's enough that you can complete the feat. I've heard they work against JTR as well, but I have yet to test that. The chief's leader zeta is required. Mon Mothma and Ewok teams are also really good targets for this team.
+Complete a battle with Deployable Cooling Systems Active: Ok. Apparently these are single use consumables now.
 
-Defeat 100 enemies with Cal or Cere:
-
-I'm assuming everyone's Cal and Cere suck (3 star, g8).
-
-- Here's the cheese strat I used, courtesy of u/chabadaprime:
-
-Call Allies to Assist with Booming Voice 60 Times: No special team needed. I got about 25 of these calls while doing the stealth cheese in sector 4 (see below).
-
-Gain Massively Overpowered 20 Times: No special team needed.
+Complete a battle with Overprepared I Active: Ok. Apparently these are single use consumables now.
 
 ----
 
 @@SECTOR 1
 
-Kill 50 enemies with Jedi:
+Defeat 50 enemies with Droids:
 
-- JML cheese (see link at top).
+- 5OR-T / BB8 / any 3 other droids. I prefer BT-1 / 0-0-0 / HK, but probably any 3 will do. BB8 gives your team a 40% turn meter (tm) boost and Farty hits 3 times on everyone. Don’t bring a tank droid, because you also want wins without tanks in this sector.
 
-Gain Secret intel 80 times:
+Inflict Ability Block 60 times:
 
-- 5OR-T / BB8 / BT-1 / 0-0-0 / 3PAC. Double up with 3PAC applying evasion down on basic and blind on 1st special, and with the global feat to win using BT-1 and 0-0-0 in your team. Since JML is busy getting jedi kills, this is a good way to keep progress moving on that feat at the same time. I get about 20 secret intels per battle with this team.
+- There are literally dozens of ways to do this, but the ones that double up with the other feats include malgus, DR, Badstila (all for SE/Malgus wins), and BT-1 for droid kills, so I’ll probably be hoping those wins finish this feat for me. If I need to, Boba Fett, Old Ben, and JML all apply ability block with an AoE to earn this quickly.
 
-Inflict Evasion Down 40 times:
+Gain Defense Up 40 times:
 
-- See above. If you don't have the above options, a standard CLS team including 3PAC will get this feat done for you quickly.
+- Ignore. Seriously using the Farty team above will get you this feat without any additional effort. BUT just in case, there's another way to cheese it...
 
-Blind 60 times:
+- Doable in one combat with CWC lead and 4 other characters. You don’t even have to win. Just stall as long as possible. If you’re an absolute wild person, you could do this with all wookiees.
 
-- See above. If you don't have the above options, a standard CLS team including 3PAC will get this feat done for you quickly.
+Win 14 battles with no tanks:
+
+Use the above team for some of the wins. Other good options include imps (bring dark trooper to get droid kills at the same time), inks if you have GI (bring 2nd sis instead of 9th), CLS (3PAC will get droid kills too), Padme / R2 / GMY / QGJ / JKA (or similar), etc etc..
 
 Sector 1 Bosses:
 
-Sector 1 Miniboss - Win with Hermit Yoda surviving: JML cheese (see link at top)
+Sector 1 Miniboss - Win with KRU surviving: JML cheese or SLKR or however you want.
 
-Sector 1 Miniboss - Win without force users: Imp troopers are my go-to here. GG sep droids also work. The 5OR-T team above worked very well for this (G12 5OR-T / r7 BB8 / r6 3PAC / g8 murderdroids).
+Sector 1 Miniboss - Win without force users: Imp troopers are my go-to here. GG sep droids also work. The 5OR-T team above is probably fine, too.
 
-Sector 1 End Boss - Win without a GL: This is actually win with no force users.
+Sector 1 End Boss - Win with Ben Solo surviving: If you have him, yay. If not, sorry.
 
-Sector 1 End Boss - Win with T3M4 surviving: JKL cheese (see link at top).
+Sector 1 End Boss - Win without force users: Imp troopers are my go-to here. GG sep droids also work. The 5OR-T team above is probably fine, too.
 
 ----
 
 @@SECTOR 2
 
-No Attackers:
+Win 14 battles with No Attackers:
 
 - Veers / Piett / Gideon / Range / Starck is one of my favorite teams for this. Remember to save this team for both the midboss and endboss fights.
 
 - Padme / GK / R2D2 / C3PO / GMY is also a great team for this, and doubles up with evasion as GMY spreads foresight to the whole team (and R2 can also apply it every now and then).
 
-- Talzin / Daka / Merrin / JML / Wat. This team counts for "no attackers" and will inflict plague (see below), plus it counts for the NS Trio global feat. Fight against a MM team and you're in great shape. Credit to u/Loocha for the strategy!
+Defeat 60 Enemies with Rebel Fighters (I am skipping this one):
 
-- Talzin / Daka / Merrin / Asajj / Zombie. Fight inks; their initial debuffs will get Merrin her turn asap and start the ball rolling. Requires good data discs, but not good NS.
+- MM seems obvious, but you can use JML with KK and 3 other Jedi and just force feed KK all of the kills. Probably easier.
 
-Health Steal up 20 times:
+Inflict Purge 300 times (I am skipping this one):
 
-- EP / 4 more sith or empire characters: EP gives your whole team health steal with his 3rd ability, so use that early and often and this feat is cake.
+- Inks, obviously. For 2 years now the inks have been a conquest staple. If you haven’t gone after them yet, it’s really past time to make them a priority if you want future conquest success.
 
-Inflict Plague 200 times:
+Gain Foresight 60 Times:
 
-- NS, obviously. See the global NS trio feat above for the various cheeses.
-
-Evade 100 attacks in battles you won:
-
-- Hopefully you get this just from using the padme team above. If not...
-
-- Old Ben lead / Your tankiest GL(pref Rey) / Hoda / BB8 / JTR. Use the voluntary vanguard disc, and - if you have it - Quick Reflexes. Then go fight a Bo katan or Carth OR team. Since they AoE on every attack, and your entire team is high dodge characters, plus hoda auto-dodges everything while stealthed, plus you get a ton of dodges from quick reflexes... I got over 26 dodges in one combat. It may have been many more, but I only needed 26 at that point so it's hard to say how many I really got. You do have to eventually win, though. Which is why a powerful GL helps so much here.
+- JTR / BB8 / R2D2 / GMY / Holdo is a pretty awful team that will survive for a long time and gain a ton of foresight while also meeting the “no attackers” requirement. Don’t need to win for foresight to count, but maybe you’ll win, too?
 
 Sector 2 Bosses:
 
-Sector 2 Miniboss - Win with Sana Starros surviving: JKL cheese (see link at top). Bring captain han in case sana dies. Standard Sana team works well, too, if you have it.
+Sector 2 Miniboss - Win with Tarfful surviving: JKL cheese (see link at top). Or I dunno. Maybe the wookiee team won’t suck.
 
-Sector 2 MiniBoss - Win without using Force Users of any kind: Imp Troopers crush this.
+Sector 2 MiniBoss - Win without using Force Users of any kind: Imp Troopers or GG seps crush this. If you can do the tarfful survival feat with full wookies, you'll get this at the same time.
 
-Sector 2 End Boss - Win with Cad and Aurra surviving: JKL cheese (see link at top).
+Sector 2 End Boss - Win with Saw surviving: JKL cheese (see link at top).
 
-Sector 2 End Boss - Win without using Force Users of any kind: Imp Troopers crush this. If your BH are very strong, you may be able to knock out both end boss feats with a single BH squad, though my BH are very strong and I couldn't keep them alive. GG also works well.
+Sector 2 End Boss - Win with only dark side characters: Imp Troopers win this for "only dark side" as well as the "no attackers" sector feat. The rancor should never take a turn.
 
 ----
 
 @@SECTOR 3
 
-kill 50 enemies with droids: Lots of options here, from Farty to GG to just bringing CLS and hoping 3PAC gets the finishes. To cheese it out, look for MM teams so you can milk revives.
+Kill 50 enemies with Geos:
 
-Gain Momentum 1000 times: There's a cheese strategy for completing this in a single battle courtesy of u/Gibsorz (post here):
+- Geos. Duh. I'm actually having very good success running Trench / Wat / GBA / Soldier / Spy. Gets some staggers, too. Works well against the NS at the end of the sector.
 
-"Go against a TM generation team. I picked Ewoks, best with elder for more TM generation.
+Gain We Have Returned 60 times:
 
-Chieftain lead, zeta not required. 2 tuskens (urorrrr and shaman I chose), JML and wat. Put tank tech on JML and hit auto. If someone on the other side started to get low then switch targeting. Don't kill anyone.
+- Malgus needs to be on the team, obviously. Cheese courtesy of u/ShadowKnight089: "A MM squad with Chirrut Imwe will spread Doubt around whenever he cleanses the team as well as give you the We Have Returned buff. If you’re using a full squad of Sith Empire that’s 5 buffs every time Doubt expires. I ended up getting 35 in one battle. Theoretically it would be possible to do this is one battle since they feed each other turn meter and can revive."
 
-By the time JMLs taunt drops there is so much momentum that the Ewoks do no damage to your tuskens. Modding? Don't worry about it. Shaman and chieftain are unmodded."
+Win 14 battles with a full squad of Galactic Republic units:
 
-Attempt to Inflict Purge 300 Times:
+- Padme. Her teams are really good in Conquest ZA helped that when it was around, but even without it she's solid.
 
-- Inks. See the link at the top for a cheese strategy which will work even if you have 3-star, g8 inks.
+- JMK. Of course.
 
-Gain Foresight 60 times:
+- Clones. I mean, if you're doing the clones feat (I'm not), they tend to check the "also GR" box.
 
-- JML cheese (see link at top) bringing GMY.
+Stagger 60 times:
 
-- Padme / GMY / R2D2 / C3PO / GK. Not as fast as above, but saves JML for the murderdroid cheese. Still very effective.
+- SE team with Badstila will get this easily. Double up with Malgus for We Have Returned, etc..
 
-- JTR / BB8 / GMY / GK / R2D2. This is my ultimate foresight team. JTR and BB8 give each other foresight like crazy. GK gives himself foresight. And GMY and R2D2 give foresight to others. The only trick is that you need the data discs to enable this team to actually kill things. ZA or the VA/AA combo should do the trick.
+- MJ also drops a ton of staggers, so EP / MJ / etc etc will get this for you, too.
 
 Sector 3 Bosses:
 
-Sector 3 Miniboss - Win with BFSoJ Surviving: JKL / JML. /Wat cheese.
+Sector 3 Miniboss - Win with 5555s Surviving: JKL cheese.
 
-Sector 3 MiniBoss - Win without using Force Users of any kind: Imp Troopers crush this.
+Sector 3 MiniBoss - Win without a GL: I want to say imp troopers but I'm not really sure. GG maybe? I'll have to play around to see what's best/easiest.
 
-Sector 3 End Boss - Win with Dr Aphra surviving: If you have her, just use her team.
+Sector 3 End Boss - Win with 5 Victors: We’ve seen this before. Basically bring strong individual units like GAS, CAT, Malak, CLS, Han Solo, etc. And there's a sweet cheese for beating Reva, courtesy of u/SoloStrate (link): Bring Darth Nihilus as lead and by the time it's him vs. reva, his annihilate will be off cooldown and you OHK her. Also, there's a bit of a bug/exploit on this fight: Bring Voluntary Vanguard and the enemies will attack your marked character, dealing zero damage on turns where it's not that character's time to fight. Malak is used in the video linked but I assume this will work with any character.
 
-Sector 3 End Boss - Win without a GL: (actually no force users).
+Sector 3 End Boss - Win without a GL: (see above for easy cheese to get both these feats in one go).
 
 ----
 
 @@SECTOR 4
 
-Get 50 kills with Imp Troopers: You're goddamn right I will. Save them for the end boss fight and you can get all 50 kills in a single fight by abusing that poor zombie.
+Win 14 Battles with Inquisitors:
 
-Inflict Ability Block 60 Times: Vader does this on basic, so a team like EP / Vader / Tarkin / MJ / Thrawn will get it done pretty quickly. But really a ton of characters apply ability block so just use whoever you like. I actually got a lot of credit towards this feat while doing the Cal kills global cheese with JML.
+- Inks, obviously.
 
-Gain Stealth 40 Times:
+Inflict Evasion Down 40 times:
 
-- Stealth Cheese (see link above).
+- JML / Old Ben / 3 other jedi. Force feed attacks to old ben, who applies evasion down on basic.
 
-- Darth Maul / 4 sith. Darth Maul's lead gives your sith stealth if they get critically hit or evade.
+Armor Shred 20 Times:
 
-- Any team with R2D2. The smoke screen stealths 4 of your characters at a time.
+- GAS / Sabine / Gideon / Ben Solo / CAT (sort of) / 5th Brother (sort of) etc etc… Just bring people who apply shred alongside your normal teams and you shouldn’t be far from done when you clear the sector.
 
-Win 14 battles with a full squad of rebels:
+Kill 50 Enemies with Imps:
 
-- CLS / Han / Chewie / Old Ben / R2D2. Using R2 lets you double up with the stealth feat above, and Old Ben applies ability block to double dip with that. (thanks to u/knope2018 for suggesting old ben alongside the others for the triple dippage)
-
-- Admiral Raddus / Jyn / Cassian / K2 / Bistan. The rogues are rebels, after all.
-
-- MM / KK / Cara / Pao / Hoth Rebel Scout. Another possible rebel team.
+- I had a lot of trouble with this feat. Most of the normal sector enemies really crushed me. HOWEVER, the bonus node is quite beatable, so doing that while using Gideon for armor shreds is a good way to combine those two feats.
 
 Sector 4 Bosses:
 
-Sector 4 Miniboss - Win with Cere Surviving: This is hard to do with JML cheese, so I use the Dash Nuke team (BAM lead / Dash / CAT -or- Kuiil if you don't have CAT / Han Solo / Cere). Gotta have VA / AA to make the TM train work, and there's a little bit of RNG if Piett gets his mass daze off, but I was able to 3-star this fight with this team (and my Cere is only 3-star g10).
+Sector 4 Miniboss - Win with Starkiller Surviving: If you have him, I’m pretty sure he’ll survive.
 
-Sector 4 MiniBoss - Win without using Force Users of any kind: GG was solid for this.
+Sector 4 MiniBoss - Win without using Force Users of any kind: GG seps got 3 stars for me on this, and my B2 and DDK are both only G12.
 
-Sector 4 End Boss - Win with Darth Malgus and Sith Assassin surviving: JKL cheese or just DR lead sith empire.
+Sector 4 End Boss - Win with Trench surviving: JKL cheese
 
-Sector 4 End Boss - Win without using Force Users of any kind: Imp Troopers can do this and abuse the zombie to get all 50 kills they need in a single fight here.
+Sector 4 End Boss - Win with only light side characters: Ok.
 
 ----
 
 @@SECTOR 5
 
-Kill 50 Enemies with Inks:
+Kill 50 Enemies with Phoenix Characters:
 
-- GI / 7th / 8th / 5th / 9th. If you don't have GI, use 5th as lead and bring 2nd along as well. If you don't have decent inks (probably most of you), you can cheese this with...
+- THIS FEAT IS CURRENTLY BUGGED. Any kills you get while a phoenix squad member is present, on either side of the combat, will count. So if you're fighting PHX, they count. If you're fighting mandos with Sabine, those kills count, too.
 
-- Treya cheese.
+- JML / Ezra or Kanaan / 3 other Jedi. Force feed attacks to the PHX Jedi.
 
-Win 14 Battles with no Tanks:
+- Phoenix Squad. Fine, if your PHX are so good, use them.
 
-- CLS / Han / Chewie / C3PO / 3PAC. Easy wins vs. Bad Batch, Inks, and a range of other teams.
+Win 20 battles without losing any units:
 
-- Rey / RH Finn / RH Poe / Scav / BB8. Solid tankless team if you have Rey.
+- Basically free since you’ll be winning without losing any units just to get 3 stars.
 
-- JMK / CAT / GAS / Ahsoka / Shaak. Solid tankless JMK team if you have him, double dips with armor shreds.
+Inflict Blind 60 Times:
 
-- Veers / Piett / Starck / Gideon / Range. The venerable imps also double dip with armor shred (Gideon).
+- CLS with 3PAC on the team. Easy. You can cheese this in a single combat against the Phoenix Squad. Take off your AA discs but keep VA + UD. Kanaan's unique will mean all of the phx squad team members will gain health and protection any time they get debuffed. Which is all the time thanks to VA. So they'll never die. Rotate through your team stunning all the PHX folks, and then once you get 3PAC to 3 stacks of Translation, just use everyone else's basic (especially C3PO's) and 3PAC's blind will be available to use on every single one of his turns. 60 blinds no sweat. Let the fight time out and you won't even burn stamina.
 
-- LV / 4 non tank guys LV is friends with. I've heard this works. I don't have LV so I can't test it.
-
-- Maul Cheese
-
-- Dash Nuke Cheese.
-
-Inflict Armor Shred 20 Times:
-
-- See above. Sabine also shreds, so if yours is good (mine isn't), you can toss her on a rebel team or just use PHX if your whole squad works. Finally, Fennec Shand shreds like a beast, so if you can get a BH squad going (with no tanks, even), she can help you out here. (Credit to u/RKNieen for letting me know)
-
-Defense Up: CW Chewie Lead / Old Ben / K2SO / L3-37 / Scarif Rebel Pathfinder (or literally any other 4 tanks). Every time someone is damaged they have a 50% chance to gain defense up, so just send this team against something with a lot of AoE like an OR team and let them auto basic until it times out. Feat done in 1 combat.
+Gain Foresight 60 Times: Really weird that this feat is in the conquest twice. But whatever, the same cheese team as earlier will work. Using JML / kanaan / hoda / GMY / cal (or cere) will let you double up on phoenix kills, plus get some cal or cere kills, too.
 
 Sector 5 Bosses:
 
-Sector 5 MiniBoss - Win without using Force Users of any kind: I like Seps for this (GG / B1 / B2 / Nute / Magna). It's generally pretty effective. Imp Troopers also work well, but they might be tied up doing battles in earlier sectors for a while.
+Sector 5 MiniBoss - Win without using Force Users of any kind: I like Seps and Imps for this.
 
-Sector 5 Miniboss - Win with Cal Kestis surviving: I guess bring him with your JKL cheese.
+Sector 5 Miniboss - Win with 5 Sith Empire Characters: Ok.
 
-Sector 5 End Boss - Win with Admiral Trench surviving: If you followed my guide for the last set of conquests, you can do this! If not... well, you're S.O.O.L. on this one
+Sector 5 End Boss - Win with JKCK surviving: I don’t have him, so I’ll be skipping this. If you do have him, JKL / JML / Wat cheese is good. Or I’ve heard JKCK is fine on his own squad.
 
-Sector 5 End Boss - Win without using a GL: (actually no force users). The GG team is outstanding in this fight. Keep Rey stunned (you can!) and it's a cinch.
+Sector 5 End Boss - Win without using Force Users of any kind: GG fucking wrecked this boss for 3 stars and this feat. And that's with g12 B2 and g12 DDK on my team.
