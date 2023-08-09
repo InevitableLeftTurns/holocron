@@ -60,8 +60,9 @@ class ConquestHolocron(commands.Cog, Holocron):
                 # noinspection PyStatementEffect
                 self.tip_storage["globals"][feat_num]
             except IndexError:  # called if location[1] dne
-                raise InvalidLocationError("Character following `g` for global feat must be a number indicating which"
-                                           " global feat to query.")
+                # raise InvalidLocationError("Character following `g` for global feat must be a number indicating which"
+                #                            " global feat to query.")
+                return True
             except ValueError:  # called if location[1] not an int
                 raise InvalidLocationError("The character following `g` must be a number.")
             except KeyError:  # called if feat_num not in [1,8]
