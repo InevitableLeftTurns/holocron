@@ -33,7 +33,7 @@ class Holocron:
     def dummy_populate(self):
         raise NotImplementedError
 
-    def valid_location(self, location, response_method):
+    def valid_location(self, location):
         raise NotImplementedError
 
     def get_tips(self, location):
@@ -162,13 +162,12 @@ class Holocron:
 
         else:
             location = user_command.lower()
-            if await self.valid_location(location, response_method):
+            if self.valid_location(location):
                 try:
                     to_edit = args[1]
                 except IndexError:
                     to_edit = ""
                 await self.holocron_tips(ctx.guild, ctx.channel, ctx.author, response_method, location, to_edit)
-                return
 
     async def holocron_tips(self, guild, channel, author, response_method, tip_location: str, to_edit):
         modifying = {
@@ -383,3 +382,7 @@ class Holocron:
         await response_method.send(feedback)
 
         self.save_storage()
+
+
+class InvalidLocationError(Exception):
+    pass
