@@ -125,11 +125,12 @@ class ConquestHolocron(commands.Cog, Holocron):
                     # noinspection PyStatementEffect
                     self.tip_storage["sectors"][sector_num]["feats"][feat_num]
                 except IndexError:  # called if location[3] dne
-                    # raise InvalidLocationError("The character following `f` for sector feats must be a number "
-                    #                            "indicating which feat to query.")
-                    return True
+                    raise InvalidLocationError("The character following `f` for sector feats must be a number "
+                                               "indicating which feat to query.")
+                    # return True
                 except ValueError:  # called if location[3] not a number
-                    raise InvalidLocationError("The character following `f` must be a number.")
+                    # raise InvalidLocationError("The character following `f` must be a number.")
+                    return True
                 except KeyError:  # called if feat_num not in [1,4]
                     raise InvalidLocationError("The number following `f` must be between 1 and 4 (inclusive).")
         else:
@@ -142,10 +143,10 @@ class ConquestHolocron(commands.Cog, Holocron):
         tip_group = self.get_group_data(location, location[3:] != '')
         if location[0] == "g":
             tip_address = location[1]
-        elif location[3:] == '':
+        elif location[3:] == '' and isinstance(tip_group, list):
             # boss/miniboss tips
             return tip_group
-        else: # location[0] == "s"
+        else:  # location[0] == "s"
             tip_address = location[3:]
 
         return tip_group[int(tip_address)]
