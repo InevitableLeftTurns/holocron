@@ -4,9 +4,6 @@ from util.base_holocron import Holocron, InvalidLocationError
 
 
 class RiseHolocron(commands.Cog, Holocron):
-    @commands.command("error")
-    async def _error(self, ctx):
-        raise NotImplementedError
     def __init__(self, bot=commands.Bot):
         super().__init__(bot, "rise")
         self.location_regex = compile(r"([a-z]+)?([0-9]+)?([a-z]+)?([0-9]+)?")
