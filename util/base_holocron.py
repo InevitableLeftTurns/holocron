@@ -18,7 +18,6 @@ class Holocron:
     Class for all Holocrons to inherit from. Contains most base functionality required for Holocrons to work.
     Methods needing implementation at top, commands not inlcuded.
     """
-
     def __init__(self, bot: commands.Bot, name):
         self.bot = bot
         self.tip_storage = None
@@ -34,7 +33,7 @@ class Holocron:
     def dummy_populate(self):
         raise NotImplementedError
 
-    def valid_location(self, location, response_method):
+    def valid_location(self, location):
         raise NotImplementedError
 
     def is_group_location(self, location: str):
@@ -84,7 +83,7 @@ class Holocron:
             if section_count:
                 # duplicate subsection in a dict of index -> subsection data for count times
                 for idx in range(0, section_count):
-                    section_storage[idx + 1] = deepcopy(sub_section_storage or [])
+                    section_storage[idx+1] = deepcopy(sub_section_storage or [])
             else:
                 if section_config.get('tips'):
                     section_storage['tips'] = []
@@ -169,7 +168,7 @@ class Holocron:
 
         else:
             location = user_command.lower()
-            if await self.valid_location(location, response_method):
+            if await self.valid_location(location):
 
                 # detect and handle short addresses
                 if self.is_group_location(location):
@@ -296,11 +295,11 @@ class Holocron:
 
             tip_messages = [f"Which tip would you like to {mod_type}?"]
             for index, tip in enumerate(user_tips):
-                tip_messages.append(f"{index + 1} - {tip.create_selection_message()}")
+                tip_messages.append(f"{index+1} - {tip.create_selection_message()}")
 
             emoji_list = []
             for index in range(len(user_tips)):
-                emoji = str(index + 1) + "\u20E3"
+                emoji = str(index+1) + "\u20E3"
                 emoji_list.append(emoji)
 
             if page_count > 1:
@@ -453,3 +452,7 @@ class Holocron:
         await response_method.send(feedback)
 
         self.save_storage()
+
+
+class InvalidLocationError(Exception):
+    pass

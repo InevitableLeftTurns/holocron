@@ -1,8 +1,8 @@
 import discord
 from discord.ext import commands
 from discord.utils import get
-
 from util import helpmgr
+from util.base_holocron import InvalidLocationError
 from util.settings.response_handler import get_response_type
 
 
@@ -22,8 +22,8 @@ class BaseCommands(commands.Cog):
         bot = guild.get_member(self.bot.user.id)
         await bot.add_roles(bot_perm_role)
 
-    @commands.Cog.listener()
-    async def on_command_error(self, ctx: commands.Context, exception):  # ignores response setting, always in-channel
+    @commands.Cog.listener()  # ignores response setting, always in-channel
+    async def on_command_error(self, ctx: commands.Context, exception: commands.CommandInvokeError):
         if ctx.command is None:
             message_content = ctx.message.content
             space_index = message_content.find(" ")
@@ -33,6 +33,12 @@ class BaseCommands(commands.Cog):
                 command_component = message_content
             await ctx.send(f"The command `{command_component}` does not exist. For a list of commands, use "
                            f"`{ctx.prefix}help`.")
+            return
+
+        python_exception = exception.original
+        if isinstance(python_exception, InvalidLocationError):
+            await ctx.send(python_exception.args[0])
+            return
         else:
             await ctx.send(f"[TEMP] Error on command `{ctx.prefix}{ctx.command.name}`: {exception}")
 
