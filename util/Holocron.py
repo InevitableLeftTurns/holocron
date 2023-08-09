@@ -342,6 +342,10 @@ class Holocron:
         try:
             emoji_num = int(reaction.emoji[0])
         except ValueError:  # if emoji is one of the arrow emojis
+            if reaction.emoji == "🚫":
+                del self.awaiting_reactions[reaction.message.id]
+                await response_method.send("Selection Cancelled.")
+                return
             await self.change_edit_page(reaction, awaiting_reaction, user)
             return
 

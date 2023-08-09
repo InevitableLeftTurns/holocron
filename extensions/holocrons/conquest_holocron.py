@@ -157,7 +157,10 @@ class ConquestHolocron(commands.Cog, Holocron):
         tip_group = self.get_group_data(location, location[3:] != '')
         if location[0] == "g":
             tip_address = location[1]
-        else:  # location[0] == "s"
+        elif location[3:] == '':
+            # boss/miniboss tips
+            return tip_group
+        else: # location[0] == "s"
             tip_address = location[3:]
 
         return tip_group[int(tip_address)]
