@@ -112,6 +112,9 @@ class RiseHolocron(commands.Cog, Holocron):
         except KeyError:
             return None
 
+    def is_group_location(self, location: str):
+        return False
+
     @commands.command(name="rise", aliases=["r"], extras={'is_holocron': True},
                       description="Access the Rise Holocron for reading and managing Rise Tips")
     async def rise_manager(self, ctx: commands.Context, *args):

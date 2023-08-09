@@ -18,6 +18,7 @@ class Holocron:
     Class for all Holocrons to inherit from. Contains most base functionality required for Holocrons to work.
     Methods needing implementation at top, commands not inlcuded.
     """
+
     def __init__(self, bot: commands.Bot, name):
         self.bot = bot
         self.tip_storage = None
@@ -36,7 +37,13 @@ class Holocron:
     def valid_location(self, location, response_method):
         raise NotImplementedError
 
+    def is_group_location(self, location: str):
+        raise NotImplementedError
+
     def get_tips(self, location):
+        raise NotImplementedError
+
+    def get_group_data(self, location, feats=False):
         raise NotImplementedError
 
     # Base Functionality
@@ -56,7 +63,7 @@ class Holocron:
         return self.labels.get(location)
 
     def get_map_name(self, location, *args):
-        return "Map not available yet."
+        raise NotImplementedError
 
     def clean_storage(self):
         self.tip_storage = {}
@@ -66,7 +73,7 @@ class Holocron:
         self.tip_storage = self.config_to_storage(config)
         self.save_storage()
 
-    def config_to_storage(self, config: dict, populate=False):
+    def config_to_storage(self, config: dict):
         storage = {}
         for section, section_config in config.items():
             sub_sections = section_config.get('subs', {})
@@ -77,7 +84,7 @@ class Holocron:
             if section_count:
                 # duplicate subsection in a dict of index -> subsection data for count times
                 for idx in range(0, section_count):
-                    section_storage[idx+1] = deepcopy(sub_section_storage or [])
+                    section_storage[idx + 1] = deepcopy(sub_section_storage or [])
             else:
                 if section_config.get('tips'):
                     section_storage['tips'] = []
@@ -163,24 +170,31 @@ class Holocron:
         else:
             location = user_command.lower()
             if await self.valid_location(location, response_method):
-                try:
-                    to_edit = args[1]
-                except IndexError:
-                    to_edit = ""
-                await self.holocron_tips(ctx.guild, ctx.channel, ctx.author, response_method, location, to_edit)
-                return
+
+                # detect and handle short addresses
+                if self.is_group_location(location):
+                    # what about boss tips?
+                    await self.holocron_handle_group(ctx.author, response_method, location)
+                else:
+                    try:
+                        to_edit = args[1]
+                    except IndexError:
+                        to_edit = ""
+                    await self.holocron_tips(ctx.guild, ctx.channel, ctx.author, response_method, location, to_edit)
+                    return
 
     async def holocron_tips(self, guild, channel, author, response_method, tip_location: str, to_edit):
-        modifying = {
-            "add": partial(self.add_tip, channel),
-            "edit": partial(self.edit_tip, to_edit, guild),
-            "delete": partial(self.edit_tip, to_edit, guild)
-        }
-        try:
-            await modifying[to_edit](author, tip_location, response_method)
-            return
-        except KeyError:
-            pass
+        if to_edit:
+            modifying = {
+                "add": partial(self.add_tip, channel),
+                "edit": partial(self.edit_tip, to_edit, guild),
+                "delete": partial(self.edit_tip, to_edit, guild)
+            }
+            try:
+                await modifying[to_edit](author, tip_location, response_method)
+                return
+            except KeyError:
+                pass
 
         location_tips = self.get_tips(tip_location)
         total = len(location_tips)
@@ -203,6 +217,50 @@ class Holocron:
             if label:
                 response += f"\n{label}"
             await response_method.send(response)
+
+    async def holocron_handle_group(self, author, response_method, group_location: str):
+        # tip_location is a short address, missing a trailling numeral and therefore
+        # looking to display a list of tip locations. however, it is possible the group itself
+        # has tips e.g. bossees and minibosses in Conquest
+        response = []
+        try:
+            tips = self.get_tips(group_location)
+            total = len(tips)
+            sort_tips(tips)
+            top_three = tips[:3]
+            response = [f"__**Recent {len(top_three)} tip{'' if len(top_three) == 1 else 's'} "
+                        f"(of {total}) for {group_location}**__"]
+            for index, tip in enumerate(top_three):
+                response.append(f"{index + 1} - " + tip.create_tip_message())
+            response.append("")
+        except LookupError:
+            pass
+        except ValueError:
+            pass
+
+        response.append("View Tips for which feat?")
+
+        group_data = self.get_group_data(group_location, True)
+        for idx, tips in group_data.items():
+            label_location = group_location + str(idx)
+            label = self.get_label(label_location)
+            count_tips = len(tips)
+
+            response.append(f"{idx} - {label} (#tips: {count_tips})")
+
+        emoji_list = []
+        for index in range(len(group_data)):
+            emoji = str(index + 1) + "\u20E3"
+            emoji_list.append(emoji)
+
+        emoji_list.append("🚫")
+        sent_message = await response_method.send('\n'.join(response))
+
+        self.awaiting_reactions[sent_message.id] = AwaitingReaction(author.id, emoji_list,
+                                                                    list(group_data.keys()), 'view', group_location)
+
+        for emoji in emoji_list:
+            await sent_message.add_reaction(emoji)
 
     async def add_tip(self, channel, author, location, response_method):
         def check_message(message):
@@ -238,11 +296,11 @@ class Holocron:
 
             tip_messages = [f"Which tip would you like to {mod_type}?"]
             for index, tip in enumerate(user_tips):
-                tip_messages.append(f"{index+1} - {tip.create_selection_message()}")
+                tip_messages.append(f"{index + 1} - {tip.create_selection_message()}")
 
             emoji_list = []
             for index in range(len(user_tips)):
-                emoji = str(index+1) + "\u20E3"
+                emoji = str(index + 1) + "\u20E3"
                 emoji_list.append(emoji)
 
             if page_count > 1:
@@ -279,6 +337,7 @@ class Holocron:
 
         tips = awaiting_reaction.tips
         mod_type = awaiting_reaction.mod_type
+        location = awaiting_reaction.location
 
         try:
             emoji_num = int(reaction.emoji[0])
@@ -290,7 +349,9 @@ class Holocron:
 
         chosen_tip = tips[emoji_num - 1]
         channel = reaction.message.channel
-        if mod_type == "edit":
+        if mod_type == "view":
+            await self.handle_view_group(response_method, chosen_tip, location)
+        elif mod_type == "edit":
             await self.handle_tip_edit(response_method, chosen_tip, channel, user)
         else:  # mod_type == delete:
             await self.handle_tip_delete(response_method, chosen_tip, channel, user, awaiting_reaction.location)
@@ -339,6 +400,11 @@ class Holocron:
         await reaction.message.edit(content="\n".join(tip_messages))
         for emoji in emoji_list:
             await reaction.message.add_reaction(emoji)
+
+    async def handle_view_group(self, response_method, chosen, location):
+        final_location = location + str(chosen)
+        await self.holocron_tips(None, None, None, response_method, final_location, '')
+        return
 
     async def handle_tip_edit(self, response_method, tip, channel, user):
         def check_message(message):

@@ -60,9 +60,9 @@ class ConquestHolocron(commands.Cog, Holocron):
                 # noinspection PyStatementEffect
                 self.tip_storage["globals"][feat_num]
             except IndexError:  # called if location[1] dne
-                await response_method.send("Character following `g` for global feat must be a number indicating which"
-                                           " global feat to query.")
-                return False
+                # await response_method.send("Character following `g` for global feat must be a number indicating which"
+                #                            " global feat to query.")
+                return True
             except ValueError:  # called if location[1] not an int
                 await response_method.send("The character following `g` must be a number.")
                 return False
@@ -137,9 +137,9 @@ class ConquestHolocron(commands.Cog, Holocron):
                     # noinspection PyStatementEffect
                     self.tip_storage["sectors"][sector_num]["feats"][feat_num]
                 except IndexError:  # called if location[3] dne
-                    await response_method.send("The character following `f` for sector feats must be a number "
-                                               "indicating which feat to query.")
-                    return False
+                    # await response_method.send("The character following `f` for sector feats must be a number "
+                    #                            "indicating which feat to query.")
+                    return True
                 except ValueError:  # called if location[3] not a number
                     await response_method.send("The character following `f` must be a number.")
                     return False
@@ -153,24 +153,30 @@ class ConquestHolocron(commands.Cog, Holocron):
 
         return True
 
-    def get_tips(self, location):
+    def get_tips(self, location: str):
+        tip_group = self.get_group_data(location, location[3:] != '')
         if location[0] == "g":
-            tip_list = self.tip_storage["globals"][int(location[1])]
-
+            tip_address = location[1]
         else:  # location[0] == "s"
+            tip_address = location[3:]
+
+        return tip_group[int(tip_address)]
+
+    def is_group_location(self, location: str):
+        return not location[-1].isdigit()
+
+    def get_group_data(self, location, feats=False):
+        if location[0] == "g":
+            group_data = self.tip_storage['globals']
+        else:
             tip_type = self.tip_types[location[2]]
-            sector = self.tip_storage["sectors"][int(location[1])][tip_type]
+            group_data = self.tip_storage["sectors"][int(location[1])][tip_type]
             if tip_type == "boss" or tip_type == "mini":
-                feat_num = location[3:]
-                if feat_num == "":  # standard tips
-                    tip_list = sector["tips"]
-                else:  # feat tips
-                    tip_list = sector["feats"][int(feat_num)]
-
-            else:  # tip_type == "feats" or "nodes"
-                tip_list = sector[int(location[3:])]
-
-        return tip_list
+                if feats:
+                    group_data = group_data['feats']
+                else:
+                    group_data = group_data['tips']
+        return group_data
 
     @commands.command(name="conquest", aliases=["c", "con", "conq"], extras={'is_holocron': True},
                       description="Access the Conquest Holocron for reading and managing Conquest Tips")
@@ -190,6 +196,10 @@ class ConquestHolocron(commands.Cog, Holocron):
         if label:
             return f"Feat: {label}"
         return None
+
+    def get_map_name(self, *args):
+        return 'Map not available yet.'
+
 
 async def setup(bot):
     await bot.add_cog(ConquestHolocron(bot))
