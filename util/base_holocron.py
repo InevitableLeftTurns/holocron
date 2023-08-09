@@ -168,7 +168,7 @@ class Holocron:
 
         else:
             location = user_command.lower()
-            if await self.valid_location(location):
+            if self.valid_location(location):
 
                 # detect and handle short addresses
                 if self.is_group_location(location):
@@ -181,6 +181,31 @@ class Holocron:
                         to_edit = ""
                     await self.holocron_tips(ctx.guild, ctx.channel, ctx.author, response_method, location, to_edit)
                     return
+
+    def prepare_tips(self, location):
+        location_tips = self.get_tips(location)
+        total = len(location_tips)
+        sort_tips(location_tips)
+        top_three = location_tips[:3]
+        label = self.get_label(location)
+
+        if len(top_three) > 0:
+            response = [f"__**Recent {len(top_three)} tip{'' if len(top_three) == 1 else 's'} "
+                        f"(of {total}) for {location}**__"]
+
+            if label:
+                response.append(label)
+
+            for index, tip in enumerate(top_three):
+                response.append(f"{index + 1} - " + tip.create_tip_message())
+
+            return '\n'.join(response)
+        else:
+            response = ""
+            if label:
+                response += f"{label}\n"
+            response += f"There are no tips in {location}."
+            return response
 
     async def holocron_tips(self, guild, channel, author, response_method, tip_location: str, to_edit):
         if to_edit:
@@ -195,27 +220,8 @@ class Holocron:
             except KeyError:
                 pass
 
-        location_tips = self.get_tips(tip_location)
-        total = len(location_tips)
-        sort_tips(location_tips)
-        top_three = location_tips[:3]
-        label = self.get_label(tip_location)
-
-        if len(top_three) > 0:
-            response = [f"__**Recent {len(top_three)} tip{'' if len(top_three) == 1 else 's'} "
-                        f"(of {total}) for {tip_location}**__"]
-
-            if label:
-                response.append(label)
-
-            for index, tip in enumerate(top_three):
-                response.append(f"{index + 1} - " + tip.create_tip_message())
-            await response_method.send('\n'.join(response))
-        else:
-            response = f"There are no tips in {tip_location}."
-            if label:
-                response += f"\n{label}"
-            await response_method.send(response)
+        response = self.prepare_tips(tip_location)
+        await response_method.send(response)
 
     async def holocron_handle_group(self, author, response_method, group_location: str):
         # tip_location is a short address, missing a trailling numeral and therefore
@@ -223,15 +229,7 @@ class Holocron:
         # has tips e.g. bossees and minibosses in Conquest
         response = []
         try:
-            tips = self.get_tips(group_location)
-            total = len(tips)
-            sort_tips(tips)
-            top_three = tips[:3]
-            response = [f"__**Recent {len(top_three)} tip{'' if len(top_three) == 1 else 's'} "
-                        f"(of {total}) for {group_location}**__"]
-            for index, tip in enumerate(top_three):
-                response.append(f"{index + 1} - " + tip.create_tip_message())
-            response.append("")
+            response = [self.prepare_tips(group_location), ""]
         except LookupError:
             pass
         except ValueError:
@@ -278,7 +276,7 @@ class Holocron:
         self.get_tips(location).append(Tip(tip_message))
         self.save_storage()
 
-        await response_method.send(f"Your tip has been added to {location}")
+        await response_method.send(f"Your tip has been added to {location}\n{self.prepare_tips(location)}")
 
     async def edit_tip(self, mod_type, guild, author, location, response_method):
         tips_list = self.get_tips(location)
@@ -355,9 +353,9 @@ class Holocron:
         if mod_type == "view":
             await self.handle_view_group(response_method, chosen_tip, location)
         elif mod_type == "edit":
-            await self.handle_tip_edit(response_method, chosen_tip, channel, user)
+            await self.handle_tip_edit(response_method, chosen_tip, location, channel, user)
         else:  # mod_type == delete:
-            await self.handle_tip_delete(response_method, chosen_tip, channel, user, awaiting_reaction.location)
+            await self.handle_tip_delete(response_method, chosen_tip, channel, user, location)
 
     async def change_edit_page(self, reaction, awaiting_reaction, user):
         page_num = awaiting_reaction.page_num
@@ -409,7 +407,7 @@ class Holocron:
         await self.holocron_tips(None, None, None, response_method, final_location, '')
         return
 
-    async def handle_tip_edit(self, response_method, tip, channel, user):
+    async def handle_tip_edit(self, response_method, tip, location, channel, user):
         def check_message(message):
             return message.channel.id == channel_id and message.author.id == user_id
 
@@ -427,7 +425,8 @@ class Holocron:
             tip.content = tip_message.content
             tip.edited = True
 
-            feedback = "Edit success. The tip will now display your last message as its content."
+            feedback = "Edit success. The tip will now display your last message as its content.\n"
+            feedback += f"{self.prepare_tips(location)}"
 
         await response_method.send(feedback)
 
@@ -445,7 +444,8 @@ class Holocron:
         confirm_message = await self.bot.wait_for("message", check=check_message)
         if confirm_message.content == "confirm":
             self.get_tips(location).remove(tip)
-            feedback = "Tip deleted."
+            feedback = "Tip deleted.\n"
+            feedback += f"{self.prepare_tips(location)}"
         else:
             feedback = "Deletion canceled. Tip not deleted."
 
