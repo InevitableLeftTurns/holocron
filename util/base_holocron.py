@@ -182,21 +182,21 @@ class Holocron:
                     await self.holocron_tips(ctx.guild, ctx.channel, ctx.author, response_method, location, to_edit)
                     return
 
-    def prepare_tips(self, location):
+    def prepare_tips(self, location, depth=3):
         location_tips = self.get_tips(location)
         total = len(location_tips)
         sort_tips(location_tips)
-        top_three = location_tips[:3]
+        top_n = location_tips[:depth]
         label = self.get_label(location)
 
-        if len(top_three) > 0:
-            response = [f"__**Recent {len(top_three)} tip{'' if len(top_three) == 1 else 's'} "
+        if len(top_n) > 0:
+            response = [f"__**Recent {len(top_n)} tip{'' if len(top_n) == 1 else 's'} "
                         f"(of {total}) for {location}**__"]
 
             if label:
                 response.append(label)
 
-            for index, tip in enumerate(top_three):
+            for index, tip in enumerate(top_n):
                 response.append(f"{index + 1} - " + tip.create_tip_message())
 
             return '\n'.join(response)
