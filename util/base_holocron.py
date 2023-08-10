@@ -9,6 +9,7 @@ from discord.ext import commands
 from functools import partial
 from util import helpmgr
 from util.command_checks import check_higher_perms
+from util.datautils import clamp
 from util.settings.response_handler import get_response_type
 from util.settings.tip_sorting_handler import sort_tips
 
@@ -207,20 +208,23 @@ class Holocron:
             response += f"There are no tips in {location}."
             return response
 
-    async def holocron_tips(self, guild, channel, author, response_method, tip_location: str, to_edit):
-        if to_edit:
+    async def holocron_tips(self, guild, channel, author, response_method, tip_location: str, subcommand):
+        if subcommand in ["add", "edit", "delete"]:
             modifying = {
                 "add": partial(self.add_tip, channel),
-                "edit": partial(self.edit_tip, to_edit, guild),
-                "delete": partial(self.edit_tip, to_edit, guild)
+                "edit": partial(self.edit_tip, subcommand, guild),
+                "delete": partial(self.edit_tip, subcommand, guild)
             }
-            try:
-                await modifying[to_edit](author, tip_location, response_method)
-                return
-            except KeyError:
-                pass
+            await modifying[subcommand](author, tip_location, response_method)
+            return
 
-        response = self.prepare_tips(tip_location)
+        elif subcommand and subcommand.isdigit():
+            num_tips = clamp(int(subcommand), 3, 10)
+
+        else:
+            num_tips = 3
+
+        response = self.prepare_tips(tip_location, num_tips)
         await response_method.send(response)
 
     async def holocron_handle_group(self, author, response_method, group_location: str):
