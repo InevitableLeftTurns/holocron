@@ -11,6 +11,7 @@ from discord.ext import commands, tasks
 from functools import partial
 from util import helpmgr
 from util.command_checks import check_higher_perms
+from util.datautils import clamp
 from util.settings.response_handler import get_response_type
 from util.settings.tip_sorting_handler import sort_tips
 
@@ -185,21 +186,21 @@ class Holocron:
                     await self.holocron_tips(ctx.guild, ctx.channel, ctx.author, response_method, location, to_edit)
                     return
 
-    def prepare_tips(self, location):
+    def prepare_tips(self, location, depth=3):
         location_tips = self.get_tips(location)
         total = len(location_tips)
         sort_tips(location_tips)
-        top_three = location_tips[:3]
+        top_n = location_tips[:depth]
         label = self.get_label(location)
 
-        if len(top_three) > 0:
-            response = [f"__**Recent {len(top_three)} tip{'' if len(top_three) == 1 else 's'} "
+        if len(top_n) > 0:
+            response = [f"__**Recent {len(top_n)} tip{'' if len(top_n) == 1 else 's'} "
                         f"(of {total}) for {location}**__"]
 
             if label:
                 response.append(label)
 
-            for index, tip in enumerate(top_three):
+            for index, tip in enumerate(top_n):
                 response.append(f"{index + 1} - " + tip.create_tip_message())
 
             return '\n'.join(response)
@@ -210,20 +211,23 @@ class Holocron:
             response += f"There are no tips in {location}."
             return response
 
-    async def holocron_tips(self, guild, channel, author, response_method, tip_location: str, to_edit):
-        if to_edit:
+    async def holocron_tips(self, guild, channel, author, response_method, tip_location: str, subcommand):
+        if subcommand in ["add", "edit", "delete"]:
             modifying = {
                 "add": partial(self.add_tip, channel),
-                "edit": partial(self.edit_tip, to_edit, guild),
-                "delete": partial(self.edit_tip, to_edit, guild)
+                "edit": partial(self.edit_tip, subcommand, guild),
+                "delete": partial(self.edit_tip, subcommand, guild)
             }
-            try:
-                await modifying[to_edit](author, tip_location, response_method)
-                return
-            except KeyError:
-                pass
+            await modifying[subcommand](author, tip_location, response_method)
+            return
 
-        response = self.prepare_tips(tip_location)
+        elif subcommand and subcommand.isdigit():
+            num_tips = clamp(int(subcommand), 3, 10)
+
+        else:
+            num_tips = 3
+
+        response = self.prepare_tips(tip_location, num_tips)
         await response_method.send(response)
 
     async def holocron_handle_group(self, author, response_method, group_location: str):
