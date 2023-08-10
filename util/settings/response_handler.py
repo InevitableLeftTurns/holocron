@@ -1,10 +1,11 @@
 import discord
+from discord.abc import Messageable
 
 
 response_settings = {}
 
 
-def get_response_type(guild: discord.Guild, user: discord.User, channel: discord.TextChannel):
+def get_response_type(guild: discord.Guild, user: discord.User, channel: discord.TextChannel) -> Messageable:
     setting = response_settings.get(str(guild.id), response_settings["0"])
     if setting == "dm":
         return user
