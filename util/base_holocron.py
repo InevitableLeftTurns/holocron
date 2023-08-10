@@ -1,3 +1,5 @@
+import datetime
+
 import discord
 import json
 import os.path
@@ -5,7 +7,7 @@ import pickle
 from copy import deepcopy
 from data.AwaitingReaction import AwaitingReaction
 from data.Tip import Tip
-from discord.ext import commands
+from discord.ext import commands, tasks
 from functools import partial
 from util import helpmgr
 from util.command_checks import check_higher_perms
@@ -25,8 +27,9 @@ class Holocron:
         self.name = name
         self.storage_filepath = f"data/{self.name}/{self.name}_storage.pckl"
 
-        self.load_storage()
         self.labels = self.load_labels()
+        self.load_storage()
+        self.clean_awaiting_reactions.start()
 
     # Requires Implementation
 
@@ -303,11 +306,12 @@ class Holocron:
             if page_count > 1:
                 tip_messages.append(f"Page 1/{page_count}")
                 emoji_list.append("➡️")
+            emoji_list.append("🚫")
 
             sent_tip_message = await response_method.send("\n".join(tip_messages))
 
-            self.awaiting_reactions[sent_tip_message.id] = AwaitingReaction(author.id, emoji_list,
-                                                                            user_tips, mod_type, location)
+            self.awaiting_reactions[sent_tip_message.id] = AwaitingReaction(author.id, emoji_list, user_tips, mod_type,
+                                                                            location)
 
             for emoji in emoji_list:
                 await sent_tip_message.add_reaction(emoji)
@@ -452,6 +456,15 @@ class Holocron:
         await response_method.send(feedback)
 
         self.save_storage()
+
+    @tasks.loop(time=datetime.time(hour=12))
+    async def clean_awaiting_reactions(self):
+        to_del = []
+        for message_id, awaiting in self.awaiting_reactions.items():
+            if (datetime.datetime.utcnow() - awaiting.creation_time).days >= 1:
+                to_del.append(message_id)
+        for message_id in to_del:
+            del self.awaiting_reactions[message_id]
 
 
 class InvalidLocationError(Exception):
