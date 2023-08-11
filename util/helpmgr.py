@@ -47,14 +47,19 @@ class ConquestHelp(HelpContent):
     def generate_content(self):
         return {
 
-            "all": ["intro", "read", "modify_header", "add", "edit", "delete", "clear"],
+            "all": ["intro", "read", "list", "modify_header", "add", "edit", "delete", "clear"],
 
             "intro": f"Manages tips for the currently active conquest.\nStart with "
                      f"`{self.prefix}conquest`, then follow with options from below.\n",
 
             "read": f"*Accessing Tips*- Simply place a `location` following `{self.prefix}conquest`. "
                     f"ex: `{self.prefix}conquest s1f2`.\n"
-                    f"\tFor `location` codes, use `{self.prefix}help conquest location`.\n",
+                    f"\tFor `location` codes, use `{self.prefix}help conquest location`.\n"
+                    f"\tTo read more than the most recent 3 tips, follow with a #.\n"
+                    F"\t\tex: `{self.prefix}con s3m1 5` to show 5 tips for Sector 1 Miniboss Feat 1\n",
+
+            "list": f"You can `list` all feats for a Sector, Boss, or Miniboss by using a shortened address.\n"
+                    f"\tex: `{self.prefix}con s3b` or `{self.prefix}con s3f` or `{self.prefix}con g`\n",
 
             "modify_header": f"*Tip Modification*- For the below modifications, place the corresponding tag "
                              f"after your location.\nex: `{self.prefix}conquest <location> <command>`",
@@ -73,14 +78,16 @@ class ConquestHelp(HelpContent):
 
             'location': "Conquest location syntax will depend on what kind of location it is:\n"
                         "* Global Feats- global feats consist of `g` and a number representing which feat. "
-                        "ex: `g3`\n"
+                        "ex: `g3` for tips for Global Feat 3" 
                         "* Sector Tips- Each kind of sector tip has a slightly different syntax, detailed "
                         "below, but all start with `s` and a number representing which sector. ex: `s2`.\n"
                         " * Boss- add `b` for tips on defeating the sector boss. ex: `s2b`\n"
                         " * Boss Feats- add `b` and the feat number to query boss feats. ex: `s2b3`\n"
                         " * Miniboss and Miniboss Feats- add `m`. Same syntax as boss. ex: `s4m` or `s4m2`\n"
                         " * Nodes- add `n` and a number representing which node. ex: `s3n16`\n"
-                        " * Sector Feats- add `f` and a number representing which feat. ex: `s1f3`",
+                        " * Sector Feats- add `f` and a number representing which feat. ex: `s1f3`\n"
+                        "* To `list` all feats for a Sector, Boss, or Miniboss use a shortened address.\n"
+                        f"\tex: `{self.prefix}con s3b` or `{self.prefix}con s3f` or `{self.prefix}con g`\n",
         }
 
 
