@@ -270,8 +270,10 @@ class Holocron:
         def check_message(message):
             return message.channel.id == channel_id and message.author.id == user_id
 
-        await response_method.send(f"Your next message in this channel will be added as a tip in {location}. If you "
-                                   f"wish to cancel, respond with `cancel`.")
+        label = self.get_label(location)
+        await response_method.send(f"Your next message in this channel will be added as a tip in {location}.\n"
+                                   f"{label if label else ''}\n"
+                                   f"If you wish to cancel, respond with `cancel`.")
         channel_id = channel.id
         user_id = author.id
         tip_message = await self.bot.wait_for("message", check=check_message)
