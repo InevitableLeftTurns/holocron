@@ -1,6 +1,6 @@
 from data.Tip import Tip
 from discord.ext import commands
-from util.base_holocron import Holocron, InvalidLocationError
+from util.base_holocron import Holocron
 
 
 class ConquestHolocron(commands.Cog, Holocron):
@@ -152,6 +152,13 @@ class ConquestHolocron(commands.Cog, Holocron):
 
         return tip_group[int(tip_address)]
 
+    def get_long_location(self, location):
+        long_loc_array = [self.get_label(label_key, raw=True) or f"{label_key}" for label_key in location]
+        long_loc = ' '.join(long_loc_array)
+        if len(long_loc_array) % 2 == 1:  #is odd
+            long_loc += 's'
+        return f"{long_loc} (`{location}`)"
+
     def is_group_location(self, location: str):
         return not location[-1].isdigit()
 
@@ -181,11 +188,11 @@ class ConquestHolocron(commands.Cog, Holocron):
     #                                  "Conquest Tips")
     #     (Holocron.holocron_command_manager))
 
-    def get_label(self, location):
+    def get_label(self, location, raw=False):
         label = super().get_label(location)
-        if label:
-            return f"Feat: {label}"
-        return None
+        if label and not raw:
+            label = f"Feat: {label}"
+        return label
 
     def get_map_name(self, *args):
         return 'Map not available yet.'

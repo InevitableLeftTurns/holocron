@@ -16,8 +16,8 @@ class WarHolocron(commands.Cog, Holocron):
     def dummy_populate(self):
         pass
 
-    def prepare_tips(self, location, depth=5):
-        return super().prepare_tips(location, depth)
+    def format_tips(self, location, depth=5):
+        return super().format_tips(location, depth)
 
     def is_group_location(self, location: str):
         return False
