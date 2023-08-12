@@ -1,21 +1,25 @@
 import datetime
-
-import discord
 import json
 import os.path
 import pickle
+import sys
 from copy import deepcopy
-from data.AwaitingReaction import AwaitingReaction
-from data.Tip import Tip
-from discord.ext import commands, tasks
 from functools import partial
 
+import discord
+from discord.ext import commands, tasks
+
+from entities.interactions import AwaitingReaction
 from entities.locations import HolocronLocation
+from entities import tip
+from entities.tip import Tip
 from util import helpmgr
 from util.command_checks import check_higher_perms
 from util.datautils import clamp
 from util.settings.response_handler import get_response_type
 from util.settings.tip_sorting_handler import sort_tips
+
+sys.modules['data.Tip'] = tip
 
 
 class Holocron:

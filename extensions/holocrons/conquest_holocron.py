@@ -1,7 +1,7 @@
-from data.Tip import Tip
 from discord.ext import commands
 
 from entities.locations import ConquestLocation
+from entities.tip import Tip
 from util.base_holocron import Holocron
 
 

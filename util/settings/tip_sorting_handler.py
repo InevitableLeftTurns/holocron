@@ -1,4 +1,4 @@
-from data.Tip import Tip
+from entities.tip import Tip
 
 
 def sort_tips(tips: list[Tip], sort_method="recent"):
@@ -14,8 +14,10 @@ def sort_tips(tips: list[Tip], sort_method="recent"):
 
     tips.sort(reverse=reverse, key=key)
 
+
 def creation_time(tip):
     return tip.creation_time
+
 
 def rating(tip):
     return tip.rating

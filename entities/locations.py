@@ -273,3 +273,30 @@ class RiseLocation(HolocronLocation):
                                        "Battles are numbered left to right. Use `map` for a visual reference.")
 
         return
+
+
+class WarLocation(HolocronLocation):
+    def __init__(self, location_string, labels):
+        super().__init__(location_string, labels)
+
+    def get_group_address(self):
+        raise NotImplementedError
+
+    def get_map_name(self):
+        raise NotImplementedError
+
+    def get_location_name(self):
+        return f"{self.labels['aliases'][self.address]}"
+
+    def get_tip_title(self):
+        return self.get_location_name()
+
+    def get_detail(self):
+        return self.get_location_name()
+
+    def parse_location(self, is_map=False, is_group=False):
+        # parses the location address and raises errors if the address is invalid
+        if len(self.address) == 0:
+            raise InvalidLocationError(f"Invalid or missing location.")
+
+        return

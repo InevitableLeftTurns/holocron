@@ -1,7 +1,7 @@
-import json
 import datetime
+import json
 
-from data.Tip import Tip
+from entities.tip import Tip
 from util import dateutils
 
 
