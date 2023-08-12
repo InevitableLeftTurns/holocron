@@ -39,14 +39,13 @@ class Holocron:
         self.location_cls = None
 
     # Requires Implementation
-
     def dummy_populate(self):
         raise NotImplementedError
 
     def get_tips(self, location: HolocronLocation):
         raise NotImplementedError
 
-    def get_group_data(self, location, feats=False):
+    def get_group_data(self, location, override_feats=False):
         raise NotImplementedError
 
     # Base Functionality
@@ -174,9 +173,8 @@ class Holocron:
             location = self.get_location(user_command.lower())
 
             # detect and handle short addresses
-            if location.is_group_location():
-                # what about boss tips?
-                await self.holocron_handle_group(ctx.author, response_method, location)
+            if location.is_group_location:
+                await self.holocron_group_list(ctx.author, response_method, location)
             else:
                 try:
                     to_edit = args[1]
@@ -229,23 +227,19 @@ class Holocron:
         response = self.format_tips(tip_location, num_tips)
         await response_method.send(response)
 
-    async def holocron_handle_group(self, author, response_method, group_location: HolocronLocation):
-        # tip_location is a short address, missing a trailing numeral and therefore
+    async def holocron_group_list(self, author, response_method, location: HolocronLocation):
+        # tip_location is a short address, missing a final id
         # looking to display a list of tip locations. however, it is possible the group itself
         # has tips e.g. bosses and mini-bosses in Conquest
         response = []
-        try:
-            response = [self.format_tips(group_location), ""]
-        except LookupError:
-            pass
-        except ValueError:
-            pass
+        if location.has_group_tips():
+            response = [self.format_tips(location), ""]
 
-        response.append(f"View Tips for which feat?")  # group_location.get_leaf_name()
+        response.append(f"View Tips for which {location.get_address_type_name()}?")
 
-        group_data = self.get_group_data(group_location, True)
+        group_data = self.get_group_data(location, override_feats=True)
         for idx, tips in group_data.items():
-            tip_title = group_location.get_tip_title() + f"{str(idx)}"
+            tip_title = location.get_tip_title() + f"{str(idx)}"
             count_tips = len(tips)
 
             response.append(f"{idx} - {tip_title} (#tips: {count_tips})")
@@ -259,7 +253,7 @@ class Holocron:
         sent_message = await response_method.send('\n'.join(response))
 
         self.awaiting_reactions[sent_message.id] = AwaitingReaction(author.id, emoji_list,
-                                                                    list(group_data.keys()), 'view', group_location)
+                                                                    list(group_data.keys()), 'view', location)
 
         for emoji in emoji_list:
             await sent_message.add_reaction(emoji)
