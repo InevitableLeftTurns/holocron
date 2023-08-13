@@ -75,7 +75,10 @@ class BaseCommands(commands.Cog):
                 response.append(f"\t**{ctx.prefix}{com.name}** (aliases: {aliases})\n"
                                 f"\t{com.description}\n")
 
-        await response_method.send("\n".join(response))
+            response.append("To submit feature requests, bug reports, or general comments:"
+                            " [Holocron Tracker](https://github.com/InevitableLeftTurns/holocron_tracker/issues)")
+
+        await response_method.send("\n".join(response), suppress_embeds=True)
 
 
 async def setup(bot):

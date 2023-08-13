@@ -11,7 +11,7 @@ from discord.ext import commands, tasks
 
 from entities.interactions import AwaitingReaction
 from entities.locations import HolocronLocation
-from entities import tip
+from entities import tip as tip_module
 from entities.tip import Tip
 from util import helpmgr
 from util.command_checks import check_higher_perms
@@ -19,13 +19,13 @@ from util.datautils import clamp
 from util.settings.response_handler import get_response_type
 from util.settings.tip_sorting_handler import sort_tips
 
-sys.modules['data.Tip'] = tip
+sys.modules['data.Tip'] = tip_module
 
 
 class Holocron:
     """
     Class for all Holocrons to inherit from. Contains most base functionality required for Holocrons to work.
-    Methods needing implementation at top, commands not inlcuded.
+    Methods needing implementation at top, commands not included.
     """
 
     def __init__(self, bot: commands.Bot, name):
@@ -129,7 +129,7 @@ class Holocron:
         try:
             self.dummy_populate()
         except NotImplementedError:
-            await response_method.send("Dummy popuation not yet implemented.")
+            await response_method.send("Dummy population not yet implemented.")
             return
 
         await response_method.send("Data added.")
@@ -360,11 +360,11 @@ class Holocron:
         chosen_tip = tips[emoji_num - 1]
         channel = reaction.message.channel
         if mod_type == "view":
-            await self.handle_view_group(response_method, chosen_tip, location)
+            await self.handle_view_group(chosen_tip, location, response_method)
         elif mod_type == "edit":
-            await self.handle_tip_edit(response_method, chosen_tip, location, channel, user)
+            await self.handle_tip_edit(chosen_tip, location, response_method, user, channel)
         else:  # mod_type == delete:
-            await self.handle_tip_delete(response_method, chosen_tip, channel, user, location)
+            await self.handle_tip_delete(chosen_tip, location, response_method, user, channel)
 
     async def change_edit_page(self, reaction, awaiting_reaction, user):
         page_num = awaiting_reaction.page_num
@@ -411,13 +411,13 @@ class Holocron:
         for emoji in emoji_list:
             await reaction.message.add_reaction(emoji)
 
-    async def handle_view_group(self, response_method, chosen, location: HolocronLocation):
+    async def handle_view_group(self, chosen, location: HolocronLocation, response_method):
         # location has a group address
         selected_location = self.get_location(location.address + str(chosen))
         await self.holocron_tips(selected_location, '', response_method, None, None, None)
         return
 
-    async def handle_tip_edit(self, response_method, tip, location, channel, user):
+    async def handle_tip_edit(self, tip, location, response_method, user, channel):
         def check_message(message):
             return message.channel.id == channel_id and message.author.id == user_id
 
@@ -442,7 +442,7 @@ class Holocron:
 
         self.save_storage()
 
-    async def handle_tip_delete(self, response_method, tip, channel, user, location):
+    async def handle_tip_delete(self, tip, location, response_method, user, channel):
         def check_message(message):
             return message.channel.id == channel_id and message.author.id == user_id
 
