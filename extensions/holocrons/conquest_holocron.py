@@ -51,8 +51,13 @@ class ConquestHolocron(commands.Cog, Holocron):
 
     def get_tips(self, location: ConquestLocation):
         tip_group = self.get_group_data(location)
+
         if location.is_group_location:
             return tip_group
+
+        if location.sector_node_type_id == 'n' and location.feat_address not in tip_group:
+            # nodes are not pre-assembled and may be missing
+            tip_group[location.feat_address] = []
         return tip_group[location.feat_address]
 
     def get_group_data(self, location: ConquestLocation, override_feats=False):

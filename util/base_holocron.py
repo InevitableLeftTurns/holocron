@@ -162,10 +162,13 @@ class Holocron:
             return
 
         elif user_command == 'map':
-            location = self.get_location(args[1:], is_map=True)
-            map_name = location.get_map_name()
-            await response_method.send(map_name,
-                                       file=discord.File(f'data/{self.name}/images/{map_name}.png'))
+            try:
+                location = self.get_location(args[1], is_map=True)
+                map_name = location.get_map_name()
+                await response_method.send(map_name,
+                                           file=discord.File(f'data/{self.name}/images/{map_name.lower()}.png'))
+            except NotImplementedError:
+                await response_method.send(f"Map command not supported for {self.name}")
 
         elif user_command == 'help':
             commands_args = args[1:]
@@ -184,7 +187,7 @@ class Holocron:
                     to_edit = args[1]
                 except IndexError:
                     to_edit = ""
-                await self.holocron_tips(ctx.guild, ctx.channel, ctx.author, response_method, location, to_edit)
+                await self.holocron_tips(location, to_edit, response_method, ctx.author, ctx.channel, ctx.guild)
                 return
 
     def format_tips(self, location: HolocronLocation, depth=3):
@@ -195,8 +198,8 @@ class Holocron:
         detail = location.get_detail()
 
         if len(top_n) > 0:
-            response = [f"__**Recent {len(top_n)} tip{'' if len(top_n) == 1 else 's'} "
-                        f"(of {total}) for {location.get_location_name()}**__"]
+            response = [f"__**Recent tip{'' if len(top_n) == 1 else 's'} {len(top_n)}** "
+                        f"(of {total}) for **{location.get_location_name()}**__"]
 
             if detail:
                 response.append(detail)
@@ -212,7 +215,7 @@ class Holocron:
             response += f"There are no tips for {location.get_location_name()}."
             return response
 
-    async def holocron_tips(self, guild, channel, author, response_method, tip_location: HolocronLocation, subcommand):
+    async def holocron_tips(self, tip_location: HolocronLocation, subcommand, response_method, author, channel, guild):
         if subcommand in ["add", "edit", "delete"]:
             modifying = {
                 "add": partial(self.add_tip, channel),
@@ -243,7 +246,8 @@ class Holocron:
 
         group_data = self.get_group_data(location, override_feats=True)
         for idx, tips in group_data.items():
-            tip_title = location.get_tip_title() + f"{str(idx)}"
+            temp_location = self.get_location(location.address + str(idx))
+            tip_title = temp_location.get_tip_title()
             count_tips = len(tips)
 
             response.append(f"{idx} - {tip_title} (#tips: {count_tips})")
@@ -407,9 +411,10 @@ class Holocron:
         for emoji in emoji_list:
             await reaction.message.add_reaction(emoji)
 
-    async def handle_view_group(self, response_method, chosen, location):
-        selected_location = self.get_location(location + str(chosen))
-        await self.holocron_tips(None, None, None, response_method, selected_location, '')
+    async def handle_view_group(self, response_method, chosen, location: HolocronLocation):
+        # location has a group address
+        selected_location = self.get_location(location.address + str(chosen))
+        await self.holocron_tips(selected_location, '', response_method, None, None, None)
         return
 
     async def handle_tip_edit(self, response_method, tip, location, channel, user):

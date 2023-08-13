@@ -7,6 +7,7 @@ from util.base_holocron import Holocron
 class WarHolocron(commands.Cog, Holocron):
     def __init__(self, bot=commands.Bot):
         super().__init__(bot, "war")
+        self.location_cls = WarLocation
 
     def dummy_populate(self):
         pass
@@ -16,7 +17,7 @@ class WarHolocron(commands.Cog, Holocron):
 
     def get_tips(self, location: WarLocation):
         # location is a leader name, so can be anything
-        return self.tip_storage[location]
+        return self.tip_storage[location.address]
 
     def get_group_data(self, location: WarLocation, feats=False):
         raise NotImplementedError
