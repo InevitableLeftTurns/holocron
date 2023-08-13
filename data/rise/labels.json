@@ -1,5 +1,6 @@
 {
   "ds": {
+    "name": "Dark Side",
     "ds1": {
       "name": "Mustafar",
       "ds1cm1": {
@@ -94,6 +95,7 @@
     }
   },
   "mx": {
+    "name": "Mixed",
     "mx1": {
       "name": "Corellia",
       "mx1cm1": {
@@ -189,6 +191,7 @@
     }
   },
   "ls": {
+    "name": "Light Side",
     "ls1": {
       "name": "Coruscant",
       "ls1cm1": {
@@ -280,6 +283,41 @@
       "ls3f": {
         "reqs": "Light Side Ships (7-Star), Profundity",
         "enemies": "Executrix, Tie Advanced X1, Scythe, Tie Fighter, Tie Interceptor (R)"
+      }
+    }
+  },
+  "lsb": {
+    "name": "Light Side Bonus",
+    "lsb1": {
+      "name": "Zeffo",
+      "lsb1cm1": {
+        "reqs": "5x Light Side or Neutral (Relic 7+), Jedi Knight Cal Kestis",
+        "enemies": [
+          "Purge Trooper (L), 2x KX-series Security Droid, 2x Stormtrooper",
+          "Second Sister (L), 2x Purge Trooper"
+        ]
+      },
+      "lsb1cm2": {
+        "reqs": "5x Light Side or Neutral (Relic 7+)",
+        "enemies": "Unknown"
+      },
+      "ls1cm3": {
+        "reqs": "5x Unaligned Force Users (Relic 7+, Light side only)",
+        "enemies": [
+          "Stormtrooper Commando (L), 2x Purge Trooper, 2x KX-series Security Droid",
+          "Imperial AT-ST"
+        ]
+      },
+      "ls1sm1": {
+        "reqs": "5x Clone Troopers (Relic 7+)",
+        "enemies": [
+          "Miktrull Tomb Guardian (L), 2x Eilram Tomb Guardian",
+          "Jedi General Chiata (L), Padawan Marseph"
+        ]
+      },
+      "lsb1f": {
+        "reqs": "Light Side Ships (7-Star), Negotiator",
+        "enemies": "Malevolence, Hyena Bomber, Vulture Droid"
       }
     }
   }

@@ -16,6 +16,7 @@ bot_intents.reactions = True
 bot = commands.Bot(command_prefix=bot_prefix, intents=bot_intents)
 bot.remove_command("help")
 
+
 # add extensions
 @bot.event
 async def setup_hook():

@@ -1,8 +1,9 @@
 import discord
 from discord.ext import commands
 from discord.utils import get
+
+from entities.locations import InvalidLocationError
 from util import helpmgr
-from util.base_holocron import InvalidLocationError
 from util.settings.response_handler import get_response_type
 
 
