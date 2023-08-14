@@ -1,7 +1,7 @@
 from discord.ext import commands
 
 from entities.locations import WarLocation
-from util.base_holocron import Holocron
+from entities.base_holocron import Holocron
 
 
 class WarHolocron(commands.Cog, Holocron):
