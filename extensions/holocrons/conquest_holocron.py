@@ -2,7 +2,7 @@ from discord.ext import commands
 
 from entities.locations import ConquestLocation
 from entities.tip import Tip
-from util.base_holocron import Holocron
+from entities.base_holocron import Holocron
 
 
 class ConquestHolocron(commands.Cog, Holocron):
@@ -11,40 +11,40 @@ class ConquestHolocron(commands.Cog, Holocron):
         self.location_cls = ConquestLocation
 
     def dummy_populate(self):
-        self.tip_storage["globals"][1].append(Tip("trich", "this is a tip for g1"))
-        self.tip_storage["globals"][1].append(Tip("trich", "this is another tip for g1"))
+        self.tip_storage["globals"][1].append(Tip(author="trich", content="this is a tip for g1"))
+        self.tip_storage["globals"][1].append(Tip(author="trich", content="this is another tip for g1"))
 
         self.tip_storage["sectors"][1]["feats"][1] = [
-            Tip("uaq", "tip for s1f1a", 0),
-            Tip("uaq", "tip for s1f1b", 7),
-            Tip("uaq", "tip for s1f1c", 2),
-            Tip("uaq", "tip for s1f1d", 4)
+            Tip(author="uaq", content="tip for s1f1a", rating=0),
+            Tip(author="uaq", content="tip for s1f1b", rating=7),
+            Tip(author="uaq", content="tip for s1f1c", rating=2),
+            Tip(author="uaq", content="tip for s1f1d", rating=4)
         ]
 
-        self.tip_storage["sectors"][1]["nodes"][1] = [Tip("uaq", "tip for s1n1")]
+        self.tip_storage["sectors"][1]["nodes"][1] = [Tip(author="uaq", content="tip for s1n1")]
         self.tip_storage["sectors"][1]["nodes"][13] = [
-            Tip("uaq", "tip for s1n13a", 0),
-            Tip("uaq", "tip for s1n13b", 7),
-            Tip("uaq", "tip for s1n13c", -3)
+            Tip(author="uaq", content="tip for s1n13a", rating=0),
+            Tip(author="uaq", content="tip for s1n13b", rating=7),
+            Tip(author="uaq", content="tip for s1n13c", rating=-3)
         ]
 
         self.tip_storage["sectors"][1]["boss"]["feats"][1] = [
-            Tip("uaq", "tip for s1b1a", 0),
-            Tip("uaq", "tip for s1b1b", 7),
-            Tip("uaq", "tip for s1b1c", 2),
-            Tip("uaq", "tip for s1b1d", 4),
+            Tip(author="uaq", content="tip for s1b1a", rating=0),
+            Tip(author="uaq", content="tip for s1b1b", rating=7),
+            Tip(author="uaq", content="tip for s1b1c", rating=2),
+            Tip(author="uaq", content="tip for s1b1d", rating=4),
         ]
-        self.tip_storage["sectors"][1]["boss"]["tips"] = [Tip("uaq", "tip for s1b")]
+        self.tip_storage["sectors"][1]["boss"]["tips"] = [Tip(author="uaq", content="tip for s1b")]
 
-        self.tip_storage["sectors"][1]["mini"]["feats"][1] = [Tip("uaq", "tip for s1m1")]
-        self.tip_storage["sectors"][1]["mini"]["tips"] = [Tip("uaq", "tip for s1m")]
+        self.tip_storage["sectors"][1]["mini"]["feats"][1] = [Tip(author="uaq", content="tip for s1m1")]
+        self.tip_storage["sectors"][1]["mini"]["tips"] = [Tip(author="uaq", content="tip for s1m")]
 
         self.tip_storage["globals"][1] = [
-            Tip("uaq", "tip 1 to del in g1", user_id=490970360272125952),
-            Tip("uaq", "tip 2 to del in g1", user_id=490970360272125952),
-            Tip("uaq", "tip 3 to del in g1", user_id=490970360272125952),
-            Tip("uaq", "tip 4 to del in g1", user_id=490970360272125952),
-            Tip("uaq", "tip 5 to del in g1", user_id=490970360272125952)
+            Tip(author="uaq", content="tip 1 to del in g1", user_id=490970360272125952),
+            Tip(author="uaq", content="tip 2 to del in g1", user_id=490970360272125952),
+            Tip(author="uaq", content="tip 3 to del in g1", user_id=490970360272125952),
+            Tip(author="uaq", content="tip 4 to del in g1", user_id=490970360272125952),
+            Tip(author="uaq", content="tip 5 to del in g1", user_id=490970360272125952)
         ]
 
         self.save_storage()

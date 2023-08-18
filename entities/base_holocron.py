@@ -9,9 +9,10 @@ from functools import partial
 import discord
 from discord.ext import commands, tasks
 
+from entities import tip as tip_module
+from entities.command_parser import HolocronCommand, CommandTypes
 from entities.interactions import AwaitingReaction
 from entities.locations import HolocronLocation
-from entities import tip as tip_module
 from entities.tip import Tip
 from util import helpmgr
 from util.command_checks import check_higher_perms
@@ -134,61 +135,55 @@ class Holocron:
 
         await response_method.send("Data added.")
 
-    async def holocron_command_manager(self, ctx: commands.Context, *args):
+    async def holocron_command_manager(self, ctx: commands.Context, *command_args):
         response_method = get_response_type(ctx.guild, ctx.author, ctx.channel)
-        if len(args) == 0:
-            await response_method.send(f"Conquest commands require extra information. For a list of commands and "
-                                       f"options, use `{ctx.prefix}conquest help`.")
+        if len(command_args) == 0:
+            await response_method.send(f"Holocron commands require extra information. For a list of commands and "
+                                       f"options, use `{ctx.prefix}{self.name} help`.")
             return
 
-        user_command = args[0]
+        command_obj = HolocronCommand(*command_args)
+        command_type = command_obj.command_type
 
-        clear_names = [
-            "clean",
-            "reset",
-            "clear"
-        ]
-        dummy_names = [
-            "dummy",
-            "populate",
-            "test"
-        ]
-        if user_command in clear_names:
+        # await response_method.send(f"C: {command_obj.command_type} | A: {command_obj.address} | "
+        #                            f"H: {command_obj.help_section} | ARGS: {command_obj.command_args} | "
+        #                            f"RD: {command_obj.read_depth} | NA: {command_obj.new_author} | "
+        #                            f"NTT: {command_obj.new_tip_text}")
+
+        if command_obj.error:
+            await response_method.send(f"Error when processing command. {command_obj.error}")
+            return
+
+        if command_type is CommandTypes.CLEAR:
             await self.request_clean_storage(ctx.guild, ctx.channel, ctx.author, response_method)
             return
 
-        elif user_command in dummy_names:
+        if command_type is CommandTypes.POPULATE:
             await self.request_dummy_populate(ctx.guild, ctx.author, response_method)
             return
 
-        elif user_command == 'map':
+        if command_type is CommandTypes.MAP:
             try:
-                location = self.get_location(args[1], is_map=True)
+                location = self.get_location(command_obj.address, is_map=True)
                 map_name = location.get_map_name()
                 await response_method.send(map_name,
                                            file=discord.File(f'data/{self.name}/images/{map_name.lower()}.png'))
             except NotImplementedError:
                 await response_method.send(f"Map command not supported for {self.name}")
+            return
 
-        elif user_command == 'help':
-            commands_args = args[1:]
-            response = helpmgr.generate_bot_help(self.bot.get_command(self.name), ctx, *commands_args)
+        if command_type is CommandTypes.HELP:
+            response = helpmgr.generate_bot_help(self.bot.get_command(self.name), ctx, command_obj.help_section)
             await response_method.send('\n'.join(response))
             return
 
-        else:
-            location = self.get_location(user_command.lower())
+        location = self.get_location(command_obj.address.lower())
 
-            # detect and handle short addresses
-            if location.is_group_location:
-                await self.holocron_group_list(ctx.author, response_method, location)
-            else:
-                try:
-                    to_edit = args[1]
-                except IndexError:
-                    to_edit = ""
-                await self.holocron_tips(location, to_edit, response_method, ctx.author, ctx.channel, ctx.guild)
-                return
+        # detect and handle short addresses
+        if location.is_group_location:
+            await self.holocron_group_list(location, response_method, ctx.author)
+        else:
+            await self.holocron_tips(command_obj, location, response_method, ctx.author, ctx.channel, ctx.guild)
 
     def format_tips(self, location: HolocronLocation, depth=3):
         location_tips = self.get_tips(location)
@@ -215,26 +210,31 @@ class Holocron:
             response += f"There are no tips for {location.get_location_name()}."
             return response
 
-    async def holocron_tips(self, tip_location: HolocronLocation, subcommand, response_method, author, channel, guild):
-        if subcommand in ["add", "edit", "delete"]:
+    async def holocron_tips(self, command: HolocronCommand, tip_location: HolocronLocation,
+                            response_method, author, channel, guild):
+        command_type = command.command_type
+        if command_type.is_modify_type():
             modifying = {
-                "add": partial(self.add_tip, channel),
-                "edit": partial(self.edit_tip, subcommand, guild),
-                "delete": partial(self.edit_tip, subcommand, guild)
+                CommandTypes.ADD: partial(self.add_tip, command, channel),
+                CommandTypes.EDIT: partial(self.edit_tip, command_type, guild),
+                CommandTypes.DELETE: partial(self.edit_tip, command_type, guild)
             }
-            await modifying[subcommand](author, tip_location, response_method)
+            await modifying[command_type](author, tip_location, response_method)
             return
 
-        elif subcommand and subcommand.isdigit():
-            num_tips = clamp(int(subcommand), 3, 10)
-
-        else:
-            num_tips = 3
+        try:
+            num_tips = clamp(int(command.read_depth), 3, 10)
+        except ValueError:
+            await response_method.send(
+                f"If you include a value after the address for reading or listing Tips, that value "
+                f"defines how many tips to show. It must be a number between 3 and 10.\n"
+                f"You entered: `{command.read_depth}`")
+            return
 
         response = self.format_tips(tip_location, num_tips)
         await response_method.send(response)
 
-    async def holocron_group_list(self, author, response_method, location: HolocronLocation):
+    async def holocron_group_list(self, location: HolocronLocation, response_method, author):
         # tip_location is a short address, missing a final id
         # looking to display a list of tip locations. however, it is possible the group itself
         # has tips e.g. bosses and mini-bosses in Conquest
@@ -266,22 +266,26 @@ class Holocron:
         for emoji in emoji_list:
             await sent_message.add_reaction(emoji)
 
-    async def add_tip(self, channel, author, location: HolocronLocation, response_method):
+    async def add_tip(self, command: HolocronCommand, channel, author, location: HolocronLocation, response_method):
         def check_message(message):
             return message.channel.id == channel_id and message.author.id == user_id
 
-        await response_method.send(f"Your next message in this channel will be added as a tip "
-                                   f"for {location.get_location_name()}.\n"
-                                   f"If you wish to cancel, respond with `cancel`.")
-        channel_id = channel.id
-        user_id = author.id
-        tip_message = await self.bot.wait_for("message", check=check_message)
+        if not command.new_tip_text:
+            await response_method.send(f"Your next message in this channel will be added as a tip "
+                                       f"for {location.get_location_name()}.\n"
+                                       f"If you wish to cancel, respond with `cancel`.")
+            channel_id = channel.id
+            user_id = author.id
+            tip_response = await self.bot.wait_for("message", check=check_message)
+            tip_message = tip_response.content
+        else:
+            tip_message = command.new_tip_text
 
-        if tip_message.content.lower() == "cancel":
+        if tip_message.lower() == "cancel":
             await response_method.send("Tip addition has been cancelled.")
             return
 
-        self.get_tips(location).append(Tip(tip_message))
+        self.get_tips(location).append(Tip(content=tip_message, author=author.name, user_id=author.id))
         self.save_storage()
 
         await response_method.send(f"Your tip has been added.\n{self.format_tips(location)}")
@@ -414,7 +418,8 @@ class Holocron:
     async def handle_view_group(self, chosen, location: HolocronLocation, response_method):
         # location has a group address
         selected_location = self.get_location(location.address + str(chosen))
-        await self.holocron_tips(selected_location, '', response_method, None, None, None)
+        command_obj = HolocronCommand(selected_location.address)
+        await self.holocron_tips(command_obj, selected_location, response_method, None, None, None)
         return
 
     async def handle_tip_edit(self, tip, location, response_method, user, channel):

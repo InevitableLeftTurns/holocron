@@ -1,7 +1,5 @@
-import re
-
 from discord.ext import commands
-from util.base_holocron import Holocron
+from entities.base_holocron import Holocron
 from entities.locations import RiseLocation
 
 

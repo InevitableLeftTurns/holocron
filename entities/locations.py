@@ -140,11 +140,11 @@ class ConquestLocation(HolocronLocation):
         try:
             self.feat_location_id = location_fragments[0]
             self.feat_location_address = self.feat_locations[self.feat_location_id]
-        except IndexError:
+        except (IndexError, KeyError):
             msg_data = [f"* `{feat_location_id}` for `{self.conquest_labels[feat_location_id]}`"
                         for feat_location_id in self.feat_locations]
             msg = '\n'.join(msg_data)
-            raise InvalidLocationError(f"Invalid or missing location. Queries to tips must start with:\n{msg}")
+            raise InvalidLocationError(f"Invalid or missing location. Tip addresses must start with:\n{msg}")
 
         if self.feat_location_id == 'g':
             try:
