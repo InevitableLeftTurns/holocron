@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands
 from discord.utils import get
 
+from entities.command_parser import HolocronCommand
 from entities.locations import InvalidLocationError
 from util import helpmgr
 from util.settings.response_handler import get_response_type
@@ -49,13 +50,14 @@ class BaseCommands(commands.Cog):
 
         try:
             command = requested[0]
-            commands_args = requested[1:]
+            command_args = requested[1:]
         except IndexError:
             command = ""
-            commands_args = tuple()
+            command_args = tuple()
 
         bot_command = self.bot.get_command(command)
-        response = helpmgr.generate_bot_help(bot_command, ctx, *commands_args)
+        holocron_command = HolocronCommand('help', *command_args)
+        response = helpmgr.generate_bot_help(bot_command, ctx, holocron_command.help_section)
 
         if len(response) == 0:
             response = [f"**List of Holocrons and Commands**.\nFor detailed help, "

@@ -4,17 +4,11 @@ import discord
 
 
 class Tip:
-    def __init__(self, message, content="", rating=0, user_id=0):
-        if isinstance(message, discord.Message):
-            self.author = message.author.name
-            self.content = message.content
-            self.rating = 0
-            self.user_id = message.author.id
-        else:
-            self.author = message
-            self.content = content
-            self.rating = rating
-            self.user_id = user_id
+    def __init__(self, content="", author="n/a", rating=0, user_id=0):
+        self.content = content
+        self.author = author
+        self.rating = rating
+        self.user_id = user_id
         self.creation_time = datetime.utcnow()
         self.edited = False
 

@@ -1,3 +1,6 @@
+from entities.command_parser import CommandTypes
+
+
 class HelpContent:
 
     def __init__(self):
@@ -5,19 +8,18 @@ class HelpContent:
         self.prefix = None
         self.modify_header = None
 
-    def get_content(self, prefix, subcommand):
+    def get_content(self, prefix, help_section: CommandTypes):
         if self.content is None or self.prefix != prefix:
             self.prefix = prefix
             self.content = self.generate_content()
 
-        subcommand = subcommand or 'all'
-
+        help_key = help_section.name.lower()
         try:
-            content = self.content[subcommand]
+            content = self.content[help_key]
         except KeyError:
-            return [f'{subcommand} has no specific help']
+            return [f'{help_key} has no specific help']
 
-        response = self.get_header(subcommand)
+        response = self.get_header(help_key)
         if not isinstance(content, list):
             # return is an array of items to be joined upstream
             response.append(content)
@@ -27,8 +29,8 @@ class HelpContent:
 
         return response
 
-    def get_header(self, subcommand):
-        if subcommand in ["add", "edit", "delete"]:
+    def get_header(self, help_section):
+        if help_section in ["add", "edit", "delete"]:
             return [self.content['modify_header']]
         return []
 
@@ -57,17 +59,18 @@ class ConquestHelp(HelpContent):
                     f"\tex: `{self.prefix}con s3b` or `{self.prefix}con s3f` or `{self.prefix}con g`\n",
 
             "modify_header": f"*Tip Modification*\n"
-                             f"For the below modifications, place the corresponding tag "
-                             f"after your location.\nex: `{self.prefix}conquest <location> <command>`",
+                             f"To modify a tip, use the location and the modification type as below.\n "
+                             f"ex: `{self.prefix}conquest <location> <command>` or "
+                             f"`{self.prefix}conquest <command> <location>`",
 
             "add": f"* `add` - Add a tip to the specified location. "
-                   f"ex: `{self.prefix}conquest s1f2 add`.",
+                   f"ex: `{self.prefix}conquest s1f2 add` or `{self.prefix}conquest add s1f2`",
 
-            'edit': f"* `edit` - Edit one of your tips. Bot admins can edit any tip. "
-                    f"ex: `{self.prefix}conquest s1f2 edit`.",
+            'edit': f"* `edit` - Edit one of your tips. Only bot admins can edit any tip. "
+                    f"ex: `{self.prefix}conquest s1f2 edit`or `{self.prefix}conquest edit s1f2`",
 
-            'delete': f"* `delete` - Delete one of your tips. Bot admins can delete any tip. "
-                      f"ex: `{self.prefix}conquest s1f2 delete`.\n",
+            'delete': f"* `delete` - Delete one of your tips. Only bot admins can delete any tip. "
+                      f"ex: `{self.prefix}conquest s1f2 delete` or `{self.prefix}conquest delete s1f2`\n",
 
             'clear': f"*Clear All Tips*\n"
                      f"`{self.prefix}conquest clear`\n"
@@ -109,17 +112,18 @@ class RiseHelp(HelpContent):
                    f"\tex: `{self.prefix}rise map ds3` for Dathomir or `{self.prefix}r map mx1` for Corellia\n",
 
             "modify_header": f"*Tip Modification*\n"
-                             f"For the below modifications, place the corresponding tag "
-                             f"after your location.\nex: `{self.prefix}rise <location> <command>`",
+                             f"To modify a tip, use the location and the modification type as below.\n "
+                             f"ex: `{self.prefix}rise <location> <command>` or "
+                             f"`{self.prefix}rise <command> <location>`",
 
             "add": f"* `add` - Add a tip to the specified location. "
-                   f"ex: `{self.prefix}rise ls2cm1 add`.",
+                   f"ex: `{self.prefix}rise ls2cm1 add` or `{self.prefix}rise add ls2cm1`",
 
-            'edit': f"* `edit` - Edit one of your tips. Bot admins can edit any tip. "
-                    f"ex: `{self.prefix}rise mx3f edit`.",
+            'edit': f"* `edit` - Edit one of your tips. Only bot admins can edit any tip. "
+                    f"ex: `{self.prefix}rise mx3f edit` or `{self.prefix}rise mx3f edit`",
 
-            'delete': f"* `delete` - Delete one of your tips. Bot admins can delete any tip. "
-                      f"ex: `{self.prefix}rise ds3sm1 delete`.\n",
+            'delete': f"* `delete` - Delete one of your tips. Only bot admins can delete any tip. "
+                      f"ex: `{self.prefix}rise ds3sm1 delete` or `{self.prefix}rise ds3sm1 delete`\n",
 
             'clear': f"*Clear All Tips*\n"
                      f"`{self.prefix}rise clear`\n"
@@ -196,7 +200,7 @@ help_content = {
 }
 
 
-def generate_bot_help(command, ctx, subcommand=None, *command_args):
+def generate_bot_help(command, ctx, help_section):
     response = []
     if command:
         aliases = "none" if len(command.aliases) == 0 else ", ".join(command.aliases)
@@ -215,7 +219,7 @@ def generate_bot_help(command, ctx, subcommand=None, *command_args):
                             f"settings, you must have the permission role, then use `{ctx.prefix}settings edit`.")
         else:
             try:
-                response.extend(help_content[com_name].get_content(ctx.prefix, subcommand))
+                response.extend(help_content[com_name].get_content(ctx.prefix, help_section))
             except [IndexError, KeyError]:
                 response.append(f"({command.name} has no help section. Referring to description.)\n"
                                 f"{command.description}")
