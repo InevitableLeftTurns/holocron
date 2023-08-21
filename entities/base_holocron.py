@@ -50,6 +50,9 @@ class Holocron:
     def get_tips(self, location: HolocronLocation):
         raise NotImplementedError
 
+    def get_all_tips(self):
+        raise NotImplementedError
+
     def get_group_data(self, location, override_feats=False):
         raise NotImplementedError
 
@@ -154,6 +157,11 @@ class Holocron:
             await response_method.send(f"Error when processing command. {command_obj.error}")
             return
 
+        if command_type is CommandTypes.USER_MIGRATION:
+            self.migrate_users(ctx.channel)
+            await response_method.send('User names migrated to Global Names')
+            return
+
         if command_type is CommandTypes.CLEAR:
             await self.request_clean_storage(ctx.guild, ctx.channel, ctx.author, response_method)
             return
@@ -184,6 +192,22 @@ class Holocron:
             await self.holocron_group_list(command_obj, location, response_method, ctx.author)
         else:
             await self.holocron_tips(command_obj, location, response_method, ctx.author, ctx.channel, ctx.guild)
+
+    def migrate_users(self, channel):
+        all_tips = self.get_all_tips()
+        member_map = {}
+        for member in channel.members:
+            member_map[member.display_name] = member
+            member_map[member.global_name] = member
+            member_map[member.name] = member
+
+        for tip in all_tips:
+            author_obj = member_map.get(tip.author)
+            if author_obj:
+                tip.author = author_obj.global_name
+                tip.user_id = author_obj.id
+
+        self.save_storage()
 
     def format_tips(self, location: HolocronLocation, depth=3):
         location_tips = self.get_tips(location)

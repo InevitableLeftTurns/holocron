@@ -60,6 +60,27 @@ class ConquestHolocron(commands.Cog, Holocron):
             tip_group[location.feat_address] = []
         return tip_group[location.feat_address]
 
+    def get_all_tips(self):
+        all_tips = []
+        # globals
+        for global_feat_tips in self.tip_storage['globals'].values():
+            all_tips.extend(global_feat_tips)
+
+        for sector_num, nodes in self.tip_storage['sectors'].items():
+            for node_type, subtypes in nodes.items():
+                if node_type in ['feats', 'nodes']:
+                    for feat_id, tips in subtypes.items():
+                        all_tips.extend(tips)
+                if node_type in ['boss', 'mini']:
+                    boss_feats = subtypes['feats']
+                    for feat_id, tips in boss_feats.items():
+                        all_tips.extend(tips)
+                    boss_tips = subtypes['tips']
+                    all_tips.extend(boss_tips)
+
+        return all_tips
+
+
     def get_group_data(self, location: ConquestLocation, override_feats=False):
         group_data = self.tip_storage[location.feat_location_address]
         if location.is_sector_location:

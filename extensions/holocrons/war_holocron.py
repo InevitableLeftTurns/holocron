@@ -19,6 +19,12 @@ class WarHolocron(commands.Cog, Holocron):
         # location is a leader name, so can be anything
         return self.tip_storage[location.address]
 
+    def get_all_tips(self):
+        all_tips = []
+        for address, tips in self.tip_storage.items():
+            all_tips.extend(tips)
+        return all_tips
+
     def get_group_data(self, location: WarLocation, feats=False):
         raise NotImplementedError
 
