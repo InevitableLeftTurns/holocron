@@ -20,6 +20,19 @@ class RiseHolocron(commands.Cog, Holocron):
             return mission_data
         return mission_data["tips"]
 
+    def get_all_tips(self):
+        all_tips = []
+        for track_id, track_data in self.tip_storage.items():
+            for planet_id, planet_data in track_data.items():
+                for mission_type_id, mission_data in planet_data.items():
+                    if mission_type_id == 'cm':
+                        # only cm's have #s for now. ignore sm #s
+                        for mission_id, mission_tips in mission_data.items():
+                            all_tips.extend(mission_tips)
+                    else:
+                        all_tips.extend(mission_data["tips"])
+        return all_tips
+
     @commands.command(name="rise", aliases=["r"], extras={'is_holocron': True},
                       description="Access the Rise Holocron for reading and managing Rise Tips")
     async def rise_manager(self, ctx: commands.Context, *args):

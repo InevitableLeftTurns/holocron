@@ -18,6 +18,9 @@ class CommandTypes(Enum):
     CLEAR = 100
     CHANGE_AUTHOR = 101
 
+    # ONE TIME COMMANDS
+    USER_MIGRATION = 1000
+
     CLEAR_COMMANDS = [
         "clean",
         "reset",
@@ -51,14 +54,20 @@ class CommandTypes(Enum):
         return None
 
     def is_modify_type(self):
-        if self in [self.ADD, self.EDIT, self.DELETE]:
+        if self in [self.ADD, self.EDIT, self.DELETE, self.CHANGE_AUTHOR]:
             return True
         return False
+
+    def description(self):
+        if self is self.CHANGE_AUTHOR:
+            return 'change the author for'
+        return self.name.lower()
 
 
 class HolocronCommand:
 
     def __init__(self, *user_inputs):
+        self.name = None
         self.command_type = None
         self.address = None
         self.error = None
@@ -107,6 +116,7 @@ class HolocronCommand:
     def parse_command_args(self):
         if not self.command_type:
             self.command_type = CommandTypes.READ
+        self.name = self.command_type.name
 
         if self.command_type is CommandTypes.HELP and not self.help_section and not self.command_args:
             self.help_section = CommandTypes.ALL
