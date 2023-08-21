@@ -370,7 +370,8 @@ class Holocron:
         elif command.command_type is CommandTypes.EDIT:
             await self.handle_tip_edit(chosen_tip, location, response_method, user, channel)
         elif command.command_type is CommandTypes.CHANGE_AUTHOR:
-            await self.handle_change_author(chosen_tip, command.new_author, location, response_method, user, channel)
+            await self.handle_change_author(chosen_tip, command.new_author, location, response_method,
+                                            user, reaction.message.guild, channel)
         elif command.command_type is CommandTypes.DELETE:
             await self.handle_tip_delete(chosen_tip, location, response_method, user, channel)
         else:
@@ -474,7 +475,11 @@ class Holocron:
 
         self.save_storage()
 
-    async def handle_change_author(self, chosen_tip, new_author, location, response_method, user, channel):
+    async def handle_change_author(self, chosen_tip, new_author, location, response_method, user, guild, channel):
+        if not check_higher_perms(user, guild):
+            await response_method.send("Only Holocron Admins and Server admins can change author.")
+            return
+
         chosen_tip.author = new_author
 
         member_id = {member_obj.display_name: member_obj.id for member_obj in channel.members}.get(new_author)
