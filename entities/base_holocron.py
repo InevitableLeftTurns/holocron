@@ -204,7 +204,7 @@ class Holocron:
         for tip in all_tips:
             author_obj = member_map.get(tip.author)
             if author_obj:
-                tip.author = author_obj.global_name
+                tip.author = author_obj.display_name
                 tip.user_id = author_obj.id
 
         self.save_storage()
@@ -310,7 +310,7 @@ class Holocron:
             await response_method.send("Tip addition has been cancelled.")
             return
 
-        self.get_tips(location).append(Tip(content=tip_message, author=author.global_name, user_id=author.id))
+        self.get_tips(location).append(Tip(content=tip_message, author=author.display_name, user_id=author.id))
         self.save_storage()
 
         await response_method.send(f"Your tip has been added.\n{self.format_tips(location)}")
