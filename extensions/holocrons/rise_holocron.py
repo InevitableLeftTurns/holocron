@@ -33,6 +33,39 @@ class RiseHolocron(commands.Cog, Holocron):
                         all_tips.extend(mission_data["tips"])
         return all_tips
 
+    def generate_stats_report(self):
+        total_tips_count = 0
+        msg = ""
+        address_lookup = {track_name: track_id for track_id, track_name in RiseLocation.tracks.items()}
+
+        for track_name, track_data in self.tip_storage.items():
+            track_tip_count = 0
+            track_msg = ""
+            track_id = address_lookup[track_name]
+            track_label = self.labels[track_id]['name']
+            for planet_id, planet_data in track_data.items():
+                if planet_id > 3 or (track_id == 'lsb' and planet_id > 1):
+                    # temporary until further progress on Rise is made
+                    continue
+                planet_tip_count = 0
+                for mission_type_id, mission_data in planet_data.items():
+                    if mission_type_id == 'cm':
+                        # only cm's have #s for now. ignore sm #s
+                        for mission_id, mission_tips in mission_data.items():
+                            planet_tip_count += len(mission_tips)
+                    else:
+                        planet_tip_count += len(mission_data["tips"])
+                planet_address = str(track_id) + str(planet_id)
+                track_msg += f"- Tips for {self.labels[track_id][planet_address]['name']}: {planet_tip_count}\n"
+                track_tip_count += planet_tip_count
+            msg += f"Tips for {track_label}: {track_tip_count}\n"
+            msg += track_msg
+            total_tips_count += track_tip_count
+
+        msg = f"**Rise of the Empire Total Tips**: {total_tips_count}\n" + msg
+
+        return msg
+
     @commands.command(name="rise", aliases=["r"], extras={'is_holocron': True},
                       description="Access the Rise Holocron for reading and managing Rise Tips")
     async def rise_manager(self, ctx: commands.Context, *args):

@@ -25,6 +25,12 @@ class WarHolocron(commands.Cog, Holocron):
             all_tips.extend(tips)
         return all_tips
 
+    def generate_stats_report(self):
+        total_tip_count = 0
+        for address, tips in self.tip_storage.items():
+            total_tip_count += len(tips)
+        return f"War Holocron Total Tips: {total_tip_count}"
+
     def get_group_data(self, location: WarLocation, feats=False):
         raise NotImplementedError
 

@@ -53,6 +53,9 @@ class Holocron:
     def get_all_tips(self):
         raise NotImplementedError
 
+    def generate_stats_report(self):
+        raise NotImplementedError
+
     def get_group_data(self, location, override_feats=False):
         raise NotImplementedError
 
@@ -178,6 +181,10 @@ class Holocron:
                                            file=discord.File(f'data/{self.name}/images/{map_name.lower()}.png'))
             except NotImplementedError:
                 await response_method.send(f"Map command not supported for {self.name}")
+            return
+
+        if command_type is CommandTypes.STATS:
+            await response_method.send(self.generate_stats_report())
             return
 
         if command_type is CommandTypes.HELP:
