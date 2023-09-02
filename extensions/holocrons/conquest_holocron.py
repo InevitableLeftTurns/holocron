@@ -1,8 +1,8 @@
 from discord.ext import commands
 
+from entities.base_holocron import Holocron
 from entities.locations import ConquestLocation
 from entities.tip import Tip
-from entities.base_holocron import Holocron
 
 
 class ConquestHolocron(commands.Cog, Holocron):
@@ -80,6 +80,37 @@ class ConquestHolocron(commands.Cog, Holocron):
 
         return all_tips
 
+    def generate_stats_report(self):
+        total_tips_count = 0
+        global_tips_count = 0
+        sector_tips = {sector_num: 0 for sector_num in self.tip_storage['sectors']}
+
+        for global_feat_tips in self.tip_storage['globals'].values():
+            tips_count = len(global_feat_tips)
+            total_tips_count += tips_count
+            global_tips_count += tips_count
+
+        for sector_num, nodes in self.tip_storage['sectors'].items():
+            sector_tip_count = 0
+            for node_type, subtypes in nodes.items():
+                if node_type in ['feats', 'nodes']:
+                    for feat_id, tips in subtypes.items():
+                        sector_tip_count += len(tips)
+                if node_type in ['boss', 'mini']:
+                    boss_feats = subtypes['feats']
+                    for feat_id, tips in boss_feats.items():
+                        sector_tip_count += len(tips)
+                    boss_tips = subtypes['tips']
+                    sector_tip_count += len(boss_tips)
+            sector_tips[sector_num] = sector_tip_count
+            total_tips_count += sector_tip_count
+
+        msg = f"**Total Tips for Conquest**: {total_tips_count}\n"
+        msg += f"Total Global Feat Tips: {global_tips_count}\n"
+        for sector_num, sector_tip_count in sector_tips.items():
+            msg += f"Total Tips in Sector {sector_num}: {sector_tip_count}\n"
+
+        return msg
 
     def get_group_data(self, location: ConquestLocation, override_feats=False):
         group_data = self.tip_storage[location.feat_location_address]

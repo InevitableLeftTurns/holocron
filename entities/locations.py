@@ -128,7 +128,7 @@ class ConquestLocation(HolocronLocation):
         return self.is_boss_location and self.is_group_location
 
     def get_address_type_name(self):
-        return self.conquest_labels[self.sector_node_type_id].lower()
+        return self.conquest_labels[self.sector_node_type_id or self.feat_location_id].lower()
 
     def parse_location(self, is_map=False, is_group=False):
         if is_map:
@@ -154,9 +154,6 @@ class ConquestLocation(HolocronLocation):
                 self.is_group_location = True
             except ValueError:  # called if feat_id not an int
                 raise InvalidLocationError("The character following `g` must be a number.")
-
-            if self.address not in self.labels:
-                raise InvalidLocationError("The number following `g` must be a valid feat #.")
 
             return
 
