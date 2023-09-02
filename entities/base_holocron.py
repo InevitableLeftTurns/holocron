@@ -57,8 +57,8 @@ class Holocron:
         raise NotImplementedError
 
     # Base Functionality
-    def get_location(self, location_string, **kwargs) -> HolocronLocation:
-        location_obj = self.location_cls(location_string, self.labels)
+    def get_location(self, location_string, location_string_suffix=None, **kwargs) -> HolocronLocation:
+        location_obj = self.location_cls(location_string, location_string_suffix, self.labels)
         location_obj.parse_location(**kwargs)
         return location_obj
 
@@ -189,6 +189,11 @@ class Holocron:
 
         # detect and handle short addresses
         if location.is_group_location:
+            if command_type is not CommandTypes.READ:
+                await response_method.send('Error when processing command.\n'
+                                           'Modification commends - add/edit/delete - must specify a full tip address. '
+                                           f'e.g. {ctx.prefix}{self.name} {list(self.labels.keys())[-1]}')
+                return
             await self.holocron_group_list(command_obj, location, response_method, ctx.author)
         else:
             await self.holocron_tips(command_obj, location, response_method, ctx.author, ctx.channel, ctx.guild)
@@ -270,12 +275,18 @@ class Holocron:
         response.append(f"View Tips for which {location.get_address_type_name()}?")
 
         group_data = self.get_group_data(location, override_feats=True)
-        for idx, tips in group_data.items():
-            temp_location = self.get_location(location.address + str(idx))
+        selection_id = 1
+        for section_id, tips in group_data.items():
+            temp_location = self.get_location(location.address, location_string_suffix=str(section_id))
             tip_title = temp_location.get_tip_title()
-            count_tips = len(tips)
+            msg = f"{selection_id} - {tip_title}"
 
-            response.append(f"{idx} - {tip_title} (#tips: {count_tips})")
+            if not location.is_mid_level_location:
+                count_tips = len(tips)
+                msg += f" (#tips: {count_tips})"
+
+            response.append(msg)
+            selection_id += 1
 
         emoji_list = []
         for index in range(len(group_data)):
@@ -361,12 +372,12 @@ class Holocron:
         try:
             awaiting_reaction = self.awaiting_reactions[reaction.message.id]
             if awaiting_reaction.user_id == user.id and reaction.emoji in awaiting_reaction.allowed_emoji:
-                await self.handle_reaction_add(reaction, user)
+                await self.handle_reaction(reaction, user)
             return
         except KeyError:
             pass
 
-    async def handle_reaction_add(self, reaction, user):
+    async def handle_reaction(self, reaction, user):
         response_method = get_response_type(reaction.message.guild, user, reaction.message.channel)
 
         awaiting_reaction = self.awaiting_reactions[reaction.message.id]
@@ -390,7 +401,7 @@ class Holocron:
         chosen_tip = tips[emoji_num - 1]
         channel = reaction.message.channel
         if command.command_type is CommandTypes.READ:
-            await self.handle_view_group(chosen_tip, location, response_method)
+            await self.handle_view_group(chosen_tip, location, response_method, user)
         elif command.command_type is CommandTypes.EDIT:
             await self.handle_tip_edit(chosen_tip, location, response_method, user, channel)
         elif command.command_type is CommandTypes.CHANGE_AUTHOR:
@@ -446,11 +457,14 @@ class Holocron:
         for emoji in emoji_list:
             await reaction.message.add_reaction(emoji)
 
-    async def handle_view_group(self, chosen, location: HolocronLocation, response_method):
+    async def handle_view_group(self, chosen, location: HolocronLocation, response_method, author):
         # location has a group address
-        selected_location = self.get_location(location.address + str(chosen))
+        selected_location = self.get_location(location.address, location_string_suffix=str(chosen))
         command_obj = HolocronCommand(selected_location.address)
-        await self.holocron_tips(command_obj, selected_location, response_method, None, None, None)
+        if selected_location.is_group_location:
+            await self.holocron_group_list(command_obj, selected_location, response_method, author)
+        else:
+            await self.holocron_tips(command_obj, selected_location, response_method, None, None, None)
         return
 
     async def handle_tip_edit(self, tip, location, response_method, user, channel):
