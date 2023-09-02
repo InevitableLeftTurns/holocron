@@ -3,10 +3,12 @@ import re
 
 class HolocronLocation:
 
-    def __init__(self, location_string, labels):
+    def __init__(self, location_string, suffix, labels):
         self.address = location_string
+        self.suffix = suffix
         self.labels = labels
         self.is_group_location = False
+        self.is_mid_level_location = False
 
     def get_location_name(self) -> str:
         # a name for the address for clean user interactions
@@ -50,8 +52,8 @@ class InvalidLocationError(Exception):
 
 class ConquestLocation(HolocronLocation):
 
-    def __init__(self, location_string, labels):
-        super().__init__(location_string, labels)
+    def __init__(self, location_string, suffix, labels):
+        super().__init__(location_string, suffix, labels)
         # ids are the individual components and used for labels
         # addresses are the lookups for storage lookup
 
@@ -93,16 +95,21 @@ class ConquestLocation(HolocronLocation):
         "f": "feats"
     }
 
+    suffix_lookup = {name: type_id for type_id, name in tip_types.items()}
+
     def get_location_name(self) -> str:
         loc_name = self.conquest_labels[self.feat_location_id]
         if self.is_sector_location:
-            loc_name += f" {self.sector_id} {self.conquest_labels.get(self.sector_node_type_id)} "
+            loc_name += f" {self.sector_id}"
+
+        if self.sector_node_type_id:
+            loc_name += f" {self.conquest_labels.get(self.sector_node_type_id)}"
 
         if self.feat_id:
             if self.is_boss_location:
-                loc_name += "Feat "
-            loc_name += f"{self.feat_id}"
-        elif self.is_group_location and not self.is_boss_location:
+                loc_name += " Feat"
+            loc_name += f" {self.feat_id}"
+        elif self.is_group_location and not self.is_boss_location and not self.is_mid_level_location:
             loc_name += "s"
 
         loc_name += f"  (`{self.address}`)"
@@ -115,7 +122,7 @@ class ConquestLocation(HolocronLocation):
         return f"{self.labels.get(self.address, self.get_location_name())}"
 
     def get_tip_title(self) -> str:
-        if self.sector_node_type_id == 'n':
+        if not self.is_mid_level_location and self.sector_node_type_id == 'n':
             return self.generate_tip_text()
         return self.generate_feat_text()
 
@@ -128,12 +135,20 @@ class ConquestLocation(HolocronLocation):
         return self.is_boss_location and self.is_group_location
 
     def get_address_type_name(self):
+        if self.is_mid_level_location and self.sector_id:
+            return f"location in Sector {self.sector_id}"
+        if self.is_boss_location and self.is_group_location:
+            return 'feat'
         return self.conquest_labels[self.sector_node_type_id or self.feat_location_id].lower()
 
     def parse_location(self, is_map=False, is_group=False):
         if is_map:
             # this makes me angry
             raise NotImplementedError
+
+        if self.suffix:
+            self.suffix = self.suffix_lookup.get(self.suffix, self.suffix)
+            self.address += self.suffix
 
         location_fragments = re.split('(\\d+)', self.address)
 
@@ -152,6 +167,7 @@ class ConquestLocation(HolocronLocation):
                 self.feat_address = int(self.feat_id)
             except IndexError:  # called if location_fragments[1] dne
                 self.is_group_location = True
+                return
             except ValueError:  # called if feat_id not an int
                 raise InvalidLocationError("The character following `g` must be a number.")
 
@@ -163,8 +179,11 @@ class ConquestLocation(HolocronLocation):
                 self.sector_id = location_fragments[1]
                 self.sector_address = int(self.sector_id)
             except IndexError:  # called if location_fragments[1] dne
-                raise InvalidLocationError("The character following `s` for sectors must be a number indicating which "
-                                           "sector to query.")
+                self.is_group_location = True
+                self.is_mid_level_location = True
+                return
+                # raise InvalidLocationError("The character following `s` for sectors must be a number indicating which "
+                #                            "sector to query.")
             except ValueError:  # called if sector_id not an int
                 raise InvalidLocationError("The character following `s` must be a number.")
 
@@ -176,8 +195,11 @@ class ConquestLocation(HolocronLocation):
                 self.sector_node_type_id = location_fragments[2]
                 self.sector_node_type_address = self.tip_types[self.sector_node_type_id]
             except (IndexError, KeyError):
-                raise InvalidLocationError(f"The character following `{self.sector_id}` must be `b` for boss tips,"
-                                           f"`m` for miniboss tips, `n` for node tips, or `f` for sector feats.")
+                self.is_group_location = True
+                self.is_mid_level_location = True
+                return
+                # raise InvalidLocationError(f"The character following `{self.sector_id}` must be `b` for boss tips,"
+                #                            f"`m` for miniboss tips, `n` for node tips, or `f` for sector feats.")
 
             self.is_boss_location = self.sector_node_type_id in self.boss_types
             try:
