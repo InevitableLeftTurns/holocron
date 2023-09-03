@@ -12,7 +12,7 @@ from discord.ext import commands, tasks
 from entities import tip as tip_module
 from entities.command_parser import HolocronCommand, CommandTypes
 from entities.interactions import AwaitingReaction
-from entities.locations import HolocronLocation
+from entities.locations import HolocronLocation, LocationDisabledError
 from entities.tip import Tip
 from util import helpmgr
 from util.command_checks import check_higher_perms
@@ -280,23 +280,34 @@ class Holocron:
             response = [self.format_tips(location), ""]
 
         response.append(f"View Tips for which {location.get_address_type_name()}?")
+        try:
+            map_name = location.get_map_name()
+            await response_method.send(file=discord.File(f'data/{self.name}/images/{map_name.lower()}_mini.png'))
+        except (NotImplementedError, KeyError):
+            pass
 
         group_data = self.get_group_data(location, override_feats=True)
-        selection_id = 1
+        selection_idx = 1
         for section_id, tips in group_data.items():
-            temp_location = self.get_location(location.address, location_string_suffix=str(section_id))
+            try:
+                # added to support WIPs when some locations are disabled and it's not really an error yet
+                temp_location = self.get_location(location.address, location_string_suffix=str(section_id),
+                                                  is_group=True)
+            except LocationDisabledError:
+                continue
+
             tip_title = temp_location.get_tip_title()
-            msg = f"{selection_id} - {tip_title}"
+            msg = f"{selection_idx} - {tip_title}"
 
             if not location.is_mid_level_location:
                 count_tips = len(tips)
                 msg += f" (#tips: {count_tips})"
 
             response.append(msg)
-            selection_id += 1
+            selection_idx += 1
 
         emoji_list = []
-        for index in range(len(group_data)):
+        for index in range(selection_idx - 1):
             emoji = str(index + 1) + "\u20E3"
             emoji_list.append(emoji)
 
