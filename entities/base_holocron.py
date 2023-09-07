@@ -36,6 +36,8 @@ class Holocron:
 
         self.awaiting_reactions = {}
         self.clean_awaiting_reactions.start()
+        self.modifier_emoji_list = ["➕", "✍", "➖"]
+        self.modifier_command_types = [CommandTypes.ADD, CommandTypes.EDIT, CommandTypes.DELETE]
 
         self.tip_storage = None
         self.load_storage()
@@ -216,7 +218,14 @@ class Holocron:
 
         self.save_storage()
 
-    def format_tips(self, location: HolocronLocation, depth=3):
+    async def send_modifier_choices(self, user, sent_message, location):
+        self.awaiting_reactions[sent_message.id] = AwaitingReaction(user.id, self.modifier_emoji_list,
+                                                                    None, HolocronCommand(), location)
+
+        for emoji in self.modifier_emoji_list:
+            await sent_message.add_reaction(emoji)
+
+    def format_tips(self, location: HolocronLocation, depth=3) -> str:
         location_tips = self.get_tips(location)
         total = len(location_tips)
         sort_tips(location_tips)
@@ -224,22 +233,24 @@ class Holocron:
         detail = location.get_detail()
 
         if len(top_n) > 0:
-            response = [f"__**Recent tip{'' if len(top_n) == 1 else 's'} {len(top_n)}** "
-                        f"(of {total}) for **{location.get_location_name()}**__"]
+            output = [f"__**Recent tip{'' if len(top_n) == 1 else 's'} {len(top_n)}** "
+                      f"(of {total}) for **{location.get_location_name()}**__"]
 
             if detail:
-                response.append(detail)
+                output.append(detail)
 
+            counter = 0
             for index, tip in enumerate(top_n):
-                response.append(f"{index + 1} - " + tip.create_tip_message())
+                counter = index + 1
+                output.append(f"{counter} - " + tip.create_tip_message())
 
-            return '\n'.join(response)
+            return '\n'.join(output)
         else:
-            response = ""
+            output = ""
             if detail:
-                response += f"{detail}\n"
-            response += f"There are no tips for {location.get_location_name()}."
-            return response
+                output += f"{detail}\n"
+            output += f"There are no tips for {location.get_location_name()}."
+            return output
 
     async def holocron_tips(self, command: HolocronCommand, tip_location: HolocronLocation,
                             response_method, author, channel, guild):
@@ -264,7 +275,8 @@ class Holocron:
             return
 
         response = self.format_tips(tip_location, num_tips)
-        await response_method.send(response)
+        sent_message = await response_method.send(response)
+        await self.send_modifier_choices(author, sent_message, tip_location)
 
     async def holocron_group_list(self, command: HolocronCommand, location: HolocronLocation, response_method, author):
         # tip_location is a short address, missing a final id
@@ -320,7 +332,8 @@ class Holocron:
         self.get_tips(location).append(Tip(content=tip_message, author=author.display_name, user_id=author.id))
         self.save_storage()
 
-        await response_method.send(f"Your tip has been added.\n{self.format_tips(location)}")
+        sent_message = await response_method.send(f"Your tip has been added.\n{self.format_tips(location)}")
+        await self.send_modifier_choices(author, sent_message, location)
 
     async def edit_tip(self, command: HolocronCommand, guild, author, location: HolocronLocation, response_method):
         tips_list = self.get_tips(location)
@@ -389,15 +402,23 @@ class Holocron:
                 del self.awaiting_reactions[reaction.message.id]
                 await response_method.send("Selection Cancelled.")
                 return
-            await self.change_edit_page(reaction, awaiting_reaction, user)
-            return
+            elif reaction.emoji in self.modifier_emoji_list:
+                idx = self.modifier_emoji_list.index(reaction.emoji)
+                command.command_type = self.modifier_command_types[idx]
+                command.address = location.address
+                await self.holocron_tips(command, location, response_method, user,
+                                         reaction.message.channel, reaction.message.guild)
+                return
+            else:
+                await self.change_edit_page(reaction, awaiting_reaction, user)
+                return
 
         del self.awaiting_reactions[reaction.message.id]
 
         chosen_tip = tips[emoji_num - 1]
         channel = reaction.message.channel
         if command.command_type is CommandTypes.READ:
-            await self.handle_view_group(chosen_tip, location, response_method)
+            await self.handle_view_group(chosen_tip, location, response_method, user)
         elif command.command_type is CommandTypes.EDIT:
             await self.handle_tip_edit(chosen_tip, location, response_method, user, channel)
         elif command.command_type is CommandTypes.CHANGE_AUTHOR:
@@ -453,11 +474,11 @@ class Holocron:
         for emoji in emoji_list:
             await reaction.message.add_reaction(emoji)
 
-    async def handle_view_group(self, chosen, location: HolocronLocation, response_method):
+    async def handle_view_group(self, chosen, location: HolocronLocation, response_method, user):
         # location has a group address
         selected_location = self.get_location(location.address + str(chosen))
         command_obj = HolocronCommand(selected_location.address)
-        await self.holocron_tips(command_obj, selected_location, response_method, None, None, None)
+        await self.holocron_tips(command_obj, selected_location, response_method, user, None, None)
         return
 
     async def handle_tip_edit(self, tip, location, response_method, user, channel):
@@ -474,16 +495,16 @@ class Holocron:
 
         if tip_message.content == "cancel":
             feedback = "Edit cancelled. Tip will remain as it was."
+            await response_method.send(feedback)
         else:
             tip.content = tip_message.content
             tip.edited = True
+            self.save_storage()
 
             feedback = "Edit success.\n"
             feedback += f"{self.format_tips(location)}"
-
-        await response_method.send(feedback)
-
-        self.save_storage()
+            sent_message = await response_method.send(feedback)
+            await self.send_modifier_choices(user, sent_message, location)
 
     async def handle_tip_delete(self, tip, location, response_method, user, channel):
         def check_message(message):
@@ -499,12 +520,12 @@ class Holocron:
             self.get_tips(location).remove(tip)
             feedback = "Tip deleted.\n"
             feedback += f"{self.format_tips(location)}"
+            self.save_storage()
+
+            sent_message = await response_method.send(feedback)
+            await self.send_modifier_choices(user, sent_message, location)
         else:
-            feedback = "Deletion canceled. Tip not deleted."
-
-        await response_method.send(feedback)
-
-        self.save_storage()
+            await response_method.send("Deletion canceled. Tip not deleted.")
 
     async def handle_change_author(self, chosen_tip, new_author, location, response_method, user, guild, channel):
         if not check_higher_perms(user, guild):
@@ -517,12 +538,12 @@ class Holocron:
         if not member_id:
             member_id = {member_obj.global_name: member_obj.id for member_obj in channel.members}.get(new_author)
         chosen_tip.user_id = member_id
+        self.save_storage()
 
         feedback = "Author change successful.\n"
         feedback += f"{self.format_tips(location)}"
-
-        await response_method.send(feedback)
-        self.save_storage()
+        sent_message = await response_method.send(feedback)
+        await self.send_modifier_choices(user, sent_message, location)
 
     @tasks.loop(time=datetime.time(hour=12))
     async def clean_awaiting_reactions(self):
