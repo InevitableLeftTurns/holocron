@@ -114,7 +114,7 @@ class ConquestHolocron(commands.Cog, Holocron):
 
     def get_group_data(self, location: ConquestLocation, override_feats=False):
         group_data = self.tip_storage[location.feat_location_address]
-        if location.is_sector_location:
+        if not location.is_mid_level_location and location.is_sector_location:
             group_data = group_data[location.sector_address][location.sector_node_type_address]
             if not override_feats and location.is_boss_location and location.is_group_location:
                 # boss tips
@@ -122,6 +122,8 @@ class ConquestHolocron(commands.Cog, Holocron):
             elif location.is_boss_location:
                 # boss or sector feat tips
                 group_data = group_data['feats']
+        if location.is_mid_level_location and location.sector_address:
+            group_data = group_data[location.sector_address]
         return group_data
 
     @commands.command(name="conquest", aliases=["c", "con", "conq"], extras={'is_holocron': True},
