@@ -66,6 +66,21 @@ class RiseHolocron(commands.Cog, Holocron):
 
         return msg
 
+    def get_group_data(self, location: RiseLocation, override_feats=False):
+        group_data = self.tip_storage[location.track_address]
+        if not location.is_mid_level_location:
+            # has to be on a planet
+            # copied so the following mutations do not mutate tip_storage
+            group_data = group_data[location.planet_address].copy()
+            cm_data = group_data.pop('cm')
+
+            new_group_data = {mission_type: data['tips'] for mission_type, data in group_data.items()}
+            cm_data = {f"cm{idx}": tips for idx, tips in cm_data.items()}
+
+            group_data = cm_data
+            group_data.update(new_group_data)
+        return group_data
+
     @commands.command(name="rise", aliases=["r"], extras={'is_holocron': True},
                       description="Access the Rise Holocron for reading and managing Rise Tips")
     async def rise_manager(self, ctx: commands.Context, *args):
