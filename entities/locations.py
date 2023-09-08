@@ -364,7 +364,7 @@ class RiseLocation(HolocronLocation):
                                        "missions are numbered from left to right. Use `map` for a visual reference.")
 
         if not is_group and self.address not in self.labels[self.track_id][self.planet_id]:
-            raise InvalidLocationError("The number following your mission type must match a valid battles number. "
+            raise InvalidLocationError("The address for your mission is not valid. "
                                        "Battles are numbered left to right. Use `map` for a visual reference.")
 
         return

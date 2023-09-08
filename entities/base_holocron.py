@@ -61,6 +61,9 @@ class Holocron:
     def get_group_data(self, location, override_feats=False):
         raise NotImplementedError
 
+    def cleanup_rise_data(self):
+        raise NotImplementedError
+
     # Base Functionality
     def get_location(self, location_string, location_string_suffix=None, **kwargs) -> HolocronLocation:
         location_obj = self.location_cls(location_string, location_string_suffix, self.labels)
@@ -162,9 +165,10 @@ class Holocron:
             await response_method.send(f"Error when processing command. {command_obj.error}")
             return
 
-        if command_type is CommandTypes.USER_MIGRATION:
-            self.migrate_users(ctx.channel)
-            await response_method.send('User names migrated to Global Names')
+        if command_type is CommandTypes.RISE_CLEANUP:
+            msgs = self.cleanup_rise_data()
+            await response_method.send('Rise taxonomy cleaned up')
+            await response_method.send('\n'.join(msgs))
             return
 
         if command_type is CommandTypes.CLEAR:

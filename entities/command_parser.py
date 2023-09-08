@@ -19,7 +19,7 @@ class CommandTypes(Enum):
     CHANGE_AUTHOR = 101
 
     # ONE TIME COMMANDS
-    USER_MIGRATION = 1000
+    RISE_CLEANUP = 1000
 
     CLEAR_COMMANDS = [
         "clean",
