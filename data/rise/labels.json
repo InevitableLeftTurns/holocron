@@ -301,14 +301,14 @@
         "reqs": "5x Light Side or Neutral (Relic 7+)",
         "enemies": "Unknown"
       },
-      "ls1cm3": {
+      "lsb1cm3": {
         "reqs": "5x Unaligned Force Users (Relic 7+, Light side only)",
         "enemies": [
           "Stormtrooper Commando (L), 2x Purge Trooper, 2x KX-series Security Droid",
           "Imperial AT-ST"
         ]
       },
-      "ls1sm1": {
+      "lsb1sm1": {
         "reqs": "5x Clone Troopers (Relic 7+)",
         "enemies": [
           "Miktrull Tomb Guardian (L), 2x Eilram Tomb Guardian",
