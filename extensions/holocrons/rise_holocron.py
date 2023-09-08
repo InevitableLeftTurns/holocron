@@ -1,4 +1,5 @@
 from discord.ext import commands
+
 from entities.base_holocron import Holocron
 from entities.locations import RiseLocation
 
@@ -80,6 +81,60 @@ class RiseHolocron(commands.Cog, Holocron):
             group_data = cm_data
             group_data.update(new_group_data)
         return group_data
+
+    def cleanup_rise_data(self):
+        response = []
+        from collections import defaultdict
+        top_level_tbr = []
+        track_planet_tbr = {}
+        planet_mission_tbr = defaultdict(dict)
+        for track_name, track_data in self.tip_storage.items():
+            address_lookup = {track_name: track_id for track_id, track_name in RiseLocation.tracks.items()}
+            track_address = address_lookup[track_name]
+            if track_address not in self.labels:
+                top_level_tbr.append(track_name)
+                continue
+
+            planet_tbr = []
+            for planet_id, planet_data in track_data.items():
+                planet_label_address = track_address + str(planet_id)
+                if planet_label_address not in self.labels[track_address]:
+                    planet_tbr.append(planet_id)
+                    track_planet_tbr[track_name] = planet_tbr
+                    continue
+
+                mission_tbr = []
+                for mission_type, mission_data in planet_data.items():
+                    mission_keys = []
+                    if mission_type == 'cm':
+                        mission_keys = [(planet_label_address + mission_type + str(mission_id), mission_id)
+                                        for mission_id in mission_data.keys()]
+                    if mission_type == 'sm':
+                        mission_keys = [(planet_label_address + 'sm1', 'sm')]  # only one today
+
+                    if mission_type == 'fleet':
+                        mission_keys = [(planet_label_address + 'f', 'f')]
+
+                    for mission_label_address, mission_id in mission_keys:
+                        if mission_label_address not in self.labels[track_address][planet_label_address]:
+                            mission_tbr.append((mission_type, mission_id))
+                            planet_mission_tbr[track_name][planet_id] = mission_tbr
+
+        for track_name, track_tbr in planet_mission_tbr.items():
+            stored_track_data = self.tip_storage[track_name]
+            for planet_key, mission_tbr in track_tbr.items():
+                for mission_key, mission_id in mission_tbr:
+                    stored_planet_data = stored_track_data[planet_key]
+                    tbr_key = mission_key
+                    if mission_key == 'cm':
+                        stored_planet_data = stored_planet_data[mission_key]
+                        tbr_key = mission_id
+                    stored_planet_data.pop(tbr_key)
+                    response.append(f'Removed {tbr_key} from {track_name}-{planet_key}')
+
+        self.save_storage()
+
+        return response or ["No further cleanup needed."]
 
     @commands.command(name="rise", aliases=["r"], extras={'is_holocron': True},
                       description="Access the Rise Holocron for reading and managing Rise Tips")
