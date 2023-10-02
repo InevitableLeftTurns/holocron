@@ -16,39 +16,38 @@ with open('data/conquest/import.txt') as importfile:
             line = line.strip('@@')
             header = line
             header_id = None
+
+            # sector header with sector number
             if ' ' in line:
                 header, header_id = line.split(' ')
             print(f'{header}:{header_id}')
-
-        if ':' in line:
-            description = line.split(':', 1)
-            if len(description) > 0 and description[0] \
-                    and not description[0].startswith('-') \
-                    and not description[0].endswith('Bosses'):
-                desc_text = description[0]
+        elif line and line != '----':
+            if ':' in line:
+                boss_type, description = line.split(':', 1)
+            else:
                 boss_type = None
-                # bosses have a ' - '
-                if ' - ' in desc_text:
-                    boss_type_data, desc_text = desc_text.split(' - ')
-                    boss_type = boss_type_data.split(' ')[-1]
-                    # print(f"boss: {boss_type}")
-                else:
-                    feat_counter += 1
+                description = line
+                feat_counter += 1
 
-                location = header.lower()[0]
-                if header_id:
-                    location += header_id
-                if boss_type:
-                    location += boss_type.lower()[0]
-                    boss_counter = (boss_counter + 1) % 2
-                    location += str(boss_counter + 1)
-                elif header_id:
-                    location += f'f{feat_counter}'
-                else:
-                    location += str(feat_counter)
+            # location code
+            location = header.lower()[0]
+            if header_id:
+                location += header_id
 
-                print(f'{location}: {desc_text}')
-                data[location] = desc_text
+            if boss_type:
+                # handle boss location m or b
+                location += boss_type.lower()[0]
+                boss_counter = (boss_counter + 1) % 2
+                location += str(boss_counter + 1)
+            elif header_id:
+                # sectors
+                location += f'f{feat_counter}'
+            else:
+                # globals have no f
+                location += str(feat_counter)
+
+            print(f'{location}: {description.strip()}')
+            data[location] = description.strip()
 
         line = importfile.readline()
 
