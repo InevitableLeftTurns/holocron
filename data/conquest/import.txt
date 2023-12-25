@@ -1,85 +1,85 @@
 @@GLOBALS
 
 Defeat at least 250 enemies on the golden Challenge Path
-Win 40 battles with a full squad of Hutt Cartel
+Win 40 battles with a full squad of First Order
+Win 20 battles with a full squad of Light Side Mandalorians surviving
 Win 40 battles with Princess Kneesaa, Chief Chirpa, Wicket, Paploo, and Logray surviving
-Win 20 battles with Captain Rex, Chopper, Ezra Bridger, Hera Syndulla, and Kanan Jarrus surviving
-Win 20 battles with a full squad of Wookiees
-Defeat 100 enemies with Tusken Warrior
+Win at least 40 battles with a full squad of Rebel units
 Complete a battle with Overprepared I active
+Defeat 100 enemies with General Veers or Admiral Piett
 Complete a battle with Deployable Cooling Systems active
 
 ----
 
 @@SECTOR 1
 
-Win 14 battles with at least 1 Jawa surviving
-Win 14 battles with a full squad of Old Republic
-Gain Potency Up 40 times
-Attempt to inflict Stun 100 times
+Win 14 battles with a full squad of Resistance characters
+Gain We Adapt, or Die 50 times
+Defeat 14 enemies with Saw Gerrera
+Attempt to inflict 500 stacks of Damage Over Time
 
-Miniboss: Win with Cere Junda surviving
-Miniboss: Win without using any Jedi, Sith, or Unaligned Force Users in your squad
+Miniboss: Win with 5 IG-series droids
+Miniboss: Win with only Dark Side characters
 
-Boss: Win with Ben Solo surviving
-Boss: Win without using any Jedi, Sith, or Unaligned Force Users in your squad
+Boss: Win with Captain Drogan surviving
+Boss: Win with only Dark Side characters
 
 ----
 
 @@SECTOR 2
 
-Defeat 10 enemies with Saw Gerrera
-Win 14 battles with no Supports in your squad
-Attempt to inflict Burning 60 times
-Attempt to inflict Plague 200 times
+Win 14 battles with a full squad of Bounty Hunters
+Attempt to inflict Confuse 40 times
+Gain Potency Up 40 times
+Defeat 50 enemies with Empire units
 
-Miniboss: Win with Tarfful surviving
-Miniboss: Win 14 battles with no Supports in your squad
+Miniboss: Defeat an enemy with Scout Trooper
+Miniboss: Win with only Light Side characters
 
-Boss: Win with Saw Gerrera surviving
-Boss: Win with only Dark Side characters
+Boss: Win with Rey (Jedi Training) surviving
+Boss: Win without using any Jedi, Sith, or Unaligned Force Users in your squad
 
 ----
 
 @@SECTOR 3
 
-Inflict Doubt on enemies 60 times
-Defeat 10 enemies with Princess Kneesaa
-Win 14 battles with a full squad of Resistance characters
-Attempt to inflict Stagger 60 times
+Win 14 battles with a full squad of Tuskens
+Gain Critical Chance Up 40 times
+Gain Heat 100 times
+Attempt to inflict Daze 100 times
 
-Miniboss: Win with Zorii Bliss surviving
-MiniBoss: Win without using any Jedi, Sith, or Unaligned Force Users in your squad
+Miniboss: Win with Commander Luke Skywalker Surviving
+Miniboss: Win with Moff Gideon surviving
 
-Boss: Win with Scout Trooper surviving
-Boss: Win with Dr. Aphra surviving
+Boss: Win with Jedi Knight Cal Kestis surviving
+Boss: Win with a full squad of Inquisitors
 
 ----
 
 @@SECTOR 4
 
-Win 14 battles with a full squad of Tuskens
-Attempt to inflict Evasion Down 40 times
-Attempt to inflict Armor Shred 20 times
-Gain Riposte 40 times
+Win 14 battles with a full squad of Light Side Unaligned Force Users
+Gain Critical Damage Up 40 times
+Attempt to inflict Expose 100 times
+Defeat 10 enemies with Captain Drogan
 
-Miniboss: Defeat an enemy with Scout Trooper
-MiniBoss: Win without using any Jedi, Sith, or Unaligned Force Users in your squad
+Miniboss: Win with only Dark Side characters
+Miniboss: Win with Captain Rex surviving
 
-Boss: Win with a full squad of Mandalorians
-Boss: Win with a full squad of Light Side units
+Boss: Win without using any Jedi, Sith, or Unaligned Force Users in your squad
+Boss: Win with Leia Organa surviving
 
 ----
 
 @@SECTOR 5
 
-Defeat 50 enemies with Empire units
-Win at least 20 battles without losing any units
-Gain Damage Immunity 40 times
-Attempt to inflict Ability Block 60 times
+Defeat 50 enemies with Clone Trooper units
+Attempt to inflict Stagger 300 times
+Gain Foresight 300 times
+Defeat 10 enemies with Iden Versio
 
-Miniboss: Win with Tarful surviving
-Miniboss: Win with only Dark Side characters
+Miniboss: Win with Dark Trooper Moff Gideon Surviving
+Miniboss: Win with only Light Side characters
 
-Boss: Win with General Leia Organa surviving
-Boss: Win without using a Galactic Legend in your squad
+Boss: Win with a full squad of Resistance units
+Boss: Win with only Dark Side characters
