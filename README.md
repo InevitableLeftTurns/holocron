@@ -1,7 +1,7 @@
-# Holocron Request, Comment, and Issue Tracker
-Feature Request and Issue Tracker for Holocron Bot
+# Holocron Discord Bot
+Discord Bot for Star Wars: Galaxy of Heroes Hint Tracking
 
-Holocron is a Discord bot for collecting adn remembering Tips for the Star Wars Galaxy of Heroes game. Created for the guild: Mando's Mudhorns. The actual code repo is private for the time being.
+Holocron is a Discord bot for collecting and remembering Tips for the Star Wars Galaxy of Heroes game. Created for the guild: Mando's Mudhorns. The actual code repo is public for the time being but privately managed.
 
 The Holocron bot allows members to add Tips for battles and the guild can look up those tips in the bot channel.
 
