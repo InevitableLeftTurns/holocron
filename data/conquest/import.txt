@@ -1,85 +1,85 @@
 @@GLOBALS
 
 Defeat at least 250 enemies on the golden Challenge Path
-Win 40 battles with a full squad of First Order
+Defeat 600 B1 Battle Droids
+Win 40 battles with a full squad of Galactic Republic
+Win 20 battles with Kelleran Beq and IG-12 & Grogu surviving
 Win 20 battles with a full squad of Light Side Mandalorians surviving
-Win 40 battles with Princess Kneesaa, Chief Chirpa, Wicket, Paploo, and Logray surviving
-Win at least 40 battles with a full squad of Rebel units
 Complete a battle with Overprepared I active
-Defeat 100 enemies with General Veers or Admiral Piett
-Complete a battle with Deployable Cooling Systems active
+Defeat 50 enemies with STAP
+Attempt to call allies to assist with Booming Voice 60 times.
 
 ----
 
 @@SECTOR 1
 
-Win 14 battles with a full squad of Resistance characters
-Gain We Adapt, or Die 50 times
-Defeat 14 enemies with Saw Gerrera
-Attempt to inflict 500 stacks of Damage Over Time
+Defeat 50 enemies with Jedi units
+Gain Defense Up 80 times
+Attempt to inflict Armor Shred 30 times
+Gain Secret Intel 80 times
 
-Miniboss: Win with 5 IG-series droids
-Miniboss: Win with only Dark Side characters
+Miniboss: Win with Hermit Yoda surviving
+Miniboss: Win without using any Jedi, Sith, or Unaligned Force Users in your squad
 
-Boss: Win with Captain Drogan surviving
-Boss: Win with only Dark Side characters
+Boss: Win with T3-M4 surviving
+Boss: Win without using a Galactic Legend in your squad
 
 ----
 
 @@SECTOR 2
 
-Win 14 battles with a full squad of Bounty Hunters
-Attempt to inflict Confuse 40 times
-Gain Potency Up 40 times
-Defeat 50 enemies with Empire units
+Win 14 battles with no Attackers in your squad
+Evade at least 100 attacks in battles you won
+Attempt to inflict Plague 400 times
+Gain Health Steal Up 60 times
 
-Miniboss: Defeat an enemy with Scout Trooper
-Miniboss: Win with only Light Side characters
+Miniboss: Win with CT-5555 "Fives" surviving
+Miniboss: Win with only Dark Side characters
 
-Boss: Win with Rey (Jedi Training) surviving
+Boss: Win with Cad Bane and Aurra Sing surviving
 Boss: Win without using any Jedi, Sith, or Unaligned Force Users in your squad
 
 ----
 
 @@SECTOR 3
 
-Win 14 battles with a full squad of Tuskens
-Gain Critical Chance Up 40 times
-Gain Heat 100 times
-Attempt to inflict Daze 100 times
+Defeat 50 enemies with Droid units
+Gain Momentum 1,000 times
+Attempt to inflict Purge 300 times
+Gain Foresight 300 times
 
-Miniboss: Win with Commander Luke Skywalker Surviving
-Miniboss: Win with Moff Gideon surviving
+Miniboss: Win with Boba Fett, Scion of Jango surviving
+Miniboss: Win without using any Jedi, Sith, or Unaligned Force Users in your squad
 
-Boss: Win with Jedi Knight Cal Kestis surviving
-Boss: Win with a full squad of Inquisitors
+Boss: Win the battle with Boss Nass surviving
+Boss: Win without using a Galactic Legend in your squad
 
 ----
 
 @@SECTOR 4
 
-Win 14 battles with a full squad of Light Side Unaligned Force Users
-Gain Critical Damage Up 40 times
-Attempt to inflict Expose 100 times
-Defeat 10 enemies with Captain Drogan
+Defeat 50 enemies with Imperial Trooper units
+Attempt to inflict Ability Block 60 times
+Gain Stealth 120 times
+Win at least 14 battles with a full squad of Rebel units
 
-Miniboss: Win with only Dark Side characters
-Miniboss: Win with Captain Rex surviving
+Miniboss: Win with Jedi Knight Cal Kestis surviving
+Miniboss: Win without using any Jedi, Sith, or Unaligned Force Users in your squad
 
-Boss: Win without using any Jedi, Sith, or Unaligned Force Users in your squad
-Boss: Win with Leia Organa surviving
+Boss: Win with Dark Trooper Moff Gideon Surviving (excluding summons)
+Boss: Win with only Light Side characters
 
 ----
 
 @@SECTOR 5
 
-Defeat 50 enemies with Clone Trooper units
-Attempt to inflict Stagger 300 times
-Gain Foresight 300 times
-Defeat 10 enemies with Iden Versio
+Defeat 50 enemies with Inquisitorius units
+Win 14 battles with no Tanks in your squad
+Attempt to inflict Blind 80 times
+Attempt to inflict Evasion Down 80 times
 
-Miniboss: Win with Dark Trooper Moff Gideon Surviving
-Miniboss: Win with only Light Side characters
+Miniboss: Win with Darth Bane surviving
+Miniboss: Win without using any Jedi, Sith, or Unaligned Force Users in your squad
 
-Boss: Win with a full squad of Resistance units
-Boss: Win with only Dark Side characters
+Boss: Win with Bo-Katan (Mand'alor) surviving
+Boss: Win without using a Galactic Legend in your squad
