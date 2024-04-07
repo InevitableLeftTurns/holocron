@@ -74,7 +74,7 @@ class HolocronCommand:
 
         # contextual attributes
         self.help_section = None
-        self.read_depth = 3
+        self.read_filters = []
         self.new_tip_text = None
         self.new_author = None
         self.command_args = []
@@ -125,7 +125,7 @@ class HolocronCommand:
             return
 
         if self.command_type is CommandTypes.READ:
-            self.read_depth = self.command_args[0]
+            self.read_filters.append(self.command_args[0])
             self._shift_args()
 
         if self.command_type is CommandTypes.ADD:
@@ -138,6 +138,13 @@ class HolocronCommand:
         if self.command_type is CommandTypes.CHANGE_AUTHOR:
             self.new_author = self.command_args[0]
             self._shift_args()
+
+    def get_read_depth(self):
+        if not self.read_filters:
+            return 3
+
+        possible_depth = self.read_filters[-1]
+
 
     def _shift_args(self):
         self.command_args = self.command_args[1:]

@@ -38,6 +38,7 @@ class Holocron:
         self.clean_awaiting_reactions.start()
         self.modifier_emoji_list = ["➕", "✍", "➖"]
         self.modifier_command_types = [CommandTypes.ADD, CommandTypes.EDIT, CommandTypes.DELETE]
+        self.default_num_tips = 5
 
         self.tip_storage = None
         self.load_storage()
@@ -49,7 +50,7 @@ class Holocron:
     def dummy_populate(self):
         raise NotImplementedError
 
-    def get_tips(self, location: HolocronLocation):
+    def get_tips(self, location: HolocronLocation, read_filters=None):
         raise NotImplementedError
 
     def get_all_tips(self):
@@ -234,11 +235,17 @@ class Holocron:
         for emoji in self.modifier_emoji_list:
             await sent_message.add_reaction(emoji)
 
-    def format_tips(self, location: HolocronLocation, depth=3) -> str:
-        location_tips = self.get_tips(location)
+    def _read_depth(self, read_filters):
+        try:
+            return clamp(int(read_filters[-1]), 3, 10)
+        except (IndexError, ValueError, TypeError):
+            return self.default_num_tips
+
+    def format_tips(self, location: HolocronLocation, read_filters=None) -> str:
+        location_tips = self.get_tips(location, read_filters=read_filters)
         total = len(location_tips)
         sort_tips(location_tips)
-        top_n = location_tips[:depth]
+        top_n = location_tips[:self._read_depth(read_filters)]
         detail = location.get_detail()
 
         if len(top_n) > 0:
@@ -274,16 +281,7 @@ class Holocron:
             await modifying[command_type](author, tip_location, response_method)
             return
 
-        try:
-            num_tips = clamp(int(command.read_depth), 3, 10)
-        except ValueError:
-            await response_method.send(
-                f"If you include a value after the address for reading or listing Tips, that value "
-                f"defines how many tips to show. It must be a number between 3 and 10.\n"
-                f"You entered: `{command.read_depth}`")
-            return
-
-        response = self.format_tips(tip_location, num_tips)
+        response = self.format_tips(tip_location, command.read_filters)
         sent_message = await response_method.send(response)
         await self.send_modifier_choices(author, sent_message, tip_location)
 

@@ -12,10 +12,14 @@ class Tip:
         self.creation_time = datetime.utcnow()
         self.edited = False
 
-    def create_tip_message(self, rating=False):
-        # *(+/-rating)* **Tip from author** *(edited)*:\ncontent
+    def _create_tip_message_info(self, rating=False):
         edited = "" if not self.edited else " *(edited)*"
         rating = "" if not rating else " *({0:+})*".format(self.rating)
+        return edited, rating
+
+    def create_tip_message(self, rating=False):
+        # *(+/-rating)* **Tip from author** *(edited)*:\ncontent
+        edited, rating = self._create_tip_message_info(rating=rating)
         return f"**Tip from {self.author}**{rating}:\n\t{self.content}{edited}"
 
     def create_selection_message(self):

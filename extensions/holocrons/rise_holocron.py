@@ -10,7 +10,7 @@ class RiseHolocron(commands.Cog, Holocron):
         self.location_cls = RiseLocation
         # self.location_regex = compile(r"([a-z]+)?([0-9]+)?([a-z]+)?([0-9]+)?")
 
-    def get_tips(self, location: RiseLocation):
+    def get_tips(self, location: RiseLocation, read_filters=None):
         track_data = self.tip_storage[location.track_address]
         planet_data = track_data[location.planet_address]
         mission_data = planet_data[location.mission_type_address]

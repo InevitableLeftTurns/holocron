@@ -157,7 +157,7 @@ class RiseHelp(HelpContent):
         }
 
 
-class WarHelp(HelpContent):
+class CounterHelp(HelpContent):
 
     def generate_content(self):
         return {
@@ -165,29 +165,33 @@ class WarHelp(HelpContent):
             "all": ["intro", "read", "modify_header", "add", "edit", "delete", "clear"],
 
             "intro": f"Manages tips for counters in **Territory War** or **Grand Arena Championships**.\nStart with "
-                     f"`{self.prefix}war` or `{self.prefix}gac` or `{self.prefix}tw`, "
+                     f"`{self.prefix}counter` or `{self.prefix}ctr`, "
                      f"then follow with the options below.\n",
 
             "read": f"*Accessing Tips*\n"
-                    f"Simply place a `squad leader` following `{self.prefix}war`. "
-                    f"ex: `{self.prefix}war jmk` or `{self.prefix}tw see`.\n",
+                    f"Simply place a `<squad leader id>` following `{self.prefix}ctr`.\n"
+                    f"ex: `{self.prefix}ctr jmk` or `{self.prefix}ctr see`.\n"
+                    f"*aliases can also be used such as glrey for rey*\n"
+                    f"  \n"
+                    f"To filter to only TW or GAC counters follow the leader id with `GAC` or `TW`\n"
+                    f"ex: `{self.prefix}ctr jmk gac`",
 
             "modify_header": f"*Tip Modification*\n"
                              f"For the below modifications, place the corresponding tag "
-                             f"after the squad leader.\nex: `{self.prefix}gac <leader> <command>`",
+                             f"after the squad leader.\nex: `{self.prefix}ctr <leader> <command>`",
 
-            "add": f"* `add` - Add a tip to the specified location. "
-                   f"ex: `{self.prefix}war cls add`.",
+            "add": f"* `add` - Add a tip to the specified squad. "
+                   f"ex: `{self.prefix}counter cls add`.",
 
             'edit': f"* `edit` - Edit one of your tips. Admins can edit any tip. "
-                    f"ex: `{self.prefix}tw maul edit`.",
+                    f"ex: `{self.prefix}counter maul edit`.",
 
             'delete': f"* `delete` - Delete one of your tips. Bot admins can delete any tip. "
-                      f"ex: `{self.prefix}gac 50r-t delete`.\n",
+                      f"ex: `{self.prefix}ctr 50rt delete`.\n",
 
             'clear': f"*Clear All Tips*\n"
-                     f"`{self.prefix}war clear`\n"
-                     f"Permission role required. Intended for when conquests end.",
+                     f"`{self.prefix}counter clear`\n"
+                     f"Permission role required.",
 
             'alias': "not yet supported"
         }
@@ -196,7 +200,7 @@ class WarHelp(HelpContent):
 help_content = {
     'conquest': ConquestHelp(),
     'rise': RiseHelp(),
-    'war': WarHelp(),
+    'counter':  CounterHelp(),
 }
 
 
