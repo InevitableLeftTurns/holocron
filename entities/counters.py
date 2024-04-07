@@ -6,7 +6,7 @@ from entities.tip import Tip
 
 class Squad:
 
-    def __init__(self, lead_id: str, lead: str, squad: str, author="n/a", user_id=0, variants=None):
+    def __init__(self, lead_id: str, lead: str, squad: str, author="n/a", user_id=0, variants=None, uid=None):
         self.uid = uuid.uuid4()
         self.lead_id = lead_id.lower()
         self.lead = lead.title()
@@ -38,14 +38,14 @@ class Squad:
 
     def to_json(self):
         return {
-            "uuid": self.uid,
+            "uid": self.uid,
             "lead_id": self.lead_id,
             "lead": self.lead,
             "squad": self.squad,
             "variants": self.variants,
             "edited": self.edited,
             "author": self.author,
-            "userid": self.user_id,
+            "user_id": self.user_id,
             "creation_time": self.creation_time
         }
 
@@ -65,19 +65,26 @@ class CounterTip(Tip):
         return f"{self.content} {activity} {edited} \t*(author: {self.author}*{rating})"
 
     def to_json(self):
-        base = super().to_json()
-        base["squad_uuid"] = self.squad_uuid
-        base["activity"] = self.activity
+        out_json = super().to_json()
+        out_json["squad_uuid"] = self.squad_uuid
+        out_json["activity"] = self.activity
+        return out_json
 
 
 class Alias:
 
-    def __init__(self, alias, squad_lead_id):
+    def __init__(self, alias, squad_lead_id, author, user_id=None):
         self.alias = alias
         self.squad_lead_id = squad_lead_id
+        self.author = author
+        self.user_id = user_id
+        self.creation_time = datetime.datetime.utcnow()
 
     def to_json(self):
         return {
             "alias": self.alias,
             "squad_lead_id": self.squad_lead_id,
+            "author": self.author,
+            "user_id": self.user_id,
+            "creation_time": self.creation_time
         }

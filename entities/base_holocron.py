@@ -89,6 +89,7 @@ class Holocron:
             config = json.load(config_file)
 
         self.tip_storage = self.config_to_storage(config)
+        self.labels = self.load_labels()
         self.save_storage()
 
     def config_to_storage(self, config: dict):
@@ -273,7 +274,7 @@ class Holocron:
         command_type = command.command_type
         if command_type.is_modify_type():
             modifying = {
-                CommandTypes.ADD: partial(self.add_tip, command, channel),
+                CommandTypes.ADD: partial(self.execute_add_tip, command, channel),
                 CommandTypes.EDIT: partial(self.edit_tip, command, guild),
                 CommandTypes.DELETE: partial(self.edit_tip, command, guild),
                 CommandTypes.CHANGE_AUTHOR: partial(self.edit_tip, command, guild),
@@ -334,7 +335,7 @@ class Holocron:
         for emoji in emoji_list:
             await sent_message.add_reaction(emoji)
 
-    async def add_tip(self, command: HolocronCommand, channel, author, location: HolocronLocation, response_method):
+    async def execute_add_tip(self, command: HolocronCommand, channel, author, location: HolocronLocation, response_method):
         def check_message(message):
             return message.channel.id == channel_id and message.author.id == user_id
 
@@ -353,11 +354,14 @@ class Holocron:
             await response_method.send("Tip addition has been cancelled.")
             return
 
-        self.get_tips(location).append(Tip(content=tip_message, author=author.display_name, user_id=author.id))
-        self.save_storage()
+        self.add_tip_to_storage(location, tip_message, author)
 
         sent_message = await response_method.send(f"Your tip has been added.\n{self.format_tips(location)}")
         await self.send_modifier_choices(author, sent_message, location)
+
+    def add_tip_to_storage(self, location, tip_message, author):
+        self.get_tips(location).append(Tip(content=tip_message, author=author.display_name, user_id=author.id))
+        self.save_storage()
 
     async def edit_tip(self, command: HolocronCommand, guild, author, location: HolocronLocation, response_method):
         tips_list = self.get_tips(location)

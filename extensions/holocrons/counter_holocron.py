@@ -1,6 +1,6 @@
 from discord.ext import commands
 
-from entities.counters import Squad, CounterTip
+from entities.counters import Squad, CounterTip, Alias
 from entities.locations import CounterLocation
 from entities.base_holocron import Holocron
 from util.settings.tip_sorting_handler import sort_tips
@@ -10,16 +10,18 @@ class CounterHolocron(commands.Cog, Holocron):
     def __init__(self, bot=commands.Bot):
         super().__init__(bot, "counter")
         self.location_cls = CounterLocation
-        self.labels = self.tip_storage
 
     def dummy_populate(self):
         jmk = Squad(lead_id="jmk", lead="Jedi Master Kenobi", squad="JMK/CAT/GK/Padme/Ahsoka", author="trich")
-        see = Squad(lead_id="see", lead="Sith Eternal Emperor", squad="SEE/Bane", variants=["SEE/Wat", "SEE/Darth Malak"], author="trich")
+        see = Squad(lead_id="see", lead="Sith Eternal Emperor", squad="SEE/Bane",
+                    variants=["SEE/Wat", "SEE/Darth Malak"], author="trich")
         self.tip_storage["squads"][jmk.lead_id] = jmk
         self.tip_storage["squads"][see.lead_id] = see
 
         self.tip_storage["tips"][jmk.uid] = [
-            CounterTip(jmk.uid, author="uaq", content="I'm running 2 leaders resolve and a green ZA; Han shoots Echo, Dash nuke; works down to 30% - probably more if I was a touch faster.", rating=0),
+            CounterTip(jmk.uid, author="uaq",
+                       content="I'm running 2 leaders resolve and a green ZA; Han shoots Echo, Dash nuke; works down to 30% - probably more if I was a touch faster.",
+                       rating=0),
             CounterTip(jmk.uid, author="uaq", content="tip 2 for jmk", activity="GAC", rating=0),
             CounterTip(jmk.uid, author="uaq", content="tip 3 for jmk", rating=0),
             CounterTip(jmk.uid, author="trich", content="tip 4 for jmk for GAC 3v3", activity="GAC3", rating=0),
@@ -32,9 +34,43 @@ class CounterHolocron(commands.Cog, Holocron):
             CounterTip(see.uid, author="uaq", content="tip 3 for see", rating=0),
         ]
 
-        self.tip_storage["aliases"]["glk"] = jmk.uid
+        self.tip_storage["aliases"]["glk"] = Alias("glk", jmk.lead_id, author="uaq")
 
         self.save_storage()
+
+    def _find_activity(self, location: CounterLocation, tip_message: str) -> (str, str | None):
+        index = tip_message.find("tag=")
+        if index != -1:
+            end_index = tip_message.find(" ", index + 4)
+            if end_index > index:
+                activity = tip_message[index + 4:end_index]
+            else:
+                activity = tip_message[index + 4:]
+
+            if activity.upper() in location.valid_activities:
+                # remove from message (using original value), bump value, and return both
+                tip_message = tip_message.replace(f"tag={activity}", "").strip()
+                activity = activity.upper()
+                return tip_message, activity
+        return tip_message, None
+
+    def add_tip_to_storage(self, location: CounterLocation, tip_message: str, author):
+        squad = self.tip_storage["squads"][location.actual_squad_lead_id]
+        if squad.uid not in self.tip_storage["tips"]:
+            self.tip_storage["tips"][squad.uid] = []
+
+        tip_message, activity = self._find_activity(location, tip_message)
+
+        tips = self.tip_storage["tips"][squad.uid]
+        tips.append(CounterTip(squad.uid, content=tip_message, activity=activity,
+                               author=author.display_name, user_id=author.id))
+        self.save_storage()
+
+    def add_squad_to_storage(self, location: CounterLocation, lead_id, lead, author):
+        pass
+
+    def add_alias_to_storage(self, location, CounterLocation, author):
+        pass
 
     def format_tips(self, location: CounterLocation, read_filters=None):
         counter_tips = self.get_tips(location, read_filters=read_filters)
@@ -95,7 +131,7 @@ class CounterHolocron(commands.Cog, Holocron):
         raise NotImplementedError
 
     def load_labels(self):
-        pass
+        return self.tip_storage
 
     def config_to_storage(self, config: dict):
         return config
