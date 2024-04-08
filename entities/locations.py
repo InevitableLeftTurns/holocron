@@ -385,7 +385,7 @@ class CounterLocation(HolocronLocation):
         return f"{self.tip_storage['squads'][self.actual_squad_lead_id].create_squad_header_message()}"
 
     def get_tip_title(self):
-        return self.get_location_name()
+        return self.actual_squad_lead_id
 
     def get_detail(self):
         return f"{self.tip_storage['squads'][self.actual_squad_lead_id].create_squad_detail_message()}"
@@ -407,7 +407,5 @@ class CounterLocation(HolocronLocation):
         if self.squad_lead_id not in self.tip_storage['squads']:
             if self.squad_lead_id in self.tip_storage['aliases']:
                 self.actual_squad_lead_id = self.tip_storage['aliases'][self.squad_lead_id].squad_lead_id
-            else:
-                raise InvalidLocationError(f"Squad Leader not found: '{self.squad_lead_id}'.")
 
         return

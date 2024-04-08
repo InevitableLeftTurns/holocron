@@ -11,6 +11,14 @@ class CommandTypes(Enum):
     MAP = 5
     STATS = 6
 
+    # counter specific types
+    SQUADS = 20
+    ADD_SQUAD = 21
+    EDIT_SQUAD = 22
+    ALIASES = 30
+    ADD_ALIAS = 31
+    TAG = 35
+
     # helper type
     ALL = 100
 
@@ -35,6 +43,14 @@ class CommandTypes(Enum):
         "reassign",
         "author",
     ]
+    ADD_SQUAD_ALIASES = [
+        "add-squad",
+        "squad-add",
+    ]
+    EDIT_SQUAD_ALIASES = [
+        "edit-squad",
+        "squad-edit",
+    ]
 
     @classmethod
     def lookup(cls, enum_str: str):
@@ -51,16 +67,24 @@ class CommandTypes(Enum):
         if alias in cls.CHANGE_AUTHOR_ALIASES.value:
             return cls.CHANGE_AUTHOR
 
+        if alias in cls.ADD_SQUAD_ALIASES.value:
+            return cls.ADD_SQUAD
+
+        if alias in cls.EDIT_SQUAD_ALIASES.value:
+            return cls.EDIT_SQUAD
+
         return None
 
     def is_modify_type(self):
-        if self in [self.ADD, self.EDIT, self.DELETE, self.CHANGE_AUTHOR]:
+        if self in [self.ADD, self.EDIT, self.DELETE, self.CHANGE_AUTHOR, self.ADD_SQUAD, self.EDIT_SQUAD]:
             return True
         return False
 
     def description(self):
         if self is self.CHANGE_AUTHOR:
             return 'change the author for'
+        if self is self.ADD_SQUAD:
+            return 'add squad to'
         return self.name.lower()
 
 

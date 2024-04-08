@@ -7,7 +7,7 @@ from entities.tip import Tip
 class Squad:
 
     def __init__(self, lead_id: str, lead: str, squad: str, author="n/a", user_id=0, variants=None, uid=None):
-        self.uid = uuid.uuid4()
+        self.uid = uid or uuid.uuid4()
         self.lead_id = lead_id.lower()
         self.lead = lead.title()
         self.squad = squad

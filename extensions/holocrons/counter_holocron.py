@@ -1,7 +1,7 @@
 from discord.ext import commands
 
 from entities.counters import Squad, CounterTip, Alias
-from entities.locations import CounterLocation
+from entities.locations import CounterLocation, InvalidLocationError
 from entities.base_holocron import Holocron
 from util.settings.tip_sorting_handler import sort_tips
 
@@ -66,8 +66,23 @@ class CounterHolocron(commands.Cog, Holocron):
                                author=author.display_name, user_id=author.id))
         self.save_storage()
 
-    def add_squad_to_storage(self, location: CounterLocation, lead_id, lead, author):
-        pass
+    def add_squad_to_storage(self, location: CounterLocation, lead, squad, author, edit=False):
+        new_squad = Squad(location.actual_squad_lead_id, lead, squad, author.display_name, author.id)
+        new_tips = []
+
+        existing = self.tip_storage["squads"].get(location.actual_squad_lead_id)
+        if edit and existing:
+            new_squad.uid = existing.uid
+            new_tips = self.tip_storage["tips"].get(new_squad.uid, [])
+        elif existing:
+            raise InvalidLocationError(f"Squad already exists: `{location.actual_squad_lead_id}`")
+
+        self.tip_storage['squads'][new_squad.lead_id] = new_squad
+        self.tip_storage['tips'][new_squad.uid] = new_tips
+        self.save_storage()
+
+    def parent_exists(self, location: CounterLocation):
+        return location.actual_squad_lead_id in self.tip_storage["squads"]
 
     def add_alias_to_storage(self, location, CounterLocation, author):
         pass
@@ -93,13 +108,15 @@ class CounterHolocron(commands.Cog, Holocron):
 
             return '\n'.join(output)
         else:
-            output = ""
+            output = f"There are no tips for **{location.get_location_name()}**.\n"
             if detail:
                 output += f"{detail}\n"
-            output += f"There are no tips for {location.get_location_name()}."
             return output
 
     def get_tips(self, location: CounterLocation, read_filters=None):
+        if location.actual_squad_lead_id not in self.tip_storage["squads"]:
+            raise InvalidLocationError(f"Squad Leader not found: '{location.actual_squad_lead_id}'.")
+
         squad = self.tip_storage["squads"][location.actual_squad_lead_id]
         tips = self.tip_storage["tips"][squad.uid]
 

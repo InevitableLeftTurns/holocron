@@ -12,7 +12,7 @@ from discord.ext import commands, tasks
 from entities import tip as tip_module
 from entities.command_parser import HolocronCommand, CommandTypes
 from entities.interactions import AwaitingReaction
-from entities.locations import HolocronLocation, LocationDisabledError
+from entities.locations import HolocronLocation, LocationDisabledError, InvalidLocationError
 from entities.tip import Tip
 from util import helpmgr
 from util.command_checks import check_higher_perms
@@ -274,10 +274,12 @@ class Holocron:
         command_type = command.command_type
         if command_type.is_modify_type():
             modifying = {
-                CommandTypes.ADD: partial(self.execute_add_tip, command, channel),
+                CommandTypes.ADD: partial(self.add_tip, command, channel),
                 CommandTypes.EDIT: partial(self.edit_tip, command, guild),
                 CommandTypes.DELETE: partial(self.edit_tip, command, guild),
                 CommandTypes.CHANGE_AUTHOR: partial(self.edit_tip, command, guild),
+                CommandTypes.ADD_SQUAD: partial(self.add_squad, command, guild),
+                CommandTypes.EDIT_SQUAD: partial(self.add_squad, command, guild),  # same function
             }
             await modifying[command_type](author, tip_location, response_method)
             return
@@ -335,7 +337,7 @@ class Holocron:
         for emoji in emoji_list:
             await sent_message.add_reaction(emoji)
 
-    async def execute_add_tip(self, command: HolocronCommand, channel, author, location: HolocronLocation, response_method):
+    async def add_tip(self, command: HolocronCommand, channel, author, location: HolocronLocation, response_method):
         def check_message(message):
             return message.channel.id == channel_id and message.author.id == user_id
 
@@ -362,6 +364,46 @@ class Holocron:
     def add_tip_to_storage(self, location, tip_message, author):
         self.get_tips(location).append(Tip(content=tip_message, author=author.display_name, user_id=author.id))
         self.save_storage()
+
+    async def add_squad(self, command: HolocronCommand, channel, author, location: HolocronLocation, response_method):
+        def check_message(message):
+            return True  # message.channel.id == channel_id and message.author.id == user_id
+
+        if command.command_type is CommandTypes.ADD_SQUAD and self.parent_exists(location):
+            raise InvalidLocationError(f"Squad already exists: `{location}`")
+
+        if not command.new_tip_text:
+            await response_method.send(f"Your next message in this channel will be added as the squad lead name "
+                                       f"for {location}.\n"
+                                       f"If you wish to cancel, respond with `cancel`.")
+            channel_id = channel.id
+            user_id = author.id
+            response = await self.bot.wait_for("message", check=check_message)
+            leader = response.content
+        else:
+            leader = command.new_tip_text
+
+        if leader.lower() == "cancel":
+            await response_method.send("Squad addition has been cancelled.")
+            return
+
+        await response_method.send(f"Your next message in this channel will be added as the squad description "
+                                   f"for {location}.\n"
+                                   f"If you wish to cancel, respond with `cancel`.")
+
+        response = await self.bot.wait_for("message", check=check_message)
+        squad = response.content
+
+        self.add_squad_to_storage(location, leader, squad, author, edit=command.command_type is CommandTypes.EDIT_SQUAD)
+
+        sent_message = await response_method.send(f"Your squad has been added.\n{self.format_tips(location)}")
+        await self.send_modifier_choices(author, sent_message, location)
+
+    def add_squad_to_storage(self, location, leader, squad, author, edit=False):
+        raise NotImplementedError
+
+    def parent_exists(self, location):
+        return False
 
     async def edit_tip(self, command: HolocronCommand, guild, author, location: HolocronLocation, response_method):
         tips_list = self.get_tips(location)
