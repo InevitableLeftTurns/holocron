@@ -49,7 +49,7 @@ class ConquestHolocron(commands.Cog, Holocron):
 
         self.save_storage()
 
-    def get_tips(self, location: ConquestLocation, read_filters=None):
+    def get_tips(self, location: ConquestLocation):
         tip_group = self.get_group_data(location)
 
         if location.is_group_location:

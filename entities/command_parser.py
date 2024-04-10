@@ -80,6 +80,12 @@ class CommandTypes(Enum):
             return True
         return False
 
+    def is_allow_missing_type(self):
+        if self in [self.ADD_SQUAD, self.EDIT_SQUAD]:
+            return True
+        return False
+
+
     def description(self):
         if self is self.CHANGE_AUTHOR:
             return 'change the author for'

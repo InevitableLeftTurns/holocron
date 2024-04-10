@@ -6,8 +6,7 @@ from entities.tip import Tip
 
 class Squad:
 
-    def __init__(self, lead_id: str, lead: str, squad: str, author="n/a", user_id=0, variants=None, uid=None):
-        self.uid = uid or uuid.uuid4()
+    def __init__(self, lead_id: str, lead: str, squad: str, variants=None, author="n/a", user_id=0):
         self.lead_id = lead_id.lower()
         self.lead = lead.title()
         self.squad = squad
@@ -16,14 +15,7 @@ class Squad:
         self.user_id = user_id
         self.edited = False
         self.creation_time = datetime.datetime.utcnow()
-
-    def update_squad(self, new_squad: str):
-        self.squad = new_squad
-        self.edited = True
-
-    def add_variant(self, variant: str):
-        self.variants.append(variant)
-        self.variants = sorted(self.variants)
+        self.tips = []
 
     def create_squad_header_message(self) -> str:
         return f"{self.lead} (`{self.lead_id}`)"
@@ -38,11 +30,11 @@ class Squad:
 
     def to_json(self):
         return {
-            "uid": self.uid,
             "lead_id": self.lead_id,
             "lead": self.lead,
             "squad": self.squad,
             "variants": self.variants,
+            "tips": self.tips,
             "edited": self.edited,
             "author": self.author,
             "user_id": self.user_id,
@@ -52,21 +44,22 @@ class Squad:
 
 class CounterTip(Tip):
 
-    def __init__(self, squad_uuid, content: str, activity=None, author="n/a", rating=0, user_id=0):
+    def __init__(self, squad: str, content: str, activity=None, author="n/a", rating=0, user_id=0, edited=False):
         super().__init__(content=content, author=author, rating=rating, user_id=user_id)
-        self.squad_uuid = squad_uuid
+        self.squad = squad
         self.activity: str = activity.upper() if activity else None
+        self.edited = edited
 
     def create_tip_message(self, rating=False):
         edited, rating = self._create_tip_message_info(rating=rating)
         activity = ""
         if self.activity:
             activity = f"\t[{self.activity}] "
-        return f"{self.content} {activity} {edited} \t*(author: {self.author}*{rating})"
+        return f"**{self.squad}**\t{activity}\n\t {self.content} {edited}\t*(author: {self.author}*{rating})"
 
     def to_json(self):
         out_json = super().to_json()
-        out_json["squad_uuid"] = self.squad_uuid
+        out_json["squad"] = self.squad
         out_json["activity"] = self.activity
         return out_json
 

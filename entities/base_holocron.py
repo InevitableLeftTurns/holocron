@@ -50,7 +50,7 @@ class Holocron:
     def dummy_populate(self):
         raise NotImplementedError
 
-    def get_tips(self, location: HolocronLocation, read_filters=None):
+    def get_tips(self, location: HolocronLocation):
         raise NotImplementedError
 
     def get_all_tips(self):
@@ -200,7 +200,7 @@ class Holocron:
             await response_method.send('\n'.join(response))
             return
 
-        location = self.get_location(command_obj.address.lower())
+        location = self.get_location(command_obj.address.lower(), command_type=command_obj.command_type)
 
         # detect and handle short addresses
         if location.is_group_location:
@@ -243,7 +243,7 @@ class Holocron:
             return self.default_num_tips
 
     def format_tips(self, location: HolocronLocation, read_filters=None) -> str:
-        location_tips = self.get_tips(location, read_filters=read_filters)
+        location_tips = self.get_tips(location)
         total = len(location_tips)
         sort_tips(location_tips)
         top_n = location_tips[:self._read_depth(read_filters)]
@@ -275,11 +275,11 @@ class Holocron:
         if command_type.is_modify_type():
             modifying = {
                 CommandTypes.ADD: partial(self.add_tip, command, channel),
+                CommandTypes.ADD_SQUAD: partial(self.add_squad, command, channel),
                 CommandTypes.EDIT: partial(self.edit_tip, command, guild),
+                CommandTypes.EDIT_SQUAD: partial(self.add_squad, command, channel),  # same function
                 CommandTypes.DELETE: partial(self.edit_tip, command, guild),
                 CommandTypes.CHANGE_AUTHOR: partial(self.edit_tip, command, guild),
-                CommandTypes.ADD_SQUAD: partial(self.add_squad, command, guild),
-                CommandTypes.EDIT_SQUAD: partial(self.add_squad, command, guild),  # same function
             }
             await modifying[command_type](author, tip_location, response_method)
             return
@@ -356,54 +356,14 @@ class Holocron:
             await response_method.send("Tip addition has been cancelled.")
             return
 
-        self.add_tip_to_storage(location, tip_message, author)
+        self.get_tips(location).append(Tip(content=tip_message, author=author.display_name, user_id=author.id))
+        self.save_storage()
 
         sent_message = await response_method.send(f"Your tip has been added.\n{self.format_tips(location)}")
         await self.send_modifier_choices(author, sent_message, location)
 
-    def add_tip_to_storage(self, location, tip_message, author):
-        self.get_tips(location).append(Tip(content=tip_message, author=author.display_name, user_id=author.id))
-        self.save_storage()
-
     async def add_squad(self, command: HolocronCommand, channel, author, location: HolocronLocation, response_method):
-        def check_message(message):
-            return True  # message.channel.id == channel_id and message.author.id == user_id
-
-        if command.command_type is CommandTypes.ADD_SQUAD and self.parent_exists(location):
-            raise InvalidLocationError(f"Squad already exists: `{location}`")
-
-        if not command.new_tip_text:
-            await response_method.send(f"Your next message in this channel will be added as the squad lead name "
-                                       f"for {location}.\n"
-                                       f"If you wish to cancel, respond with `cancel`.")
-            channel_id = channel.id
-            user_id = author.id
-            response = await self.bot.wait_for("message", check=check_message)
-            leader = response.content
-        else:
-            leader = command.new_tip_text
-
-        if leader.lower() == "cancel":
-            await response_method.send("Squad addition has been cancelled.")
-            return
-
-        await response_method.send(f"Your next message in this channel will be added as the squad description "
-                                   f"for {location}.\n"
-                                   f"If you wish to cancel, respond with `cancel`.")
-
-        response = await self.bot.wait_for("message", check=check_message)
-        squad = response.content
-
-        self.add_squad_to_storage(location, leader, squad, author, edit=command.command_type is CommandTypes.EDIT_SQUAD)
-
-        sent_message = await response_method.send(f"Your squad has been added.\n{self.format_tips(location)}")
-        await self.send_modifier_choices(author, sent_message, location)
-
-    def add_squad_to_storage(self, location, leader, squad, author, edit=False):
         raise NotImplementedError
-
-    def parent_exists(self, location):
-        return False
 
     async def edit_tip(self, command: HolocronCommand, guild, author, location: HolocronLocation, response_method):
         tips_list = self.get_tips(location)
