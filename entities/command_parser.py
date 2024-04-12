@@ -10,6 +10,7 @@ class CommandTypes(Enum):
     DELETE = 4
     MAP = 5
     STATS = 6
+    LIST = 7
 
     # counter specific types
     SQUADS = 20

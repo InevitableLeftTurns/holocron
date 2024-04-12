@@ -65,6 +65,9 @@ class Holocron:
     def cleanup_rise_data(self):
         raise NotImplementedError
 
+    def get_list(self):
+        raise NotImplementedError
+
     # Base Functionality
     def get_location(self, location_string, location_string_suffix=None, **kwargs) -> HolocronLocation:
         location_obj = self.location_cls(location_string, location_string_suffix, self.labels)
@@ -165,6 +168,10 @@ class Holocron:
 
         if command_obj.error:
             await response_method.send(f"Error when processing command. {command_obj.error}")
+            return
+
+        if command_type is CommandTypes.LIST:
+            await response_method.send(self.get_list())
             return
 
         if command_type is CommandTypes.RISE_CLEANUP:

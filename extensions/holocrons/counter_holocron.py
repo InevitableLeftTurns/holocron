@@ -184,6 +184,14 @@ class CounterHolocron(commands.Cog, Holocron):
 
         return squad.tips
 
+    def get_list(self):
+        # this is really get squads
+        output = "**Listing all squads for counters**\n"
+        for squad in sorted(self.tip_storage["squads"].values(), key=lambda squad: squad.lead):
+            output += f"`{squad.lead_id}`\t{squad.lead}"  #\t \t[{squad.squad}]"
+            output += f"\t*tips: {len(squad.tips)}*\n"
+        return output
+
     def get_all_tips(self):
         all_tips = []
         for squad_id, squad in self.tip_storage["squads"].items():
