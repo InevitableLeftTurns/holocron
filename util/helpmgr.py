@@ -162,45 +162,66 @@ class CounterHelp(HelpContent):
     def generate_content(self):
         return {
 
-            "all": ["intro", "read", "modify_header", "add", "edit", "delete", "clear"],
+            "all": ["intro", "list", "read", "squad_header", "add_squad", "edit_squad", "modify_header", "add", "edit",
+                    "delete", "clear"],
 
             "intro": f"Manages tips for counters in **Territory War** or **Grand Arena Championships**.\nStart with "
                      f"`{self.prefix}counter` or `{self.prefix}ctr`, "
                      f"then follow with the options below.\n",
 
-            "read": f"*Accessing Tips*\n"
+            "list": f"**Listing Counters**\n"
+                    f"Use the command `list` to show all squads with counter tips. This will list all squads including "
+                    f"the `squad leader id` (e.g. `jmk` for Jedi Master Kenobi counters), the squad name, and the "
+                    f"number of tips.\n",
+
+            "read": f"**Accessing Counter Tips**\n"
                     f"Simply place a `<squad leader id>` following `{self.prefix}ctr`.\n"
                     f"ex: `{self.prefix}ctr jmk` or `{self.prefix}ctr see`.\n"
                     f"*aliases can also be used such as glrey for rey*\n"
                     f"  \n"
-                    f"To filter to only TW or GAC counters follow the leader id with `GAC` or `TW`\n"
-                    f"ex: `{self.prefix}ctr jmk gac`",
+                    f"To filter to only TW or GAC counters follow the leader id with `TW`, `GAC`, or `GAC3`\n"
+                    f"ex: `{self.prefix}ctr jmk gac` for 5v5 GAC specific counters.\n",
 
-            "modify_header": f"*Tip Modification*\n"
-                             f"For the below modifications, place the corresponding tag "
-                             f"after the squad leader.\nex: `{self.prefix}ctr <leader> <command>`",
+            "squad_header": f"**Adding and Editing Squads**\n"
+                            f"To add or edit a squad use `add-squad` or `edit-squad` with the leader id.",
 
-            "add": f"* `add` - Add a tip to the specified squad. "
-                   f"ex: `{self.prefix}counter cls add`.",
+            "add_squad": f"`add-squad` - Add a squad to the list of squad counters. You will be prompted for a Squad "
+                         f"Name and a Squad for counter tips such as `Commander Luke Skywalker` and "
+                         f"`CLS/Han/Chewie/Chewpio/C3PO`\n"
+                         f"ex: `{self.prefix}counter add-squad CLS` or `{self.prefix}ctr add-squad Reva`\n",
 
-            'edit': f"* `edit` - Edit one of your tips. Admins can edit any tip. "
-                    f"ex: `{self.prefix}counter maul edit`.",
+            'edit_squad': f"`edit-squad` - Edit one of the squads in the counter list. You will be prompted to set a "
+                          f"new name and Squad such as `Maul` and `Maul/BAM/Armorer/Bo/Ordo`\n"
+                          f"ex: `{self.prefix}counter edit-squad maul`\n",
 
-            'delete': f"* `delete` - Delete one of your tips. Bot admins can delete any tip. "
+            "modify_header": f"**Tip Modification**\n"
+                             f"Use the corresponding command with the squad leader or select the icon after displaying "
+                             f"tips.\n"
+                             f"ex: `{self.prefix}ctr <leader> <command>`",
+
+            "add": f"`add` - Add a counter tip to the specified squad. You will be prompted to add a counter squad "
+                   f"and a description of how the counter works.\n"
+                   f"ex: `{self.prefix}counter add cls` will add a counter against CLS squads.\n",
+
+            'edit': f"`edit` - Edit one of your counter tips. You will be asked to edit both squad and counter "
+                    f"description."
+                    f"ex: `{self.prefix}counter edit maul` will update a counter against Maul squads.\n",
+
+            'delete': f"`delete` - Delete one of your counter tips. \n"
                       f"ex: `{self.prefix}ctr 50rt delete`.\n",
 
-            'clear': f"*Clear All Tips*\n"
+            'clear': f"**Clear All Tips**\n"
                      f"`{self.prefix}counter clear`\n"
-                     f"Permission role required.",
+                     f"Permission role required.\n",
 
-            'alias': "not yet supported"
+            'alias': "not yet supported. will allow multiple aliases for the same squad.\n"
         }
 
 
 help_content = {
     'conquest': ConquestHelp(),
     'rise': RiseHelp(),
-    'counter':  CounterHelp(),
+    'counter': CounterHelp(),
 }
 
 

@@ -374,7 +374,7 @@ class CounterLocation(HolocronLocation):
     def __init__(self, squad_lead_id: str, suffix: str, tip_storage: dict):
         super().__init__(squad_lead_id, suffix, tip_storage)
         self.tip_storage = tip_storage
-        self.squad_lead_id = squad_lead_id
+        self.squad_lead_id = squad_lead_id.lower()
         self.actual_squad_lead_id = self.squad_lead_id
         self.valid_activities = ['GAC', 'TW', 'GAC3']
 
