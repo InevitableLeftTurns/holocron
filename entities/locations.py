@@ -144,7 +144,7 @@ class ConquestLocation(HolocronLocation):
             return 'feat'
         return self.conquest_labels[self.sector_node_type_id or self.feat_location_id].lower()
 
-    def parse_location(self, is_map=False, is_group=False):
+    def parse_location(self, is_map=False, is_group=False, **kwargs):
         if is_map:
             # this makes me angry
             raise NotImplementedError
@@ -302,7 +302,7 @@ class RiseLocation(HolocronLocation):
     def has_group_tips(self) -> bool:
         return False
 
-    def parse_location(self, is_map=False, is_group=False):
+    def parse_location(self, is_map=False, is_group=False, **kwargs):
         # parses the location address and raises errors if the address is invalid
         if self.suffix:
             self.suffix = self.suffix_lookup.get(self.suffix, self.suffix)
@@ -370,25 +370,41 @@ class RiseLocation(HolocronLocation):
         return
 
 
-class WarLocation(HolocronLocation):
-    def __init__(self, location_string, suffix, labels):
-        super().__init__(location_string, suffix, labels)
+class CounterLocation(HolocronLocation):
+    def __init__(self, squad_lead_id: str, suffix: str, tip_storage: dict):
+        super().__init__(squad_lead_id, suffix, tip_storage)
+        self.tip_storage = tip_storage
+        self.squad_lead_id = squad_lead_id.lower()
+        self.actual_squad_lead_id = self.squad_lead_id
+        self.valid_activities = ['GAC', 'TW', 'GAC3']
 
     def get_group_address(self):
         raise NotImplementedError
 
     def get_location_name(self):
-        return f"{self.labels['aliases'].get(self.address, f'`{self.address}`')}"
+        return f"{self.tip_storage['squads'][self.actual_squad_lead_id].create_squad_header_message()}"
 
     def get_tip_title(self):
-        return self.get_location_name()
+        return self.actual_squad_lead_id
 
-    def get_detail(self):
-        return ''  # self.get_location_name()
+    def check_activity(self, read_filters):
+        try:
+            if read_filters[0].upper() in self.valid_activities:
+                return read_filters[0].upper()
+        except (IndexError, ValueError, TypeError):
+            pass
 
-    def parse_location(self, is_map=False, is_group=False):
+        return None
+
+    def parse_location(self, command_type=None, **kwargs):
         # parses the location address and raises errors if the address is invalid
-        if len(self.address) == 0:
-            raise InvalidLocationError(f"Invalid or missing location.")
+        if len(self.squad_lead_id) == 0:
+            raise InvalidLocationError(f"Invalid or missing Squad Leader.")
+
+        if self.squad_lead_id not in self.tip_storage['squads']:
+            if self.squad_lead_id in self.tip_storage['aliases']:
+                self.actual_squad_lead_id = self.tip_storage['aliases'][self.squad_lead_id].squad_lead_id
+            elif command_type and not command_type.is_allow_missing_type():
+                raise InvalidLocationError(f"Squad Leader not found: '{self.squad_lead_id}'")
 
         return

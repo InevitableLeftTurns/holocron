@@ -10,6 +10,15 @@ class CommandTypes(Enum):
     DELETE = 4
     MAP = 5
     STATS = 6
+    LIST = 7
+
+    # counter specific types
+    SQUADS = 20
+    ADD_SQUAD = 21
+    EDIT_SQUAD = 22
+    ALIASES = 30
+    ADD_ALIAS = 31
+    TAG = 35
 
     # helper type
     ALL = 100
@@ -35,6 +44,14 @@ class CommandTypes(Enum):
         "reassign",
         "author",
     ]
+    ADD_SQUAD_ALIASES = [
+        "add-squad",
+        "squad-add",
+    ]
+    EDIT_SQUAD_ALIASES = [
+        "edit-squad",
+        "squad-edit",
+    ]
 
     @classmethod
     def lookup(cls, enum_str: str):
@@ -51,16 +68,30 @@ class CommandTypes(Enum):
         if alias in cls.CHANGE_AUTHOR_ALIASES.value:
             return cls.CHANGE_AUTHOR
 
+        if alias in cls.ADD_SQUAD_ALIASES.value:
+            return cls.ADD_SQUAD
+
+        if alias in cls.EDIT_SQUAD_ALIASES.value:
+            return cls.EDIT_SQUAD
+
         return None
 
     def is_modify_type(self):
-        if self in [self.ADD, self.EDIT, self.DELETE, self.CHANGE_AUTHOR]:
+        if self in [self.ADD, self.EDIT, self.DELETE, self.CHANGE_AUTHOR, self.ADD_SQUAD, self.EDIT_SQUAD]:
             return True
         return False
+
+    def is_allow_missing_type(self):
+        if self in [self.ADD_SQUAD, self.EDIT_SQUAD]:
+            return True
+        return False
+
 
     def description(self):
         if self is self.CHANGE_AUTHOR:
             return 'change the author for'
+        if self is self.ADD_SQUAD:
+            return 'add squad to'
         return self.name.lower()
 
 
@@ -74,7 +105,7 @@ class HolocronCommand:
 
         # contextual attributes
         self.help_section = None
-        self.read_depth = 3
+        self.read_filters = []
         self.new_tip_text = None
         self.new_author = None
         self.command_args = []
@@ -125,7 +156,7 @@ class HolocronCommand:
             return
 
         if self.command_type is CommandTypes.READ:
-            self.read_depth = self.command_args[0]
+            self.read_filters.append(self.command_args[0])
             self._shift_args()
 
         if self.command_type is CommandTypes.ADD:
@@ -138,6 +169,13 @@ class HolocronCommand:
         if self.command_type is CommandTypes.CHANGE_AUTHOR:
             self.new_author = self.command_args[0]
             self._shift_args()
+
+    def get_read_depth(self):
+        if not self.read_filters:
+            return 3
+
+        possible_depth = self.read_filters[-1]
+
 
     def _shift_args(self):
         self.command_args = self.command_args[1:]

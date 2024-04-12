@@ -12,7 +12,7 @@ from discord.ext import commands, tasks
 from entities import tip as tip_module
 from entities.command_parser import HolocronCommand, CommandTypes
 from entities.interactions import AwaitingReaction
-from entities.locations import HolocronLocation, LocationDisabledError
+from entities.locations import HolocronLocation, LocationDisabledError, InvalidLocationError
 from entities.tip import Tip
 from util import helpmgr
 from util.command_checks import check_higher_perms
@@ -38,6 +38,7 @@ class Holocron:
         self.clean_awaiting_reactions.start()
         self.modifier_emoji_list = ["➕", "✍", "➖"]
         self.modifier_command_types = [CommandTypes.ADD, CommandTypes.EDIT, CommandTypes.DELETE]
+        self.default_num_tips = 5
 
         self.tip_storage = None
         self.load_storage()
@@ -64,6 +65,9 @@ class Holocron:
     def cleanup_rise_data(self):
         raise NotImplementedError
 
+    def get_list(self):
+        raise NotImplementedError
+
     # Base Functionality
     def get_location(self, location_string, location_string_suffix=None, **kwargs) -> HolocronLocation:
         location_obj = self.location_cls(location_string, location_string_suffix, self.labels)
@@ -88,6 +92,7 @@ class Holocron:
             config = json.load(config_file)
 
         self.tip_storage = self.config_to_storage(config)
+        self.labels = self.load_labels()
         self.save_storage()
 
     def config_to_storage(self, config: dict):
@@ -165,6 +170,10 @@ class Holocron:
             await response_method.send(f"Error when processing command. {command_obj.error}")
             return
 
+        if command_type is CommandTypes.LIST:
+            await response_method.send(self.get_list())
+            return
+
         if command_type is CommandTypes.RISE_CLEANUP:
             msgs = self.cleanup_rise_data()
             await response_method.send('Rise taxonomy cleaned up')
@@ -198,7 +207,7 @@ class Holocron:
             await response_method.send('\n'.join(response))
             return
 
-        location = self.get_location(command_obj.address.lower())
+        location = self.get_location(command_obj.address.lower(), command_type=command_obj.command_type)
 
         # detect and handle short addresses
         if location.is_group_location:
@@ -234,11 +243,17 @@ class Holocron:
         for emoji in self.modifier_emoji_list:
             await sent_message.add_reaction(emoji)
 
-    def format_tips(self, location: HolocronLocation, depth=3) -> str:
+    def _read_depth(self, read_filters):
+        try:
+            return clamp(int(read_filters[-1]), 3, 10)
+        except (IndexError, ValueError, TypeError):
+            return self.default_num_tips
+
+    def format_tips(self, location: HolocronLocation, read_filters=None) -> str:
         location_tips = self.get_tips(location)
         total = len(location_tips)
         sort_tips(location_tips)
-        top_n = location_tips[:depth]
+        top_n = location_tips[:self._read_depth(read_filters)]
         detail = location.get_detail()
 
         if len(top_n) > 0:
@@ -267,23 +282,16 @@ class Holocron:
         if command_type.is_modify_type():
             modifying = {
                 CommandTypes.ADD: partial(self.add_tip, command, channel),
+                CommandTypes.ADD_SQUAD: partial(self.add_squad, command, channel),
                 CommandTypes.EDIT: partial(self.edit_tip, command, guild),
+                CommandTypes.EDIT_SQUAD: partial(self.add_squad, command, channel),  # same function
                 CommandTypes.DELETE: partial(self.edit_tip, command, guild),
                 CommandTypes.CHANGE_AUTHOR: partial(self.edit_tip, command, guild),
             }
             await modifying[command_type](author, tip_location, response_method)
             return
 
-        try:
-            num_tips = clamp(int(command.read_depth), 3, 10)
-        except ValueError:
-            await response_method.send(
-                f"If you include a value after the address for reading or listing Tips, that value "
-                f"defines how many tips to show. It must be a number between 3 and 10.\n"
-                f"You entered: `{command.read_depth}`")
-            return
-
-        response = self.format_tips(tip_location, num_tips)
+        response = self.format_tips(tip_location, command.read_filters)
         sent_message = await response_method.send(response)
         await self.send_modifier_choices(author, sent_message, tip_location)
 
@@ -360,6 +368,9 @@ class Holocron:
 
         sent_message = await response_method.send(f"Your tip has been added.\n{self.format_tips(location)}")
         await self.send_modifier_choices(author, sent_message, location)
+
+    async def add_squad(self, command: HolocronCommand, channel, author, location: HolocronLocation, response_method):
+        raise NotImplementedError
 
     async def edit_tip(self, command: HolocronCommand, guild, author, location: HolocronLocation, response_method):
         tips_list = self.get_tips(location)
