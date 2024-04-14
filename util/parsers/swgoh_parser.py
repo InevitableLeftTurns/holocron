@@ -87,14 +87,15 @@ def parse_counter_response(counter_lead, response) -> dict:
             attackers, stats, defense = cols
             for attacker in attackers.find_all("a"):
                 counter_obj.add_attacker(attacker.get("href"))
-            #     print(f'{attacker.get("href")} ||')
-            # print("\n")
-            # print(stats)
-            # print("defense\n")
+
+            attrs = ["seen", "wins", "points"]
+            for attr, stat_parts in zip(attrs, stats.find_all("div", class_="col-xs-4")):
+                last = [x for x in stat_parts.children][-1]
+                last = last.strip().strip("\\n")
+                counter_obj.__setattr__(attr, last)
+
             for defender in defense.find_all("a"):
                 counter_obj.add_defender(defender.get("href"))
-                # print(f'{defender.get("href")} ||')
-            # print(counterobj)
             counter_data[counter_obj.defense()].add(counter_obj)
 
     return counter_data
@@ -109,6 +110,7 @@ class ParsedCounter():
         self.defenders = [self.lead_id]
         self.seen = None
         self.wins = None
+        self.points = None
 
     def defense(self) -> str:
         return "/".join(self.defenders)
@@ -131,7 +133,11 @@ class ParsedCounter():
         return f"Lead: {self.lead_id}\n" \
                f"Defense: {self.defenders}\n" \
                f"Attack Lead: {self.lead_attacker}\n" \
-               f"Attackers: {self.attackers}\n"
+               f"Attackers: {self.attackers}\n" \
+               f"Seen: {self.seen}\n" \
+               f"Wins: {self.wins}\n" \
+               f"Avg Points: {self.points}%\n"
+
 
     def _add(self, attribute: list, key: str, data: str):
         start = data.find(key) + len(key)
