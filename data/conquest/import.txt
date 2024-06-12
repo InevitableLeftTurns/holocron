@@ -1,85 +1,84 @@
 @@GLOBALS
 
 Defeat at least 250 enemies on the golden Challenge Path
-Defeat 600 B1 Battle Droids
-Win 40 battles with a full squad of Galactic Republic
-Win 20 battles with Kelleran Beq and IG-12 & Grogu surviving
-Win 20 battles with a full squad of Light Side Mandalorians surviving
+Win 15 Battles with Captain Rex Surviving
+Defeat 35 enemies with Jedi Knight Cal Kestis
+Win 15 battles with Master Qui-Gon and Padawan Obi-Wan surviving
+Win 15 battles with at least 4 Gungans in your squad
 Complete a battle with Overprepared I active
-Defeat 50 enemies with STAP
-Attempt to call allies to assist with Booming Voice 60 times.
-
+Defeat 35 enemies with Dark Trooper Moff Gideon
+Attempt to call allies to assist with Booming Voice 60 times
 ----
 
 @@SECTOR 1
 
-Defeat 50 enemies with Jedi units
-Gain Defense Up 80 times
-Attempt to inflict Armor Shred 30 times
-Gain Secret Intel 80 times
+Defeat 35 enemies with Light Side Mandalorians
+Gain Evasion Up 50 times
+Defeat 35 enemies with Ewoks
+Win 10 battles with a full squad of Resistance units
 
-Miniboss: Win with Hermit Yoda surviving
-Miniboss: Win without using any Jedi, Sith, or Unaligned Force Users in your squad
+Miniboss: Defeat an enemy with Scout Trooper
+Miniboss: Win with only Light Side characters
 
-Boss: Win with T3-M4 surviving
-Boss: Win without using a Galactic Legend in your squad
+Boss: Win with Grand Admiral Thrawn surviving
+Boss: Win without using any Empire in your squad
 
 ----
 
 @@SECTOR 2
 
-Win 14 battles with no Attackers in your squad
-Evade at least 100 attacks in battles you won
-Attempt to inflict Plague 400 times
-Gain Health Steal Up 60 times
+Defeat 35 enemies with Rebel Fighter units
+Attempt to inflict Potency Down 50 times
+Defeat 35 enemies with Imperial Trooper units
+Win 10 battles with a full squad of Night Sister units
 
-Miniboss: Win with CT-5555 "Fives" surviving
-Miniboss: Win with only Dark Side characters
+Miniboss: Defeat an enemy with Sabine Wren
+Miniboss: Win with a full squad of Galactic Republic Surviving
 
-Boss: Win with Cad Bane and Aurra Sing surviving
-Boss: Win without using any Jedi, Sith, or Unaligned Force Users in your squad
+Boss: Win with Saw Gerrera surviving
+Boss: Win with a full squad of Empire units
 
 ----
 
 @@SECTOR 3
 
-Defeat 50 enemies with Droid units
-Gain Momentum 1,000 times
-Attempt to inflict Purge 300 times
-Gain Foresight 300 times
+Defeat 35 enemies with any Han
+Win 10 battles with a full squad of Separatist units
+Gain Accuracy Up 50 times
+Gain We Adapt, or Die 50 times
 
-Miniboss: Win with Boba Fett, Scion of Jango surviving
+Miniboss: Win with a full squad of Galactic Republic Jedi
 Miniboss: Win without using any Jedi, Sith, or Unaligned Force Users in your squad
 
 Boss: Win the battle with Boss Nass surviving
-Boss: Win without using a Galactic Legend in your squad
+Boss: Win with only Dark Side characters
 
 ----
 
 @@SECTOR 4
 
-Defeat 50 enemies with Imperial Trooper units
-Attempt to inflict Ability Block 60 times
-Gain Stealth 120 times
-Win at least 14 battles with a full squad of Rebel units
+Win 10 battles with STAP surviving
+Gain Shield Up 50 times
+Attempt to inflict Accuracy Down 50 times
+Win 10 battles with a full squad of Rebel units
 
-Miniboss: Win with Jedi Knight Cal Kestis surviving
-Miniboss: Win without using any Jedi, Sith, or Unaligned Force Users in your squad
+Miniboss: Win with Bo-Katan (Mand'alor) surviving.
+Miniboss: Win with only Dark Side characters
 
-Boss: Win with Dark Trooper Moff Gideon Surviving (excluding summons)
-Boss: Win with only Light Side characters
+Boss: Win with Leia Organa surviving
+Boss: Win without using a Galactic Legend in your squad
 
 ----
 
 @@SECTOR 5
 
-Defeat 50 enemies with Inquisitorius units
-Win 14 battles with no Tanks in your squad
-Attempt to inflict Blind 80 times
-Attempt to inflict Evasion Down 80 times
+Attempt to inflict Evasion Down 50 times
+Defeat 35 enemies with Phoenix characters
+Win 10 battles with Master Qui-Gon and Qui-Gon Surviving
+Defeat 35 enemies with Bounty Hunter units
 
-Miniboss: Win with Darth Bane surviving
-Miniboss: Win without using any Jedi, Sith, or Unaligned Force Users in your squad
+Miniboss: Win with General Veers in your squad
+Miniboss: Win with only Light Side characters
 
-Boss: Win with Bo-Katan (Mand'alor) surviving
-Boss: Win without using a Galactic Legend in your squad
+Boss: Win with Darth Bane surviving
+Boss: Win without using any Jedi, Sith, or Unaligned Force Users in your squad
