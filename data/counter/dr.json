@@ -1,0 +1,184 @@
+{
+  "name": "Darth Revan",
+  "base_id": "DARTHREVAN",
+  "pk": 336,
+  "url": "http://swgoh.gg/characters/darth-revan/",
+  "image": "https://game-assets.swgoh.gg/tex.charui_sithrevan.png",
+  "power": 40488,
+  "description": "Ruthless Sith Lord that is extremely effective at taking down the enemy leader",
+  "combat_type": 1,
+  "gear_levels": [
+    {
+      "tier": 1,
+      "gear": [
+        "009",
+        "003",
+        "005",
+        "009",
+        "011",
+        "011"
+      ]
+    },
+    {
+      "tier": 2,
+      "gear": [
+        "027",
+        "033",
+        "012",
+        "028",
+        "020",
+        "032"
+      ]
+    },
+    {
+      "tier": 3,
+      "gear": [
+        "059",
+        "070",
+        "025",
+        "050",
+        "054",
+        "026"
+      ]
+    },
+    {
+      "tier": 4,
+      "gear": [
+        "082",
+        "077",
+        "073",
+        "054",
+        "065",
+        "068"
+      ]
+    },
+    {
+      "tier": 5,
+      "gear": [
+        "088",
+        "080",
+        "085",
+        "055",
+        "068",
+        "077"
+      ]
+    },
+    {
+      "tier": 6,
+      "gear": [
+        "090",
+        "098",
+        "095",
+        "088",
+        "077",
+        "102"
+      ]
+    },
+    {
+      "tier": 7,
+      "gear": [
+        "113",
+        "113",
+        "107",
+        "055",
+        "077",
+        "073"
+      ]
+    },
+    {
+      "tier": 8,
+      "gear": [
+        "111",
+        "117",
+        "172",
+        "108",
+        "098",
+        "109"
+      ]
+    },
+    {
+      "tier": 9,
+      "gear": [
+        "132",
+        "173",
+        "125",
+        "117",
+        "088",
+        "102"
+      ]
+    },
+    {
+      "tier": 10,
+      "gear": [
+        "143",
+        "130",
+        "129",
+        "131",
+        "117",
+        "129"
+      ]
+    },
+    {
+      "tier": 11,
+      "gear": [
+        "130",
+        "137",
+        "137",
+        "129",
+        "144",
+        "129"
+      ]
+    },
+    {
+      "tier": 12,
+      "gear": [
+        "161",
+        "159",
+        "162",
+        "169",
+        "169",
+        "G12Finisher_DARTHREVAN_C"
+      ]
+    },
+    {
+      "tier": 13,
+      "gear": [
+        "9999",
+        "9999",
+        "9999",
+        "9999",
+        "9999",
+        "9999"
+      ]
+    }
+  ],
+  "alignment": "Dark Side",
+  "categories": [
+    "Attacker",
+    "Fleet Commander",
+    "Leader",
+    "Sith",
+    "Sith Empire"
+  ],
+  "ability_classes": [
+    "Ability Block",
+    "AoE",
+    "Assist",
+    "Bonus Attack",
+    "Buff Immunity",
+    "Deathmark",
+    "Dispel",
+    "Fear",
+    "Foresight",
+    "Gain Turn Meter",
+    "Leader: +Critical",
+    "Leader: +Speed",
+    "Reduce Cooldowns",
+    "Shock",
+    "Stun"
+  ],
+  "role": "Leader",
+  "ship": "CAPITALLEVIATHAN",
+  "ship_slot": 0,
+  "activate_shard_count": 330
+}

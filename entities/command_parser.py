@@ -13,9 +13,9 @@ class CommandTypes(Enum):
     LIST = 7
 
     # counter specific types
-    SQUADS = 20
-    ADD_SQUAD = 21
-    EDIT_SQUAD = 22
+    ADD_SQUAD = 20
+    EDIT_SQUAD = 21
+    IMPORT = 25
     ALIASES = 30
     ADD_ALIAS = 31
     TAG = 35
@@ -86,7 +86,6 @@ class CommandTypes(Enum):
             return True
         return False
 
-
     def description(self):
         if self is self.CHANGE_AUTHOR:
             return 'change the author for'
@@ -139,8 +138,8 @@ class HolocronCommand:
             # assume the first non-command is an address
             self.address = command_arg
         else:
-            # this is an argument to the command and address
-            self.command_args.append(command_arg)
+            # this is an argument to the command and address, maintain case
+            self.command_args.append(user_inputs[0])
 
         self.parse_command(*user_inputs[1:])
 
@@ -156,7 +155,7 @@ class HolocronCommand:
             return
 
         if self.command_type is CommandTypes.READ:
-            self.read_filters.append(self.command_args[0])
+            self.read_filters.append(self.command_args[0].lower())
             self._shift_args()
 
         if self.command_type is CommandTypes.ADD:
@@ -166,16 +165,16 @@ class HolocronCommand:
                 self.new_tip_text = self.command_args[0]
                 self._shift_args()
 
+        if self.command_type is CommandTypes.ADD_SQUAD:
+            if len(self.command_args) > 1:
+                self.new_tip_text = " ".join(self.command_args)
+            else:
+                self.new_tip_text = self.command_args[0]
+                self._shift_args()
+
         if self.command_type is CommandTypes.CHANGE_AUTHOR:
             self.new_author = self.command_args[0]
             self._shift_args()
-
-    def get_read_depth(self):
-        if not self.read_filters:
-            return 3
-
-        possible_depth = self.read_filters[-1]
-
 
     def _shift_args(self):
         self.command_args = self.command_args[1:]

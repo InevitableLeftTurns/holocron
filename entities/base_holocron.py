@@ -68,6 +68,9 @@ class Holocron:
     def get_list(self):
         raise NotImplementedError
 
+    async def handle_import(self, command: HolocronCommand, location: HolocronLocation, author, response_method):
+        raise NotImplementedError
+
     # Base Functionality
     def get_location(self, location_string, location_string_suffix=None, **kwargs) -> HolocronLocation:
         location_obj = self.location_cls(location_string, location_string_suffix, self.labels)
@@ -208,6 +211,10 @@ class Holocron:
             return
 
         location = self.get_location(command_obj.address.lower(), command_type=command_obj.command_type)
+
+        if command_type is CommandTypes.IMPORT:
+            await self.handle_import(command_obj, location, ctx.author, response_method)
+            return
 
         # detect and handle short addresses
         if location.is_group_location:

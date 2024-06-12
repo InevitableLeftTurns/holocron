@@ -4,64 +4,66 @@ from collections import defaultdict
 import requests
 from bs4 import BeautifulSoup
 
+characters = {}
 
-def run_parser(characters: dict) -> dict:
-    season_id = 51
-    counter_lead_id = "dr"
-    counter_lead = "DARTHREVAN"
 
-    print(f"Len: {len(characters)}")
-    print(f"{characters[counter_lead]['id']}:{characters[counter_lead]['name']}")
+def run_parser(counter_lead_id, counter_lead, season_id) -> (dict, dict):
+    global characters
+    if not characters:
+        characters = parse_character_file()
 
-    site_response = get_site_data(season_id, counter_lead_id, counter_lead)
+    print(f"Importing {characters[counter_lead]['id']}:{characters[counter_lead]['name']}")
+
+    site_response = get_site_data(counter_lead_id, counter_lead, season_id)
     counters = parse_counter_response(counter_lead, site_response)
-    print_counter_output(counter_lead, counters)
-    return counters
+    return counters, characters
 
 
-def get_site_data(season_id, counter_lead_id, counter_lead):
+def get_site_data(counter_lead_id, counter_lead, season_id):
     url = f"https://swgoh.gg/gac/counters/{counter_lead}/?season={season_id}"
 
-    # response = requests.get(url,
-    #                         headers={
-    #                             "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,"
-    #                                       "image/webp,image/apng,*/*;q=0.8,application/signed-exchange;,v=b3;q=0.7",
-    #                             "accept-language": "en-US,en;q=0.9",
-    #                             "cache-control": "max-age=0",
-    #                             "referer": "https://swgoh.gg/gac/counters/",
-    #                             'sec-ch-ua': '"Google Chrome";v="123", "Not:A-Brand";v="8", "Chromium";v="123"',
-    #                             'sec-ch-ua-platform': "macOS",
-    #                             "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36"
-    #                                           "(KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36",
-    #                         })
+    response = requests.get(url,
+                            headers={
+                                "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,"
+                                          "image/webp,image/apng,*/*;q=0.8,application/signed-exchange;,v=b3;q=0.7",
+                                "accept-language": "en-US,en;q=0.9",
+                                "cache-control": "max-age=0",
+                                "referer": "https://swgoh.gg/gac/counters/",
+                                'sec-ch-ua': '"Google Chrome";v="123", "Not:A-Brand";v="8", "Chromium";v="123"',
+                                'sec-ch-ua-platform': "macOS",
+                                "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36"
+                                              "(KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36",
+                            })
 
-    class Response():
-        def __init__(self):
-            self.text = ""
-            self.status = 200
-            with open(f"data/counter/{counter_lead_id}.html", "r") as f:
-                line = f.readline()
-                while line:
-                    self.text += line
-                    line = f.readline()
+    # class Response():
+    #     def __init__(self):
+    #         self.text = ""
+    #         self.status = 200
+    #         with open(f"data/counter/{counter_lead_id}.html", "r") as f:
+    #             line = f.readline()
+    #             while line:
+    #                 self.text += line
+    #                 line = f.readline()
+    #
+    # response = Response()
 
-    response = Response()
-
-    if response.status != 200:
-        raise IOError(f"URL '{url}' did not return successfully")
+    if response.status_code != 200:
+        raise IOError(f"`{counter_lead_id}` : `{counter_lead}` : season {season_id} did not return successfully\n"
+                      f"{url}")
     return response
 
 
-def print_counter_output(counter_lead, counters: dict):
+def print_counter_output(counter_lead, counters: dict, character_map: dict):
     for grouped_counters in counters.values():
         idx = 0
         for actual_counter in grouped_counters:
             idx += 1
             if idx == 1:
-                d_lead = characters[counter_lead]['name']
+                d_lead = character_map[counter_lead]['name']
                 print(f"Counters for {d_lead}:"
-                      f"{[characters[defender]['name'] for defender in actual_counter.defenders]}\n")
-            print(f"{[characters[ac]['name'] for ac in actual_counter.attackers]}\n")
+                      f"{[character_map[defender]['name'] for defender in actual_counter.defenders]}\n")
+            print(f"{[character_map[ac]['name'] for ac in actual_counter.attackers]}\n")
+            print(f"Wins: {actual_counter.wins} | {actual_counter.wins_float()}\n")
 
 
 def parse_character_file() -> dict:
@@ -71,6 +73,7 @@ def parse_character_file() -> dict:
         for char_json_obj in result:
             char_map[char_json_obj["base_id"]] = {"id": char_json_obj["base_id"],
                                                   "name": char_json_obj["name"]}
+    print(f"{len(char_map)} Characters Loaded")
     return char_map
 
 
@@ -115,6 +118,10 @@ class ParsedCounter():
     def defense(self) -> str:
         return "/".join(self.defenders)
 
+    def wins_float(self):
+        wins_num_str = self.wins.strip("%")
+        return float(wins_num_str)
+
     def __hash__(self):
         return hash(self.lead_id + "|" + self.lead_attacker)
 
@@ -138,7 +145,6 @@ class ParsedCounter():
                f"Wins: {self.wins}\n" \
                f"Avg Points: {self.points}%\n"
 
-
     def _add(self, attribute: list, key: str, data: str):
         start = data.find(key) + len(key)
         toon = data[start:]
@@ -161,6 +167,14 @@ class ParsedCounter():
         self._add(self.defenders, "d_unit=", defender_data)
 
 
+def _main():
+    season_id = 51
+    counter_lead_id = "dr"
+    counter_lead = "DARTHREVAN"
+
+    counters, character_map = run_parser(counter_lead_id, counter_lead, season_id)
+    print_counter_output(counter_lead, counters, character_map)
+
+
 if __name__ == '__main__':
-    characters = parse_character_file()
-    run_parser(characters)
+    _main()

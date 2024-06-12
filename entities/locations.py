@@ -376,7 +376,7 @@ class CounterLocation(HolocronLocation):
         self.tip_storage = tip_storage
         self.squad_lead_id = squad_lead_id.lower()
         self.actual_squad_lead_id = self.squad_lead_id
-        self.valid_activities = ['GAC', 'TW', 'GAC3']
+        self.valid_activities = ['GAC', 'TW', 'GAC3', 'GG', 'GG3']
 
     def get_group_address(self):
         raise NotImplementedError

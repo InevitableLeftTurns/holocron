@@ -6,34 +6,25 @@ from entities.tip import Tip
 
 class Squad:
 
-    def __init__(self, lead_id: str, lead: str, squad: str, variants=None, author="n/a", user_id=0):
+    def __init__(self, lead_id: str, lead: str, author="n/a", user_id=0, tips=None, import_id=None):
         self.lead_id = lead_id.lower()
         self.lead = lead.title()
-        self.squad = squad
-        self.variants = variants or []
         self.author = author
         self.user_id = user_id
         self.edited = False
         self.creation_time = datetime.datetime.utcnow()
-        self.tips = []
+
+        self.tips = tips or []
+        self.import_id = import_id
 
     def create_squad_header_message(self) -> str:
         return f"{self.lead} (`{self.lead_id}`)"
-
-    def create_squad_detail_message(self) -> str:
-        variants = ""
-        if self.variants:
-            variant_str = ", ".join([variant for variant in self.variants])
-            variants = f"***variants***: {variant_str}\n"
-        output = f"**Squad:** {self.squad}\n{variants}"
-        return output
 
     def to_json(self):
         return {
             "lead_id": self.lead_id,
             "lead": self.lead,
-            "squad": self.squad,
-            "variants": self.variants,
+            "import_id": self.import_id,
             "tips": self.tips,
             "edited": self.edited,
             "author": self.author,
